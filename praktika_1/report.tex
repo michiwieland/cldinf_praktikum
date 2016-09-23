@@ -1,0 +1,79 @@
+\input{../template.tex}
+
+% Dokumentinformationen
+\newcommand{\SUBJECT}{Report}
+\newcommand{\TITLE}{Analyzing an existing network}
+
+\input{../front.tex}
+
+% E-Mail to beat.stettler@ins.hsr.ch
+
+Logical Topology (Map of the network, IP Addresses, IP Addressing Scheme, Layer 2 Protocols, Layer 3 Protocols)
+- Measurement results
+- Explain the problems within the network, verify and prove with measured data.
+- Propose an action plan with an approach to resolve the inadequateness within the whole network
+- Create an offering / project proposal with a cost estimate and to achieve a full functional network. Choose the solution with the least impact to the productive system as well with the lowest possible costs involved.
+
+vlans, ospf
+
+Analysetools und Protokolle
+• Simple Network Management Protocol (SNMP) / WMI
+• Netflow
+• Taps / Monitoring Ports
+• Ping / Traceroute
+• IP SLA. Erlaubt das Simmulieren von Netzwerkverkehr.
+
+\section{Vorgehen}
+\subsection{Tools}
+\begin{enumerate}
+	\item Tftpd64 um Konfigurationen zu dumpen
+	\item jPerf um den Durchsatz zu messen
+\end{enumerate}
+
+
+
+
+\section{Informationsbeschaffung}
+Wir versuchen in einem ersten Schritt, alle Konfigurationen mit dem Tool Tftpd64 von den Router zu kopieren. Diese sollen anschliessend analysiert werden. Zur Verfügung steht uns der einzig einen Layer1 Plan und physischen Zugriff auf die Geräte.
+
+\subsection{Konfigurationen kopieren}
+\begin{enumerate}
+	\item Computer mit Ethernet Kabel mit dem Geräte verbinden
+	\item ipconfig -> IP des Routers auslesen
+	\item Tftpd64 öffnen und folgende Einstellungen treffen
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=0.7\linewidth]{images/tftpd64_configuration}
+		\caption{Tftpd64 Einstellungen}
+		\label{fig:tftpd64configuration}
+	\end{figure}
+	\item Putty Verbindung zum Default Gateway öffnen
+	\item enable
+	\item Folgende Commands ausführen. Der Output wird nun vom Tftp64 in das angegeben Verzeichnis kopiert
+	\begin{enumerate}
+		\item copy run tftp [your ip addr]
+		\item show ip interface brief
+		\item show int status
+		\item cdp neighbours (evtl. nur für switches)
+	\end{enumerate}
+	\itme 
+\end{enumerate}
+
+\section{Logical Topology}
+
+
+
+\section{Findings}
+layer 1 i.O
+\subsection{Finding 1}
+
+\section{Measurements result}
+durchsatz, wo sind die probleme
+port mit langsamemer durchsatz
+
+\section{Recommedations}
+
+\section{}
+
+
+\input{../appendix.tex}
