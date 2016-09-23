@@ -1,0 +1,8 @@
+BR2_R1#show ip interface brief
+Interface                  IP-Address      OK? Method Status                Protocol
+FastEthernet0/0            200.200.200.3   YES manual up                    up
+FastEthernet0/1            172.16.102.1    YES manual up                    up
+Serial0/0/0                172.16.252.3    YES manual up                    up
+Serial0/0/1                unassigned      YES unset  administratively down down
+Tunnel0                    172.16.255.6    YES manual up                    up
+

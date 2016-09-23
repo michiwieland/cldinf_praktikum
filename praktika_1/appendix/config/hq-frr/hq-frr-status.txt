@@ -1,0 +1,22 @@
+HQ_FRR#show int stat
+FastEthernet0/0
+          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
+               Processor      11417    2039747      15264    2269864
+             Route cache       7789     864229       8372     558345
+                   Total      19206    2903976      23636    2828209
+Interface FastEthernet0/1 is disabled
+
+Serial0/0/0
+          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
+               Processor      10981    1113980      11642    1052162
+             Route cache       8372     474625       7789     755301
+                   Total      19353    1588605      19431    1807463
+Interface Serial0/0/1 is disabled
+
+Interface Serial1/0 is disabled
+
+Interface Serial1/1 is disabled
+
+Interface Serial1/2 is disabled
+
+Interface Serial1/3 is disabled

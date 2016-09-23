@@ -1,0 +1,31 @@
+BR1_R1#show int stat
+FastEthernet0/0
+          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
+               Processor      22380    3923705      14760    2464011
+             Route cache         52       6579          0          0
+                   Total      22432    3930284      14760    2464011
+FastEthernet0/1
+          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
+               Processor      16927    4264320      16764    2498748
+             Route cache       4041     276448       3920     580387
+                   Total      20968    4540768      20684    3079135
+Serial0/0/0
+          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
+               Processor      13211     843517      13447     908579
+             Route cache       3920     541187       4041     217118
+                   Total      17131    1384704      17488    1125697
+Interface Serial0/0/1 is disabled
+
+Interface Serial1/0 is disabled
+
+Interface Serial1/1 is disabled
+
+Interface Serial1/2 is disabled
+
+Interface Serial1/3 is disabled
+
+Tunnel0
+          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
+               Processor       4812     515851       4715     490834
+             Route cache          0          0          0          0
+                   Total       4812     515851       4715     490834

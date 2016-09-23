@@ -1,0 +1,25 @@
+
+HQ_WER1#show int status
+HQ_WER1#
+HQ_WER1#show int stat
+FastEthernet0/0
+          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
+               Processor      25850    6849093      15600    2284014
+             Route cache       7084     813091       7104     483627
+                   Total      32934    7662184      22704    2767641
+FastEthernet0/1
+          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
+               Processor      11567    2042240      16272    2336919
+             Route cache       7104     514628       7084     784531
+                   Total      18671    2556868      23356    3121450
+Interface Serial0/0/0 is disabled
+
+Interface Serial0/0/1 is disabled
+
+Interface Serial1/0 is disabled
+
+Interface Serial1/1 is disabled
+
+Interface Serial1/2 is disabled
+
+Interface Serial1/3 is disabled

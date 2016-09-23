@@ -1,0 +1,137 @@
+BR2_R1#show run
+Building configuration...
+
+
+Current configuration : 1595 bytes
+!
+! Last configuration change at 23:56:23 UTC Thu Sep 22 2016
+version 15.1
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname BR2_R1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable secret 5 $1$tooV$GpQ3VCxj1U3jlmnAZbnQr/
+!
+no aaa new-model
+!
+memory-size iomem 10
+!
+dot11 syslog
+ip source-route
+!
+!
+ip cef
+!
+!
+!
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+voice-card 0
+!
+crypto pki token default removal timeout 0
+!
+!
+!
+!
+license udi pid CISCO2811 sn FCZ1432207G
+archive
+ log config
+  hidekeys
+!
+redundancy
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Tunnel0
+ ip address 172.16.255.6 255.255.255.252
+ ip ospf 1 area 0
+ tunnel source 200.200.200.3
+ tunnel destination 200.200.200.1
+!
+interface FastEthernet0/0
+ ip address 200.200.200.3 255.255.255.240
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ ip address 172.16.102.1 255.255.255.0
+ ip ospf 1 area 0
+ duplex auto
+ speed auto
+!
+interface Serial0/0/0
+ ip address 172.16.252.3 255.255.255.0
+ encapsulation frame-relay
+ ip ospf network point-to-multipoint
+ ip ospf 1 area 0
+ frame-relay map ip 172.16.252.1 301 broadcast
+ frame-relay lmi-type cisco
+!
+interface Serial0/0/1
+ no ip address
+ shutdown
+ clock rate 2000000
+!
+router ospf 1
+!
+ip forward-protocol nd
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+!
+!
+!
+snmp-server community public RO
+snmp-server community private RW
+!
+!
+control-plane
+!
+!
+!
+!
+mgcp profile default
+!
+!
+!
+!
+!
+!
+line con 0
+line aux 0
+line vty 0 4
+ password ins@lab
+ login
+ transport input all
+!
+scheduler allocate 20000 1000
+end
+

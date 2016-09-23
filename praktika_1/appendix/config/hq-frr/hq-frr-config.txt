@@ -1,0 +1,156 @@
+HQ_FRR#show run
+
+Building configuration...
+
+
+Current configuration : 1810 bytes
+!
+! Last configuration change at 22:56:57 UTC Thu Sep 22 2016
+version 15.1
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname HQ_FRR
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable secret 5 $1$FscR$wXNeNkzJuiZqfM2mESMKM/
+!
+no aaa new-model
+!
+memory-size iomem 10
+!
+dot11 syslog
+ip source-route
+!
+!
+ip cef
+!
+!
+!
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+voice-card 0
+!
+crypto pki token default removal timeout 0
+!
+!
+!
+!
+license udi pid CISCO2811 sn FCZ1432207U
+archive
+ log config
+  hidekeys
+!
+redundancy
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface FastEthernet0/0
+ ip address 172.16.254.62 255.255.255.252
+ ip ospf 1 area 0
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface Serial0/0/0
+ no ip address
+ encapsulation frame-relay
+ no fair-queue
+ frame-relay lmi-type cisco
+!
+interface Serial0/0/0.123 multipoint
+ ip address 172.16.252.1 255.255.255.0
+ ip ospf network point-to-multipoint
+ ip ospf 1 area 0
+ snmp trap link-status
+ frame-relay map ip 172.16.252.3 103 broadcast
+ frame-relay map ip 172.16.252.4 104 broadcast
+ frame-relay map ip 172.16.252.2 102 broadcast
+!
+interface Serial0/0/1
+ no ip address
+ shutdown
+ clock rate 2000000
+!
+interface Serial1/0
+ no ip address
+ shutdown
+!
+interface Serial1/1
+ no ip address
+ shutdown
+!
+interface Serial1/2
+ no ip address
+ shutdown
+!
+interface Serial1/3
+ no ip address
+ shutdown
+!
+router ospf 1
+!
+ip forward-protocol nd
+ip http server
+no ip http secure-server
+!
+!
+!
+!
+!
+!
+!
+snmp-server community public RO
+snmp-server community private RW
+!
+!
+control-plane
+!
+!
+!
+!
+mgcp profile default
+!
+!
+!
+!
+!
+!
+line con 0
+line aux 0
+line vty 0 4
+ password ins@lab
+ login
+ transport input all
+!
+scheduler allocate 20000 1000
+end          R S I  2811      Fas 0/1
+HQ_FRR#

@@ -63,23 +63,15 @@ Auf OSI Layer 1 wurden keine Fehler gefunden.
 
 
 \section{Messungen}
-\subsection{Durchsatz}
-Folgende Traceroute Messungen wurden durchgeführt. Die Messungen wurden direkt auf dem angegebene Gerät ausgeführt.
+\subsection{Traceroute}
+Alle Durchgeführten Traceroute Messungen sind im Anhang \ref{appendix:measures} zu finden.
+
+% TODO add folgerungen
+
 
 %TODO Ist ein Port mit langsamem Durchsatz konfiguriert?
 
-\subsubsection{Von X nach Y}
-\begin{lstlisting}[language=bash]
-Tracing route to 172.16.100.2 over a maximum of 30 hops
-	1 2 ms 2 ms 2 ms 172.16.16.1
-	2 3 ms 1 ms 2 ms 172.16.254.33
-	3 1 ms 1 ms 1 ms 172.16.254.2
-	4 1 ms 1 ms 1 ms 172.16.254.58
-	5 1 ms 1 ms 1 ms 172.16.254.62
-	6 1842 ms 1532 ms 1676 ms 172.16.252.2
-	7 1419 ms 1042 ms 655 ms 172.16.100.2
-\end{lstlisting}
-
+\subsection{jPerf}
 
 
 
@@ -106,6 +98,4 @@ Für die Umsetzung unserer Empfehlungen würden folgende Kosten anfallen.
 	\caption{Laufzeitverhalten von Suchtabellen}
 \end{table}
 
-
-
-\input{../appendix.tex}
+\input{appendix.tex}

@@ -1,0 +1,24 @@
+CCNA-CCNP-FRSwitch#show int sta
+Interface Ethernet0/0 is disabled
+
+Interface Ethernet0/1 is disabled
+
+Serial1/0
+          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
+               Processor       6055      80073       6024     102162
+             Route cache      11641    1618848      10962    1342326
+                   Total      17696    1698921      16986    1444488
+Serial1/1
+          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
+               Processor       6049      80432       6017      94029
+             Route cache       9743     940370       9632    1196100
+                   Total      15792    1020802      15649    1290129
+Serial1/2
+          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
+               Processor          0          0          0          0
+             Route cache          0          0          0          0
+                   Total          0          0          0          0
+Serial1/3
+          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
+               Processor       1950      60176       1281      20109
+             Route cache          0          0          0          0
