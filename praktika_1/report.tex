@@ -2,78 +2,110 @@
 
 % Dokumentinformationen
 \newcommand{\SUBJECT}{Report}
-\newcommand{\TITLE}{Analyzing an existing network}
+\newcommand{\TITLE}{Cloud Infrastructre Lab 1}
 
 \input{../front.tex}
 
 % E-Mail to beat.stettler@ins.hsr.ch
 
-Logical Topology (Map of the network, IP Addresses, IP Addressing Scheme, Layer 2 Protocols, Layer 3 Protocols)
-- Measurement results
-- Explain the problems within the network, verify and prove with measured data.
-- Propose an action plan with an approach to resolve the inadequateness within the whole network
-- Create an offering / project proposal with a cost estimate and to achieve a full functional network. Choose the solution with the least impact to the productive system as well with the lowest possible costs involved.
+%TODO: Übersicht logische topologie erstellen
+%TODO: IP Adressplan erstellen
+%TODO: Layer 2 und Layer 3 Protokolle angeben
 
-vlans, ospf
+%TODO: Verify and proof problems with measured date
+%TODO: Empfehlungen für Anpassungen am Netzwerk
+%TODO: Kostenvoranschlag für das Beheben der Fehler. Lösung mit dem kleinsten Einfluss auf das Produktive System und geringste Kosten
 
-Analysetools und Protokolle
-• Simple Network Management Protocol (SNMP) / WMI
-• Netflow
-• Taps / Monitoring Ports
-• Ping / Traceroute
-• IP SLA. Erlaubt das Simmulieren von Netzwerkverkehr.
 
-\section{Vorgehen}
+\section{Grundlegendes}
 \subsection{Tools}
 \begin{enumerate}
 	\item Tftpd64 um Konfigurationen zu dumpen
 	\item jPerf um den Durchsatz zu messen
+	\item % TODO Netflow?
+	\item % TODO 
 \end{enumerate}
-
-
-
 
 \section{Informationsbeschaffung}
-Wir versuchen in einem ersten Schritt, alle Konfigurationen mit dem Tool Tftpd64 von den Router zu kopieren. Diese sollen anschliessend analysiert werden. Zur Verfügung steht uns der einzig einen Layer1 Plan und physischen Zugriff auf die Geräte.
+In einem ersten Schritt wurden sämtliche Konfigurationen mit dem Tool Tftpd64 von den Router und Switches kopiert. Diese wurden dann in einem nächsten Schritt auf Fehlkonfigurationen analysiert. Dabei gingen wir nach folgendem Schema vor:
 
-\subsection{Konfigurationen kopieren}
+% TODO add schema
 \begin{enumerate}
-	\item Computer mit Ethernet Kabel mit dem Geräte verbinden
-	\item ipconfig -> IP des Routers auslesen
-	\item Tftpd64 öffnen und folgende Einstellungen treffen
-	\begin{figure}[h]
-		\centering
-		\includegraphics[width=0.7\linewidth]{images/tftpd64_configuration}
-		\caption{Tftpd64 Einstellungen}
-		\label{fig:tftpd64configuration}
-	\end{figure}
-	\item Putty Verbindung zum Default Gateway öffnen
-	\item enable
-	\item Folgende Commands ausführen. Der Output wird nun vom Tftp64 in das angegeben Verzeichnis kopiert
-	\begin{enumerate}
-		\item copy run tftp [your ip addr]
-		\item show ip interface brief
-		\item show int status
-		\item cdp neighbours (evtl. nur für switches)
-	\end{enumerate}
-	\itme 
+	\item 
 \end{enumerate}
 
-\section{Logical Topology}
+\subsection{Konfiguration kopieren}
+Für jedes Geräte wurden die Outputs der folgenden Befehle auf die lokalen Notebooks kopiert. Alle Konfiguration sind im Anhang \ref{appendix:configurations} zu finden
+
+\begin{lstlisting}[language=bash]
+copy run tftp und dann [your local ip addr]
+show ip interface brief
+show interface status
+show cdp neighbors
+\end{lstlisting}
+
+\section{Logische Topologie}
+
+\section{Gefundene Fehler}
+\subsection{Layer 1}
+Auf OSI Layer 1 wurden keine Fehler gefunden.
+
+\subsection{Layer 2}
+\subsubsection{Spanning Tree}
+
+\subsubsection{VLAN}
+
+\subsection{Layer 3}
+
+\subsubsection{Routen}
+
+\subsection{OSPF}
+
+
+\section{Messungen}
+\subsection{Durchsatz}
+Folgende Traceroute Messungen wurden durchgeführt. Die Messungen wurden direkt auf dem angegebene Gerät ausgeführt.
+
+%TODO Ist ein Port mit langsamem Durchsatz konfiguriert?
+
+\subsubsection{Von X nach Y}
+\begin{lstlisting}[language=bash]
+Tracing route to 172.16.100.2 over a maximum of 30 hops
+	1 2 ms 2 ms 2 ms 172.16.16.1
+	2 3 ms 1 ms 2 ms 172.16.254.33
+	3 1 ms 1 ms 1 ms 172.16.254.2
+	4 1 ms 1 ms 1 ms 172.16.254.58
+	5 1 ms 1 ms 1 ms 172.16.254.62
+	6 1842 ms 1532 ms 1676 ms 172.16.252.2
+	7 1419 ms 1042 ms 655 ms 172.16.100.2
+\end{lstlisting}
 
 
 
-\section{Findings}
-layer 1 i.O
-\subsection{Finding 1}
 
-\section{Measurements result}
-durchsatz, wo sind die probleme
-port mit langsamemer durchsatz
 
-\section{Recommedations}
+\section{Empfehlungen}
+Aufgrund der vorangehenden Erkenntnissen empfehlen wir, an folgenden Punkten anzusetzen:
+%TODO add recommedations
+\begin{enumerate}
+	\item 
+\end{enumerate}
 
-\section{}
+\subsection{Kostenvoranschlag}
+Für die Umsetzung unserer Empfehlungen würden folgende Kosten anfallen.
+\begin{table}[h]
+	\centering
+	\begin{tabu} to \linewidth {l l l l}
+		\toprule 
+		Beschreibung & Zeitaufwand in h  & Stundenansatz in CHF & Total \\
+		\midrule
+		&&& \\
+		\textbf{Total} & & & \underline{\underline{1 Million}} \\
+		\bottomrule 
+	\end{tabu} 
+	\caption{Laufzeitverhalten von Suchtabellen}
+\end{table}
+
 
 
 \input{../appendix.tex}
