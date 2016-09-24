@@ -1,0 +1,13 @@
+Device ID        Local Intrfce     Holdtme    Capability  Platform  Port ID
+HQ_CS4           Fas 0/4           140             R S I  WS-C3560- Fas 0/4
+HQ_CS4           Fas 0/2           170             R S I  WS-C3560- Fas 0/2
+HQ_CS4           Fas 0/1           170             R S I  WS-C3560- Fas 0/1
+HQ_DS3           Fas 0/16          160             R S I  WS-C3560- Fas 0/4
+HQ_DS3           Fas 0/15          160             R S I  WS-C3560- Fas 0/3
+HQ_DS3           Fas 0/14          160             R S I  WS-C3560- Fas 0/2
+HQ_DS3           Fas 0/13          153             R S I  WS-C3560- Fas 0/1
+HQ_CS4           Fas 0/3           153             R S I  WS-C3560- Fas 0/3
+HQ_CS1           Fas 0/5           140             R S I  WS-C3560V Fas 0/5
+HQ_CS1           Fas 0/8           129             R S I  WS-C3560V Fas 0/8
+HQ_CS1           Fas 0/7           129             R S I  WS-C3560V Fas 0/7
+HQ_CS1           Fas 0/6           153             R S I  WS-C3560V Fas 0/6

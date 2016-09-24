@@ -37,19 +37,6 @@ bibliography=totocnumbered]{scrartcl}
 \usepackage[all]{hypcap}
 \usepackage{hyperxmp} % for license metadata
 
-% Glossar und Abkürzungsverzeichnis
-\usepackage[acronym,toc,nopostdot]{glossaries}
-\glossarystyle{altlist}
-\usepackage{xparse}
-\DeclareDocumentCommand{\newdualentry}{ O{} O{} m m m m } {
-	\newglossaryentry{gls-#3}{name={#5},text={#5\glsadd{#3}},
-		description={#6},#1
-	}
-	\makeglossaries
-	\newacronym[see={[Siehe:]{gls-#3}},#2]{#3}{#4}{#5\glsadd{gls-#3}}
-}
-\makeglossaries
-
 % Mathematik
 \usepackage{amsmath}
 \usepackage{amssymb}

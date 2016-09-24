@@ -6,7 +6,7 @@
 
 \input{../front.tex}
 
-% E-Mail to beat.stettler@ins.hsr.ch
+% E-Mail to beat.stettler@ins.hsr.ch bis Donnerstag 23:59
 
 %TODO: Übersicht logische topologie erstellen
 %TODO: IP Adressplan erstellen
@@ -33,6 +33,46 @@ In einem ersten Schritt wurden sämtliche Konfigurationen mit dem Tool Tftpd64 v
 \begin{enumerate}
 	\item 
 \end{enumerate}
+
+\subsection{Analyse des Konfigurationen}
+\subsubsection{VLAN}
+\begin{table}[h]
+	\centering
+	\begin{tabu} to \linewidth {l l l}
+		\toprule 
+		VLAN & Name & Bedeutung \\
+		\midrule
+		VLAN 10 & HR & Personalabteilung \\
+		VLAN 11 & IT & IT Abteilung \\
+		VLAN 99 & MGMT & Management\\
+		VLAN 100 & STAFF & Mitarbeiter\\
+		VLAN 150 & IWAS & ???\\
+		VLAN 200 & STUDENTS & Studenten\\
+		\bottomrule 
+	\end{tabu} 
+	\caption{VLAN's}
+\end{table}
+
+\begin{table}[h]
+	\centering
+	\begin{tabu} to \linewidth {l l l}
+		\toprule 
+		VLAN & Subnetz & Bemerkung \\
+		\midrule
+		VLAN1 & 172.16.103.0/24 & \\
+		VLAN10 & 172.16.1.0/24 & \\
+		VLAN11 & 172.16.2.0/24 & \\
+		VLAN20 & no ip addr assigned & (router ospf) \\
+		VLAN21 & 172.16.16.0/24 & (mtu-ignore) \\
+		VLAN30 & 172.16.17.0/24 & \\
+		VLAN40 & 172.16.18.0/24 & (standby) \\
+		VLAN41 & 172.16.19.0/24 & (mtu ignore) \\
+		VLAN100 & 172.16.20.0/24 & (mtu ignore) \\
+		VLAN103 & 172.16.23.0/24 & \\
+		\bottomrule 
+	\end{tabu} 
+	\caption{VLAN Subnetze}
+\end{table}
 
 \subsection{Konfiguration kopieren}
 Für jedes Geräte wurden die Outputs der folgenden Befehle auf die lokalen Notebooks kopiert. Alle Konfiguration sind im Anhang \ref{appendix:configurations} zu finden
@@ -95,7 +135,7 @@ Für die Umsetzung unserer Empfehlungen würden folgende Kosten anfallen.
 		\textbf{Total} & & & \underline{\underline{1 Million}} \\
 		\bottomrule 
 	\end{tabu} 
-	\caption{Laufzeitverhalten von Suchtabellen}
+	\caption{Kostenvoranschlag}
 \end{table}
 
 \input{appendix.tex}
