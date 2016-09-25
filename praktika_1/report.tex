@@ -34,7 +34,38 @@ In einem ersten Schritt wurden sämtliche Konfigurationen mit dem Tool Tftpd64 v
 	\item 
 \end{enumerate}
 
+\subsection{Konfiguration kopieren}
+Für jedes Geräte wurden die Outputs der folgenden Befehle auf die lokalen Notebooks kopiert. Alle Konfiguration sind im Anhang \ref{appendix:configurations} zu finden
+
+\begin{lstlisting}[language=bash]
+copy run tftp und dann [your local ip addr]
+show ip interface brief
+show interface status
+show cdp neighbors
+\end{lstlisting}
+
 \subsection{Analyse des Konfigurationen}
+\subsection{DHCP}
+\begin{table}[h]
+	\centering
+	\begin{tabu} to \linewidth {l l X}
+		\toprule 
+		DHCP Pool & Beschreibung & Bemerkung \\
+		\midrule
+		172.16.1.0/24 & HR &  \\
+		172.16.2.0/24 & ENGINEERING &  \\
+		172.16.3.0/24 & PRODUCTION &  \\
+		172.16.4.0/24 & FINANCE &  \\
+		172.16.16.0/24 & IT & DHCP exlude 172.16.16.1, 172.16.16.10 172.16.16.12 \\
+		172.16.17.0/24 & SERVER & DHCP exclude 172.16.17.1, 172.16.17.10 172.16.17.12 \\
+		172.16.18.0/24 & MARKETING & DHCP exclude 172.16.18.250, 172.16.18.254, 172.16.18.10 172.16.18.12  \\
+		172.16.19.0/24 & SALES & DHCP exclude 172.16.19.250, 172.16.19.254, 172.16.19.10 172.16.19.12 \\
+		172.16.103.0/24 & Branch 2 & DHCP exlude 172.16.103.1, 172.16.103.10, 172.16.103.12 \\
+		\bottomrule 
+	\end{tabu} 
+	\caption{DHCP Pools}
+\end{table}
+
 \subsubsection{VLAN}
 \begin{table}[h]
 	\centering
@@ -74,16 +105,6 @@ In einem ersten Schritt wurden sämtliche Konfigurationen mit dem Tool Tftpd64 v
 	\caption{VLAN Subnetze}
 \end{table}
 
-\subsection{Konfiguration kopieren}
-Für jedes Geräte wurden die Outputs der folgenden Befehle auf die lokalen Notebooks kopiert. Alle Konfiguration sind im Anhang \ref{appendix:configurations} zu finden
-
-\begin{lstlisting}[language=bash]
-copy run tftp und dann [your local ip addr]
-show ip interface brief
-show interface status
-show cdp neighbors
-\end{lstlisting}
-
 \section{Logische Topologie}
 
 \section{Gefundene Fehler}
@@ -91,6 +112,19 @@ show cdp neighbors
 Auf OSI Layer 1 wurden keine Fehler gefunden.
 
 \subsection{Layer 2}
+%TODO Auf CCNA-CCNP-FRSwitch ist CNP (Cisco ???) nicht aktiviert
+
+\subsubsection{Design}
+\begin{itemize}
+	\item HQ\_CS2 bildet die einzige Verbindung zu den Branches. Es bildet somit einen Single Point of Failure
+\end{itemize}
+
+\subsubsection{Speed}
+\begin{itemize}
+	\item Die Port Channel Group 4 beim HQ\_CS1 ist auf Half Duplex 100 eingestellt.
+	\item Die Port Channel Group 2 bei HQ\_CS2 ist auf 10 eingestellt. 
+\end{itemize}
+
 \subsubsection{Spanning Tree}
 
 \subsubsection{VLAN}
