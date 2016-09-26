@@ -1,0 +1,3 @@
+HQ_CS4# show spanning-tree
+
+No spanning tree instance exists.

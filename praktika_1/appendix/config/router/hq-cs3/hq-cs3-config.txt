@@ -1,0 +1,215 @@
+
+!
+version 12.2
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+service sequence-numbers
+!
+hostname HQ_CS3
+!
+boot-start-marker
+boot-end-marker
+!
+enable secret 5 $1$vTJp$Y2wLOoVslvoOaBBNAr1oX0
+!
+username ins password 0 ins@lab
+!
+!
+no aaa new-model
+system mtu routing 1500
+vtp mode transparent
+ip routing
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-789190400
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-789190400
+ revocation-check none
+ rsakeypair TP-self-signed-789190400
+!
+!
+crypto pki certificate chain TP-self-signed-789190400
+ certificate self-signed 01
+  3082023D 308201A6 A0030201 02020101 300D0609 2A864886 F70D0101 04050030
+  30312E30 2C060355 04031325 494F532D 53656C66 2D536967 6E65642D 43657274
+  69666963 6174652D 37383931 39303430 30301E17 0D393330 33303130 35343835
+  315A170D 32303031 30313030 30303030 5A303031 2E302C06 03550403 1325494F
+  532D5365 6C662D53 69676E65 642D4365 72746966 69636174 652D3738 39313930
+  34303030 819F300D 06092A86 4886F70D 01010105 0003818D 00308189 02818100
+  C6C5446B BBCF34FF 439D0799 2EB637D6 822843B1 3A8D9AE5 4E1BCE76 6BA2FC1D
+  2E4B00FE 98620634 368959FB 97A92D32 9128ED2B A06BAAA8 D597C7A2 83918ECB
+  0CFBCFA3 C5655F94 530C8875 DF278C94 37D7CDC4 50A60294 170E9EDE 42D9F5AF
+  4BB1C6EC D12E59BD 7B813469 2C2CE6E0 160347A3 B33953FF E1B41BBE 63B967EF
+  02030100 01A36730 65300F06 03551D13 0101FF04 05300301 01FF3012 0603551D
+  11040B30 09820748 515F4353 332E301F 0603551D 23041830 168014C9 52E60A9F
+  D61C6333 B57971FA 63F81D9E 1E6ED830 1D060355 1D0E0416 0414C952 E60A9FD6
+  1C6333B5 7971FA63 F81D9E1E 6ED8300D 06092A86 4886F70D 01010405 00038181
+  005EEE8C 4FD31148 0FDC9155 BFAE63D4 0C28666B 1B9B3504 3E0353AF 124EF810
+  1E13F6D9 5F080222 433F481F 82B2EC7D 564A5EFA 0693404A C1B2F33A 6421460A
+  D05C704A DCA0D681 8A3D3D22 956F4BFC CBEE4EAD 9A51EB53 802FF1E0 81DFCBF6
+  A8AF70AE 785BECB2 3D02114C 43138B7E CC472238 98501F4B 936FED21 C53F0293 D1
+  quit
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+!
+vlan 99
+ name mgmt
+!
+vlan 100
+ name staff
+!
+vlan 150
+ name iwas
+!
+vlan 200
+ name students
+!
+!
+!
+!
+interface Loopback100
+ ip address 172.16.25.3 255.255.255.0
+ ip ospf 1 area 0
+!
+interface Port-channel1
+ no switchport
+ ip address 172.16.254.9 255.255.255.252
+ ip ospf mtu-ignore
+ ip ospf 1 area 0
+!
+interface Port-channel2
+ no switchport
+ ip address 172.16.254.6 255.255.255.252
+ ip ospf mtu-ignore
+ ip ospf 1 area 0
+!
+interface Port-channel3
+ no switchport
+ ip address 172.16.254.21 255.255.255.252
+ ip ospf mtu-ignore
+ ip ospf 1 area 0
+!
+interface FastEthernet0/1
+ no switchport
+ no ip address
+ channel-group 1 mode on
+!
+interface FastEthernet0/2
+ no switchport
+ no ip address
+ channel-group 1 mode on
+!
+interface FastEthernet0/3
+ no switchport
+ no ip address
+ channel-group 1 mode on
+!
+interface FastEthernet0/4
+ no switchport
+ no ip address
+ channel-group 1 mode on
+!
+interface FastEthernet0/5
+ no switchport
+ no ip address
+ channel-group 2 mode on
+!
+interface FastEthernet0/6
+ no switchport
+ no ip address
+ channel-group 2 mode on
+!
+interface FastEthernet0/7
+ no switchport
+ no ip address
+ channel-group 2 mode on
+!
+interface FastEthernet0/8
+ no switchport
+ no ip address
+ channel-group 2 mode on
+!
+interface FastEthernet0/9
+!
+interface FastEthernet0/10
+!
+interface FastEthernet0/11
+!
+interface FastEthernet0/12
+!
+interface FastEthernet0/13
+ no switchport
+ no ip address
+ channel-group 3 mode on
+!
+interface FastEthernet0/14
+ no switchport
+ no ip address
+ channel-group 3 mode on
+!
+interface FastEthernet0/15
+ no switchport
+ no ip address
+ channel-group 3 mode on
+!
+interface FastEthernet0/16
+ no switchport
+ no ip address
+ channel-group 3 mode on
+!
+interface FastEthernet0/17
+!
+interface FastEthernet0/18
+!
+interface FastEthernet0/19
+!
+interface FastEthernet0/20
+!
+interface FastEthernet0/21
+!
+interface FastEthernet0/22
+!
+interface FastEthernet0/23
+!
+interface FastEthernet0/24
+!
+interface GigabitEthernet0/1
+!
+interface GigabitEthernet0/2
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+router ospf 1
+ log-adjacency-changes
+!
+ip classless
+ip http server
+ip http secure-server
+!
+!
+ip sla enable reaction-alerts
+!
+snmp-server community public RO
+snmp-server community private RW
+!
+!
+line con 0
+line vty 0 4
+ password cisco
+ login
+line vty 5 15
+ password cisco
+ login
+!
+end

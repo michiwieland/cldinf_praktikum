@@ -1,0 +1,35 @@
+BR2_S1> show interface trunk
+
+Port        Mode             Encapsulation  Status        Native vlan
+Fa0/2       on               802.1q         trunking      1
+Fa0/3       on               802.1q         trunking      1
+Fa0/4       on               802.1q         trunking      1
+Fa0/5       on               802.1q         trunking      1
+Fa0/6       on               802.1q         trunking      1
+Fa0/7       on               802.1q         trunking      1
+
+Port        Vlans allowed on trunk
+Fa0/2       1-4094
+Fa0/3       1-4094
+Fa0/4       1-4094
+Fa0/5       1-4094
+Fa0/6       1-4094
+Fa0/7       1-4094
+
+Port        Vlans allowed and active in management domain
+Fa0/2       1-5,10-11,17,19,46,1006
+Fa0/3       1-5,10-11,17,19,46,1006
+Fa0/4       1-5,10-11,17,19,46,1006
+Fa0/5       1-5,10-11,17,19,46,1006
+Fa0/6       1-5,10-11,17,19,46,1006
+
+Port        Vlans allowed and active in management domain
+Fa0/7       1-5,10-11,17,19,46,1006
+
+Port        Vlans in spanning tree forwarding state and not pruned
+Fa0/2       1-5,10-11,17,19,46,1006
+Fa0/3       2-5,10-11,17,19,46,1006
+Fa0/4       1-5,10-11,17,19,46,1006
+Fa0/5       1-5,10-11,17,19,46,1006
+Fa0/6       1-5,10-11,17,19,46,1006
+Fa0/7       1-5,10-11,17,19,46,1006

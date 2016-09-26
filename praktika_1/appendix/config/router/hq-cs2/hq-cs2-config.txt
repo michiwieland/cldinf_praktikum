@@ -1,0 +1,215 @@
+
+!
+! Last configuration change at 08:38:55 UTC Mon Mar 1 1993
+!
+version 15.0
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+service sequence-numbers
+!
+hostname HQ_CS2
+!
+boot-start-marker
+boot-end-marker
+!
+enable secret 5 $1$2GLo$vSF1.pg28M8/YjQJtzH.r/
+!
+username ins password 0 ins@lab
+no aaa new-model
+system mtu routing 1500
+ip routing
+no ip domain-lookup
+!
+!
+!
+!
+crypto pki trustpoint HTTPS_SS_CERT_KEYPAIR
+ enrollment selfsigned
+ serial-number
+ revocation-check none
+ rsakeypair HTTPS_SS_CERT_KEYPAIR
+!
+!
+crypto pki certificate chain HTTPS_SS_CERT_KEYPAIR
+ certificate self-signed 01
+  	quit
+!
+!
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback100
+ ip address 172.16.25.2 255.255.255.0
+ ip ospf 1 area 0
+!
+interface Port-channel1
+ no switchport
+ ip address 172.16.254.2 255.255.255.252
+ ip ospf mtu-ignore
+ ip ospf 1 area 0
+!
+interface Port-channel2
+ no switchport
+ bandwidth 10000
+ ip address 172.16.254.13 255.255.255.252
+ ip ospf mtu-ignore
+ ip ospf 1 area 0
+ speed 10
+!
+interface Port-channel3
+ no switchport
+ ip address 172.16.254.50 255.255.255.248
+ ip ospf mtu-ignore
+ ip ospf 1 area 0
+!
+interface FastEthernet0/1
+ no switchport
+ no ip address
+ channel-group 1 mode on
+!
+interface FastEthernet0/2
+ no switchport
+ no ip address
+ channel-group 1 mode on
+!
+interface FastEthernet0/3
+ no switchport
+ no ip address
+ channel-group 1 mode on
+!
+interface FastEthernet0/4
+ no switchport
+ no ip address
+ channel-group 1 mode on
+!
+interface FastEthernet0/5
+ no switchport
+ no ip address
+ speed 10
+ channel-group 2 mode on
+!
+interface FastEthernet0/6
+ no switchport
+ no ip address
+ speed 10
+ channel-group 2 mode on
+!
+interface FastEthernet0/7
+ no switchport
+ no ip address
+ speed 10
+ channel-group 2 mode on
+!
+interface FastEthernet0/8
+ no switchport
+ no ip address
+ speed 10
+ channel-group 2 mode on
+!
+interface FastEthernet0/9
+!
+interface FastEthernet0/10
+!
+interface FastEthernet0/11
+!
+interface FastEthernet0/12
+!
+interface FastEthernet0/13
+ no switchport
+ no ip address
+ ip ospf mtu-ignore
+ ip ospf 1 area 0
+ channel-group 3 mode on
+!
+interface FastEthernet0/14
+ no switchport
+ no ip address
+ ip ospf mtu-ignore
+ ip ospf 1 area 0
+ channel-group 3 mode on
+!
+interface FastEthernet0/15
+ no switchport
+ no ip address
+ ip ospf mtu-ignore
+ ip ospf 1 area 0
+ channel-group 3 mode on
+!
+interface FastEthernet0/16
+ no switchport
+ no ip address
+ ip ospf mtu-ignore
+ ip ospf 1 area 0
+ channel-group 3 mode on
+!
+interface FastEthernet0/17
+!
+interface FastEthernet0/18
+!
+interface FastEthernet0/19
+!
+interface FastEthernet0/20
+!
+interface FastEthernet0/21
+ no switchport
+ ip address 172.16.254.57 255.255.255.252
+ ip ospf 1 area 0
+!
+interface FastEthernet0/22
+ no switchport
+ ip address 172.16.254.65 255.255.255.252
+ ip ospf 1 area 0
+!
+interface FastEthernet0/23
+!
+interface FastEthernet0/24
+!
+interface GigabitEthernet0/1
+!
+interface GigabitEthernet0/2
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+router ospf 1
+!
+ip http server
+ip http secure-server
+!
+!
+ip sla enable reaction-alerts
+snmp-server community public RO
+snmp-server community private RW
+!
+!
+line con 0
+ logging synchronous
+line vty 0 4
+ password cisco
+ login
+line vty 5 15
+ password cisco
+ login
+!
+end

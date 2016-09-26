@@ -1,0 +1,154 @@
+CCNA-CCNP-FRSwitch#show run
+Building configuration...
+
+Current configuration : 2648 bytes
+!
+version 12.3
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname CCNA-CCNP-FRSwitch
+!
+boot-start-marker
+boot-end-marker
+!
+!
+memory-size iomem 10
+no aaa new-model
+ip subnet-zero
+!
+!
+!
+ip cef
+frame-relay switching
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Ethernet0/0
+ no ip address
+ shutdown
+ half-duplex
+ no cdp enable
+ no clns route-cache
+!
+interface Ethernet0/1
+ no ip address
+ shutdown
+ half-duplex
+ no cdp enable
+ no clns route-cache
+!
+interface Serial1/0
+ description 102 103 104
+ no ip address
+ encapsulation frame-relay
+ clockrate 64000
+ no fair-queue
+ no clns route-cache
+ frame-relay intf-type dce
+ frame-relay route 102 interface Serial1/1 201
+ frame-relay route 103 interface Serial1/2 301
+ frame-relay route 104 interface Serial1/3 401
+!
+interface Serial1/1
+ description 201 203
+ no ip address
+ encapsulation frame-relay
+ clockrate 64000
+ no clns route-cache
+ frame-relay intf-type dce
+ frame-relay route 201 interface Serial1/0 102
+ frame-relay route 203 interface Serial1/2 302
+!
+interface Serial1/2
+ description 301 302
+ no ip address
+ encapsulation frame-relay
+ clockrate 64000
+ no clns route-cache
+ frame-relay intf-type dce
+ frame-relay route 301 interface Serial1/0 103
+ frame-relay route 302 interface Serial1/1 203
+!
+interface Serial1/3
+ description 301 302
+ no ip address
+ encapsulation frame-relay
+ clockrate 64000
+ no clns route-cache
+ frame-relay intf-type dce
+ frame-relay route 301 interface Serial1/0 103
+ frame-relay route 302 interface Serial1/1 203
+!
+interface Serial1/4
+ description 102 103 104
+ no ip address
+ encapsulation frame-relay
+ clockrate 64000
+ no fair-queue
+ no clns route-cache
+ frame-relay intf-type dce
+ frame-relay route 102 interface Serial1/5 201
+ frame-relay route 103 interface Serial1/6 301
+ frame-relay route 104 interface Serial1/7 401
+!
+interface Serial1/5
+ description 201 203
+ no ip address
+ encapsulation frame-relay
+ clockrate 64000
+ no clns route-cache
+ frame-relay intf-type dce
+ frame-relay route 201 interface Serial1/4 102
+ frame-relay route 203 interface Serial1/6 302
+!
+interface Serial1/6
+ description 301 302
+ no ip address
+ encapsulation frame-relay
+ clockrate 64000
+ no clns route-cache
+ frame-relay intf-type dce
+ frame-relay route 301 interface Serial1/4 103
+ frame-relay route 302 interface Serial1/5 203
+!
+interface Serial1/7
+ description 401
+ no ip address
+ encapsulation frame-relay
+ clockrate 64000
+ no clns route-cache
+ frame-relay intf-type dce
+ frame-relay route 401 interface Serial1/4 104
+!
+no ip http server
+ip classless
+!
+!
+no cdp run
+!
+!
+!
+!
+!
+!
+line con 0
+line aux 0
+line vty 0 4
+ login
+!
+!
+end

@@ -1,0 +1,173 @@
+BR1_S1#show run
+Building configuration...
+
+Current configuration : 3888 bytes
+!
+version 12.2
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname BR1_S1
+!
+boot-start-marker
+boot-end-marker
+!
+enable secret 5 $1$dJ4X$aH6RNcO9SZ.ooz6ktrrMn1
+!
+username ins password 0 ins@lab
+!
+!
+no aaa new-model
+system mtu routing 1500
+ip routing
+ip dhcp excluded-address 172.16.101.1
+ip dhcp excluded-address 172.16.101.10 172.16.101.12
+!
+ip dhcp pool Branch1
+   network 172.16.101.0 255.255.255.0
+   default-router 172.16.101.1
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-802432128
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-802432128
+ revocation-check none
+ rsakeypair TP-self-signed-802432128
+!
+!
+crypto pki certificate chain TP-self-signed-802432128
+ certificate self-signed 01
+  3082023D 308201A6 A0030201 02020101 300D0609 2A864886 F70D0101 04050030
+  30312E30 2C060355 04031325 494F532D 53656C66 2D536967 6E65642D 43657274
+  69666963 6174652D 38303234 33323132 38301E17 0D393330 33303130 35353230
+  325A170D 32303031 30313030 30303030 5A303031 2E302C06 03550403 1325494F
+  532D5365 6C662D53 69676E65 642D4365 72746966 69636174 652D3830 32343332
+  31323830 819F300D 06092A86 4886F70D 01010105 0003818D 00308189 02818100
+  C6767C8B 74F76A0B E52B17D3 EDB140B1 FB84E668 2060B119 57F18207 C581AB9B
+  5460655A CE5B6D41 839BDA45 F3FBFB4C 13F1AEB2 72BFA93C FB84FB71 18479182
+  E33D9F85 E9ABF67D B7A70443 8E3BA50E 645BA919 2F1F0F95 C273BCA2 3815D92D
+  E0E5A57D 3256CE21 F8A6D722 375884AF 69F71986 37D5CF6D DAF04C43 E43EACD5
+  02030100 01A36730 65300F06 03551D13 0101FF04 05300301 01FF3012 0603551D
+  11040B30 09820742 52315F53 312E301F 0603551D 23041830 16801459 42E114A0
+  B9A79060 D06C6C00 251F1132 38083530 1D060355 1D0E0416 04145942 E114A0B9
+  A79060D0 6C6C0025 1F113238 0835300D 06092A86 4886F70D 01010405 00038181
+  0056383D 463FEBCD 6408EC1B B6FB7509 1137C129 F9BE2DA7 6FAE9C50 C8C9CE12
+  30C0564D 4F64F5CA A531575B F56F6E99 54BE16F4 7763843E 893842ED 33FDE7B2
+  84180226 BEBE83CB 540E557F F07162ED 0AA190B7 4758EB4F EAEE4DA1 52F7F9CD
+  7E53365D AA90243F 308A56B4 B99516C2 E1991FFC E203EA4F 821DFF83 EDB2FBA5 72
+  quit
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+!
+!
+!
+!
+interface FastEthernet0/1
+ no switchport
+ ip address 172.16.100.2 255.255.255.0
+ ip ospf 1 area 0
+!
+interface FastEthernet0/2
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/3
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/4
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/5
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/6
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/7
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/8
+!
+interface FastEthernet0/9
+!
+interface FastEthernet0/10
+!
+interface FastEthernet0/11
+!
+interface FastEthernet0/12
+!
+interface FastEthernet0/13
+!
+interface FastEthernet0/14
+!
+interface FastEthernet0/15
+!
+interface FastEthernet0/16
+!
+interface FastEthernet0/17
+!
+interface FastEthernet0/18
+!
+interface FastEthernet0/19
+!
+interface FastEthernet0/20
+!
+interface FastEthernet0/21
+!
+interface FastEthernet0/22
+!
+interface FastEthernet0/23
+!
+interface FastEthernet0/24
+!
+interface GigabitEthernet0/1
+!
+interface GigabitEthernet0/2
+!
+interface Vlan1
+ ip address 172.16.101.1 255.255.255.0
+ ip ospf 1 area 0
+!
+interface Vlan102
+ ip address 172.16.22.1 255.255.255.0
+ ip ospf 1 area 0
+!
+router ospf 1
+ log-adjacency-changes
+!
+ip classless
+ip http server
+ip http secure-server
+!
+!
+ip sla enable reaction-alerts
+!
+snmp-server community public RO
+snmp-server community private RW
+!
+!
+line con 0
+line vty 0 4
+ password cisco
+ login
+line vty 5 15
+ password cisco
+ login
+!
+end
+
+

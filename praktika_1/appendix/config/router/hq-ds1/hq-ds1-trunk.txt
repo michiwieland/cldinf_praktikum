@@ -1,0 +1,39 @@
+HQ_DS1> show interface trunk
+
+Port        Mode             Encapsulation  Status        Native vlan
+Fa0/7       on               802.1q         trunking      1
+Fa0/8       on               802.1q         trunking      1
+Fa0/9       on               802.1q         trunking      1
+Fa0/13      on               802.1q         trunking      1
+Fa0/14      on               802.1q         trunking      1
+Po4         on               802.1q         trunking      1
+Po5         on               802.1q         trunking      1
+
+Port        Vlans allowed on trunk
+Fa0/7       1-4094
+Fa0/8       1-4094
+Fa0/9       1-4094
+Fa0/13      1-4094
+Fa0/14      1-4094
+Po4         1-4094
+Po5         1-4094
+
+Port        Vlans allowed and active in management domain
+Fa0/7       1,10,20,30,40-41,99
+Fa0/8       1,10,20,30,40-41,99
+Fa0/9       1,10,20,30,40-41,99
+
+Port        Vlans allowed and active in management domain
+Fa0/13      1,10,20,30,40-41,99
+Fa0/14      1,10,20,30,40-41,99
+Po4         1,10,20,30,40-41,99
+Po5         1,10,20,30,40-41,99
+
+Port        Vlans in spanning tree forwarding state and not pruned
+Fa0/7       1,10,20,30,40-41,99
+Fa0/8       1,10,20,30,40-41,99
+Fa0/9       1,10,20,30,40-41,99
+Fa0/13      1,10,20,30,40-41,99
+Fa0/14      1,10,20,30,40-41,99
+Po4         1,10,20,30,40-41,99
+Po5         1,10,20,30,40-41,99

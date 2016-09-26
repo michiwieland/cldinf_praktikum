@@ -1,0 +1,2 @@
+BR1_R1#show vlans
+No Virtual LANs configured

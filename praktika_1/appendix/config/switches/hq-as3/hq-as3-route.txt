@@ -1,0 +1,5 @@
+HQ_AS3#show ip route
+                ^
+% Invalid input detected at '^' marker.
+
+

@@ -1,0 +1,10 @@
+HQ_WER1#show ip interface brief
+Interface                  IP-Address      OK? Method Status                Protocol
+FastEthernet0/0            172.16.254.58   YES manual up                    up
+FastEthernet0/1            172.16.254.61   YES manual up                    up
+Serial0/0/0                unassigned      YES unset  administratively down down
+Serial0/0/1                unassigned      YES unset  administratively down down
+Serial1/0                  unassigned      YES unset  administratively down down
+Serial1/1                  unassigned      YES unset  administratively down down
+Serial1/2                  unassigned      YES unset  administratively down down
+Serial1/3                  unassigned      YES unset  administratively down down

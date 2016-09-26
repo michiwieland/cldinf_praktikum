@@ -1,0 +1,5 @@
+HQ_IER1#show spanning
+
+No spanning tree instances exist.
+
+

@@ -1,0 +1,145 @@
+HQ_WER1#show running-config
+Building configuration...
+
+
+Current configuration : 1524 bytes
+!
+! Last configuration change at 23:58:14 UTC Thu Sep 22 2016
+version 15.1
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname HQ_WER1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable secret 5 $1$RJxO$6QppMo5PI1VrlwnDvu//l1
+!
+no aaa new-model
+!
+memory-size iomem 10
+!
+dot11 syslog
+ip source-route
+!
+!
+ip cef
+!
+!
+!
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+voice-card 0
+!
+crypto pki token default removal timeout 0
+!
+!
+!
+!
+license udi pid CISCO2811 sn FCZ104770XM
+archive
+ log config
+  hidekeys
+!
+redundancy
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface FastEthernet0/0
+ ip address 172.16.254.58 255.255.255.252
+ ip ospf 1 area 0
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ ip address 172.16.254.61 255.255.255.252
+ ip ospf 1 area 0
+ duplex auto
+ speed auto
+!
+interface Serial0/0/0
+ no ip address
+ shutdown
+ no fair-queue
+ clock rate 2000000
+!
+interface Serial0/0/1
+ no ip address
+ shutdown
+ clock rate 2000000
+!
+interface Serial1/0
+ no ip address
+ shutdown
+!
+interface Serial1/1
+ no ip address
+ shutdown
+!
+interface Serial1/2
+ no ip address
+ shutdown
+!
+interface Serial1/3
+ no ip address
+ shutdown
+!
+router ospf 1
+!
+ip forward-protocol nd
+ip http server
+no ip http secure-server
+!
+!
+!
+!
+!
+!
+!
+snmp-server community public RO
+snmp-server community private RW
+!
+!
+control-plane
+!
+!
+!
+!
+mgcp profile default
+!
+!
+!
+!
+!
+!
+line con 0
+line aux 0
+line vty 0 4
+ password ins@lab
+ login
+ transport input all
+!
+scheduler allocate 20000 1000
+end
