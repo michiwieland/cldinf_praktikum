@@ -1,0 +1,6 @@
+HQ_AS2#show ip route
+Default gateway is 172.16.20.1
+
+Host               Gateway           Last Use    Total Uses  Interface
+ICMP redirect cache is empty
+

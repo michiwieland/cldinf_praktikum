@@ -1,0 +1,39 @@
+HQ_AS10#show spanning
+
+VLAN0001
+  Spanning tree enabled protocol ieee
+  Root ID    Priority    32769
+             Address     001a.2fd4.4000
+             Cost        12
+             Port        72 (Port-channel2)
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32769  (priority 32768 sys-id-ext 1)
+             Address     24b6.5725.db00
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  300 sec
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Po2                 Root FWD 12        128.72   P2p
+
+
+
+VLAN0031
+  Spanning tree enabled protocol ieee
+  Root ID    Priority    32799
+             Address     001a.2fd4.4000
+             Cost        12
+             Port        72 (Port-channel2)
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32799  (priority 32768 sys-id-ext 31)
+             Address     24b6.5725.db00
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  300 sec
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Po2                 Root FWD 12        128.72   P2p
+
+
