@@ -1,0 +1,1 @@
+BR2_R1>show interface status

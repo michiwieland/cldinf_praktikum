@@ -1,0 +1,2 @@
+HQ_WER1>show vlan
+% Ambiguous command:  "show vlan"

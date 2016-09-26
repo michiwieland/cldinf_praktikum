@@ -1,22 +1,22 @@
-BR1_R1#show run
+HQ_IER1#show running-config
 Building configuration...
 
 
-Current configuration : 1829 bytes
+Current configuration : 1977 bytes
 !
-! Last configuration change at 16:09:57 UTC Fri Jul 4 2014
+! Last configuration change at 17:14:57 UTC Mon Jan 2 2006
 version 15.1
 service timestamps debug datetime msec
 service timestamps log datetime msec
 no service password-encryption
 !
-hostname BR1_R1
+hostname HQ_IER1
 !
 boot-start-marker
 boot-end-marker
 !
 !
-enable secret 5 $1$iIN0$WQSejQFOMmTy6nGBblqi60
+enable secret 5 $1$59bW$.eTpV8UBqKkJfmSRZCWHH/
 !
 no aaa new-model
 !
@@ -51,7 +51,7 @@ crypto pki token default removal timeout 0
 !
 !
 !
-license udi pid CISCO2811 sn FCZ14322073
+license udi pid CISCO2811 sn FGL154811KR
 archive
  log config
   hidekeys
@@ -68,52 +68,61 @@ redundancy
 !
 !
 interface Tunnel0
- ip address 172.16.255.2 255.255.255.252
+ ip address 172.16.255.1 255.255.255.252
  ip ospf 1 area 0
- tunnel source 200.200.200.2
- tunnel destination 200.200.200.1
+ tunnel source 200.200.200.1
+ tunnel destination 200.200.200.2
+!
+interface Tunnel1
+ ip address 172.16.255.5 255.255.255.252
+ ip ospf 1 area 0
+ tunnel source 200.200.200.1
+ tunnel destination 200.200.200.3
+!
+interface Tunnel2
+ ip address 172.16.255.9 255.255.255.252
+ ip ospf 1 area 0
+ tunnel source 200.200.200.1
+ tunnel destination 200.200.200.4
 !
 interface FastEthernet0/0
- ip address 200.200.200.2 255.255.255.240
+ ip address 172.16.254.66 255.255.255.252
+ ip ospf 1 area 0
  duplex auto
  speed auto
 !
 interface FastEthernet0/1
- ip address 172.16.100.1 255.255.255.0
+ ip address 200.200.200.1 255.255.255.240
  ip ospf 1 area 0
  duplex auto
  speed auto
 !
 interface Serial0/0/0
- ip address 172.16.252.2 255.255.255.0
- encapsulation frame-relay
- ip ospf network point-to-multipoint
- ip ospf 1 area 0
+ no ip address
+ shutdown
  no fair-queue
- frame-relay map ip 172.16.252.1 201 broadcast
- no frame-relay inverse-arp IP 203
- frame-relay lmi-type cisco
+ clock rate 2000000
 !
 interface Serial0/0/1
  no ip address
  shutdown
  clock rate 2000000
 !
-interface Serial1/0
+interface Serial0/1/0
  no ip address
  shutdown
+ clock rate 2000000
 !
-interface Serial1/1
+interface Serial0/1/1
  no ip address
  shutdown
+ clock rate 2000000
 !
-interface Serial1/2
+interface FastEthernet1/0
  no ip address
  shutdown
-!
-interface Serial1/3
- no ip address
- shutdown
+ duplex auto
+ speed auto
 !
 router ospf 1
 !

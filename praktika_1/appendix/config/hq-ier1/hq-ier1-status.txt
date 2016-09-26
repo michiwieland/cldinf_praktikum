@@ -1,31 +1,36 @@
-BR1_R1#show int stat
+HQ_IER1#show interface stat
 FastEthernet0/0
           Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor      22380    3923705      14760    2464011
-             Route cache         52       6579          0          0
-                   Total      22432    3930284      14760    2464011
+               Processor      62819   11889872      79578    8858519
+             Route cache       6340     389026       4122     366141
+                   Total      69159   12278898      83700    9224660
 FastEthernet0/1
           Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor      16927    4264320      16764    2498748
-             Route cache       4041     276448       3920     580387
-                   Total      20968    4540768      20684    3079135
-Serial0/0/0
-          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor      13211     843517      13447     908579
-             Route cache       3920     541187       4041     217118
-                   Total      17131    1384704      17488    1125697
+               Processor      96159   13859220     179286   18716338
+             Route cache       4174     471502       6340     473164
+                   Total     100333   14330722     185626   19189502
+Interface Serial0/0/0 is disabled
+
 Interface Serial0/0/1 is disabled
 
-Interface Serial1/0 is disabled
+Interface Serial0/1/0 is disabled
 
-Interface Serial1/1 is disabled
+Interface Serial0/1/1 is disabled
 
-Interface Serial1/2 is disabled
-
-Interface Serial1/3 is disabled
+Interface FastEthernet1/0 is disabled
 
 Tunnel0
           Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor       4812     515851       4715     490834
+               Processor      35006    3645775      36571    3887455
+             Route cache          0          0         13       1612
+                   Total      35006    3645775      36584    3889067
+Tunnel1
+          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
+               Processor      34746    3621587      36701    3900323
+             Route cache       4122     407361       4715     315131
+                   Total      38868    4028948      41416    4215454
+Tunnel2
+          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
+               Processor          0          0      32357    3235391
              Route cache          0          0          0          0
-                   Total       4812     515851       4715     490834
+                   Total          0          0      32357    3235391

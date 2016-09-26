@@ -1,0 +1,3 @@
+CCNA-CCNP-FRSwitch>show interface trunk
+                                   ^
+% Invalid input detected at '^' marker.
