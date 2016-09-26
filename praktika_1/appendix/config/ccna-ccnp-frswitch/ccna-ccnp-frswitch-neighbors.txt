@@ -1,3 +1,0 @@
-CCNA-CCNP-FRSwitch#show cdp neighbors
-% CDP is not enabled
-CCNA-CCNP-FRSwitch#

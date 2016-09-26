@@ -1,3 +1,0 @@
-BR1_R1#show spanning
-
-No spanning tree instances exist.

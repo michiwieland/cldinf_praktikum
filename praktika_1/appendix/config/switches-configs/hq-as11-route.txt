@@ -1,5 +1,0 @@
-HQ_AS11#show ip route
-                 ^
-% Invalid input detected at '^' marker.
-
-

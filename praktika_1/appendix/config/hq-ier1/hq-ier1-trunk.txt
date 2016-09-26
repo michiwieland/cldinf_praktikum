@@ -1,2 +1,0 @@
-HQ_IER1#show interface trunk
-

@@ -1,6 +1,0 @@
-HQ_AS9#show ip route
-Default gateway is 172.16.21.1
-
-Host               Gateway           Last Use    Total Uses  Interface
-ICMP redirect cache is empty
-

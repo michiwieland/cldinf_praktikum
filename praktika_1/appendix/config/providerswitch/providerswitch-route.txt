@@ -1,3 +1,0 @@
-Switch#show ip route
-                ^
-% Invalid input detected at '^' marker.

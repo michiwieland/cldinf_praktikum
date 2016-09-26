@@ -1,3 +1,0 @@
-CCNA-CCNP-FRSwitch>show spanning
-
-No spanning tree instances exist.

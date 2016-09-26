@@ -1,3 +1,0 @@
-HQ_FRR>show spanning
-
-No spanning tree instances exist.

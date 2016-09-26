@@ -1,3 +1,0 @@
-CCNA-CCNP-FRSwitch>show interface status
-                                      ^
-% Invalid input detected at '^' marker.

@@ -1,3 +1,0 @@
-HQ_CS3# show spanning-tree
-
-No spanning tree instance exists.
