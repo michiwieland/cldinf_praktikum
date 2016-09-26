@@ -1,4 +1,4 @@
-HQ_IER1#show running-config
+HQ_IER1#show run
 Building configuration...
 
 
@@ -161,3 +161,4 @@ line vty 0 4
 !
 scheduler allocate 20000 1000
 end
+
