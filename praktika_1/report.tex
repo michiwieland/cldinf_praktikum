@@ -38,7 +38,7 @@ In einem ersten Schritt wurden sämtliche Konfigurationen mit dem Tool Tftpd64 v
 	\item[HQ] Head Quarter
 	\item[BR] Branch
 	\item[DS] Distribution
-	\item[CS] Core
+	\item[CS] Core %TODO Keine Trunks???
 	\item[WER] WAN Exchange Router
 	\item[IER] Internet Exchange Router
 	\item[FRR] FrameRelayRouter
@@ -50,8 +50,12 @@ Für jedes Geräte wurden die Outputs der folgenden Befehle auf die lokalen Note
 \begin{lstlisting}[language=bash]
 copy run tftp und dann [your local ip addr]
 show ip interface brief
-show interface status
 show cdp neighbors
+show interface status
+show interface trunk
+show vlan
+show ip route
+show spanning
 \end{lstlisting}
 
 \subsection{Analyse des Konfigurationen}

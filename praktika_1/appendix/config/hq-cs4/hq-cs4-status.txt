@@ -1,3 +1,5 @@
+HQ_CS4>show int status
+
 Port      Name               Status       Vlan       Duplex  Speed Type
 Fa0/1                        connected    routed     a-full  a-100 10/100BaseTX
 Fa0/2                        connected    routed     a-full  a-100 10/100BaseTX

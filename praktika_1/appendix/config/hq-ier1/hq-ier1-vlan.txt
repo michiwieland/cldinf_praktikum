@@ -1,0 +1,5 @@
+HQ_IER1# show vlans
+
+No Virtual LANs configured.
+
+

@@ -1,0 +1,1 @@
+HQ_WER1>show interface trunk

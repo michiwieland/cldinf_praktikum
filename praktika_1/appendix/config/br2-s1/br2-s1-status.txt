@@ -1,138 +1,31 @@
-BR2_S1#show int stat
-Interface Vlan1 is disabled
+BR2_S1>show interface status
 
-Vlan103
-          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor          0          0          0          0
-             Route cache          0          0          0          0
-                   Total          0          0          0          0
-FastEthernet0/1
-          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor       6087     578068      10408    1136458
-             Route cache          0          0          0          0
-                   Total       6087     578068      10408    1136458
-FastEthernet0/2
-          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor          0          0     214509   14998495
-             Route cache          0          0          0          0
-                   Total          0          0     214509   14998495
-FastEthernet0/3
-          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor          0          0      10423    1112441
-             Route cache          0          0          0          0
-                   Total          0          0      10423    1112441
-FastEthernet0/4
-          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor          0          0     288995   19894189
-             Route cache          0          0          0          0
-                   Total          0          0     288995   19894189
-FastEthernet0/5
-          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor          0          0     267067   18446985
-             Route cache          0          0          0          0
-                   Total          0          0     267067   18446985
-FastEthernet0/6
-          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor          0          0     266983   18437453
-             Route cache          0          0          0          0
-                   Total          0          0     266983   18437453
-FastEthernet0/7
-          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor          0          0     266999   18438475
-             Route cache          0          0          0          0
-                   Total          0          0     266999   18438475
-FastEthernet0/8
-          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor          0          0       1938     146004
-             Route cache          0          0          0          0
-                   Total          0          0       1938     146004
-FastEthernet0/9
-          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor          0          0          0          0
-             Route cache          0          0          0          0
-                   Total          0          0          0          0
-FastEthernet0/10
-          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor          0          0          0          0
-             Route cache          0          0          0          0
-                   Total          0          0          0          0
-FastEthernet0/11
-          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor          0          0          0          0
-             Route cache          0          0          0          0
-                   Total          0          0          0          0
-FastEthernet0/12
-          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor          0          0          0          0
-             Route cache          0          0          0          0
-                   Total          0          0          0          0
-FastEthernet0/13
-          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor          0          0          0          0
-             Route cache          0          0          0          0
-                   Total          0          0          0          0
-FastEthernet0/14
-          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor          0          0          0          0
-             Route cache          0          0          0          0
-                   Total          0          0          0          0
-FastEthernet0/15
-          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor          0          0          0          0
-             Route cache          0          0          0          0
-                   Total          0          0          0          0
-FastEthernet0/16
-          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor          0          0          0          0
-             Route cache          0          0          0          0
-                   Total          0          0          0          0
-FastEthernet0/17
-          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor          0          0          0          0
-             Route cache          0          0          0          0
-                   Total          0          0          0          0
-FastEthernet0/18
-          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor          0          0          0          0
-             Route cache          0          0          0          0
-                   Total          0          0          0          0
-FastEthernet0/19
-          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor          0          0          0          0
-             Route cache          0          0          0          0
-                   Total          0          0          0          0
-FastEthernet0/20
-          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor          0          0          0          0
-             Route cache          0          0          0          0
-                   Total          0          0          0          0
-FastEthernet0/21
-          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor          0          0          0          0
-             Route cache          0          0          0          0
-                   Total          0          0          0          0
-FastEthernet0/22
-          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor          0          0          0          0
-             Route cache          0          0          0          0
-                   Total          0          0          0          0
-FastEthernet0/23
-          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor          0          0          0          0
-             Route cache          0          0          0          0
-                   Total          0          0          0          0
-FastEthernet0/24
-          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor          0          0          0          0
-             Route cache          0          0          0          0
-                   Total          0          0          0          0
-GigabitEthernet0/1
-          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor          0          0          0          0
-             Route cache          0          0          0          0
-                   Total          0          0          0          0
-GigabitEthernet0/2
-          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
-               Processor          0          0          0          0
-             Route cache          0          0          0          0
-                   Total          0          0          0          0
+Port      Name               Status       Vlan       Duplex  Speed Type
+Fa0/1                        connected    routed     a-full  a-100 10/100BaseTX
+Fa0/2                        connected    trunk      a-full  a-100 10/100BaseTX
+Fa0/3                        connected    trunk      a-full  a-100 10/100BaseTX
+Fa0/4                        connected    trunk      a-full  a-100 10/100BaseTX
+Fa0/5                        connected    trunk      a-full  a-100 10/100BaseTX
+Fa0/6                        connected    trunk      a-full  a-100 10/100BaseTX
+Fa0/7                        connected    trunk      a-full  a-100 10/100BaseTX
+Fa0/8                        notconnect   1            auto   auto 10/100BaseTX
+Fa0/9                        notconnect   1            auto   auto 10/100BaseTX
+Fa0/10                       notconnect   1            auto   auto 10/100BaseTX
+Fa0/11                       notconnect   1            auto   auto 10/100BaseTX
+Fa0/12                       notconnect   1            auto   auto 10/100BaseTX
+Fa0/13                       notconnect   1            auto   auto 10/100BaseTX
+Fa0/14                       notconnect   1            auto   auto 10/100BaseTX
+Fa0/15                       notconnect   1            auto   auto 10/100BaseTX
+Fa0/16                       notconnect   1            auto   auto 10/100BaseTX
+Fa0/17                       notconnect   1            auto   auto 10/100BaseTX
+Fa0/18                       notconnect   1            auto   auto 10/100BaseTX
+Fa0/19                       notconnect   1            auto   auto 10/100BaseTX
+Fa0/20                       notconnect   1            auto   auto 10/100BaseTX
+Fa0/21                       notconnect   1            auto   auto 10/100BaseTX
+
+Port      Name               Status       Vlan       Duplex  Speed Type
+Fa0/22                       notconnect   1            auto   auto 10/100BaseTX
+Fa0/23                       notconnect   1            auto   auto 10/100BaseTX
+Fa0/24                       notconnect   1            auto   auto 10/100BaseTX
+Gi0/1                        notconnect   1            auto   auto Not Present
+Gi0/2                        notconnect   1            auto   auto Not Present

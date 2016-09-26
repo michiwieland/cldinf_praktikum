@@ -1,0 +1,9 @@
+HQ_AS12# show cdp neighbors
+Capability Codes: R - Router, T - Trans Bridge, B - Source Route Bridge
+                  S - Switch, H - Host, I - IGMP, r - Repeater, P - Phone,
+                  D - Remote, C - CVTA, M - Two-port Mac Relay
+
+Device ID        Local Intrfce     Holdtme    Capability  Platform  Port ID
+HQ_DS3           Fas 0/2           162             R S I  WS-C3560- Fas 0/24
+HQ_DS3           Fas 0/1           162             R S I  WS-C3560- Fas 0/23
+
