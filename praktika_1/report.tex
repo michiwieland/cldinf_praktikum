@@ -23,16 +23,26 @@
 	\item Tftpd64 um Konfigurationen zu dumpen
 	\item jPerf um den Durchsatz zu messen
 	\item % TODO Netflow?
-	\item % TODO 
 \end{enumerate}
 
 \section{Informationsbeschaffung}
 In einem ersten Schritt wurden sämtliche Konfigurationen mit dem Tool Tftpd64 von den Router und Switches kopiert. Diese wurden dann in einem nächsten Schritt auf Fehlkonfigurationen analysiert. Dabei gingen wir nach folgendem Schema vor:
 
-% TODO add schema
+% TODO add schemes
 \begin{enumerate}
 	\item 
 \end{enumerate}
+
+\subsection{Terminologie}
+\begin{description}
+	\item[HQ] Head Quarter
+	\item[BR] Branch
+	\item[DS] Distribution
+	\item[CS] Core
+	\item[WER] %TODO ????
+	\item[IER] %TODO ????
+	\item[FRR] FrameRelayRouter
+\end{description}
 
 \subsection{Konfiguration kopieren}
 Für jedes Geräte wurden die Outputs der folgenden Befehle auf die lokalen Notebooks kopiert. Alle Konfiguration sind im Anhang \ref{appendix:configurations} zu finden
@@ -66,7 +76,8 @@ show cdp neighbors
 	\caption{DHCP Pools}
 \end{table}
 
-\subsubsection{VLAN}
+\subsection{VLAN}
+IEEE 802.1Q = Paketbasierte tagged VLAN's
 \begin{table}[h]
 	\centering
 	\begin{tabu} to \linewidth {l l l}
