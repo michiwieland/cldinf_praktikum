@@ -17,36 +17,43 @@
 %TODO: Kostenvoranschlag für das Beheben der Fehler. Lösung mit dem kleinsten Einfluss auf das Produktive System und geringste Kosten
 
 
-\section{Grundlegendes}
-\subsection{Tools}
-\begin{enumerate}
-	\item Tftpd64 um Konfigurationen zu dumpen
-	\item jPerf um den Durchsatz zu messen
-	\item % TODO Netflow?
-\end{enumerate}
-
 \section{Informationsbeschaffung}
 In einem ersten Schritt wurden sämtliche Konfigurationen mit dem Tool Tftpd64 von den Router und Switches kopiert. Diese wurden dann in einem nächsten Schritt auf Fehlkonfigurationen analysiert. Dabei gingen wir nach folgendem Schema vor:
 
-% TODO add schemes
 \begin{enumerate}
-	\item 
+	\item Übersicht verschaffen. 
+	\item Kopieren aller benötigten Konfigurationen
+	\item Ordnen und Analysieren der Konfiguration. Was ist überhaupt vorhanden?
+	\item Prüfen auf ''Common Mistakes'' mit besonderem Augenmerk auf die Layer 2 (VLAN, VTP, STP, Frame Relay) und Layer 3 Protokolle (OSPF)
+	\item Auswerten der gefunden Fehler
+	\item Feedback und Lösungsvorschläge
+\end{enumerate}
+
+\subsection{Tools}
+Für die Analyse wurden folgende Tools verwendet
+\begin{enumerate}
+	\item Tftpd64 um Konfigurationen zu dumpen
+	\item jPerf um den Durchsatz zu messen
+	\item Putty für die Telnet und Serielle Verbindung zu den Router und Switches
 \end{enumerate}
 
 \subsection{Terminologie}
+Damit die Namen mehr an Bedeutung gewinnen, sollen folgend einige Abkürzungen nach besten Wissen ausgeschrieben werden.
+\begin{multicols}{2}
 \begin{description}
 	\item[HQ] Head Quarter
 	\item[BR] Branch
-	\item[DS] Distribution
-	\item[CS] Core %TODO Keine Trunks???
+	\item[DS] Distribution Switch
+	\item[CS] Core Switch
 	\item[WER] WAN Exchange Router
 	\item[IER] Internet Exchange Router
 	\item[FRR] FrameRelayRouter
 \end{description}
+\end{multicols}
+
 
 \subsection{Konfiguration kopieren}
-Für jedes Geräte wurden die Outputs der folgenden Befehle auf die lokalen Notebooks kopiert. Alle Konfiguration sind im Anhang \ref{appendix:configurations} zu finden
-
+Für jedes Geräte wurden die Outputs der folgenden Befehle auf die lokalen Notebooks kopiert. Alle Konfiguration sind im Anhang \ref{appendix:configurations} zu finden:
 \begin{lstlisting}[language=bash]
 copy run tftp und dann [your local ip addr]
 show ip interface brief
@@ -59,6 +66,7 @@ show spanning
 \end{lstlisting}
 
 \subsection{Analyse des Konfigurationen}
+Folgende Tabellen dienen als Erweiterung zu den graphischen Schemas.
 \subsection{DHCP}
 \begin{table}[h]
 	\centering
@@ -120,7 +128,8 @@ IEEE 802.1Q = Paketbasierte tagged VLAN's
 	\caption{VLAN Subnetze}
 \end{table}
 
-\section{Logische Topologie}
+\includepdf[pages={1},landscape=true]{appendix/schemes/vlan.pdf}
+\includepdf[pages={1},landscape=true]{appendix/schemes/L1.pdf}
 
 \section{Gefundene Fehler}
 
@@ -139,8 +148,8 @@ Auf OSI Layer 1 wurden keine Fehler gefunden.
 
 \subsubsection{Speed}
 \begin{itemize}
-	\item Die Port Channel Group 4 beim HQ\_CS1 ist auf Half Duplex 100 eingestellt.
-	\item Die Port Channel Group 2 bei HQ\_CS2 ist auf 10 eingestellt. 
+	\item Die Port Channel Group 4 beim HQ\_CS1 ist auf Half Duplex 100Mbit/s eingestellt.
+	\item Die Port Channel Group 2 bei HQ\_CS2 ist auf 10Mbit/s eingestellt. 
 \end{itemize}
 
 \subsubsection{Spanning Tree}
@@ -182,7 +191,7 @@ Alle Durchgeführten Traceroute Messungen sind im Anhang \ref{appendix:measures}
 Aufgrund der vorangehenden Erkenntnissen empfehlen wir, an folgenden Punkten anzusetzen:
 %TODO add recommedations
 \begin{enumerate}
-	\item 
+	\item Alle 10 und 100Mbit/s Leitung auf den maximal physisch möglichen Durchsatz aufschrauben.
 \end{enumerate}
 
 \subsection{Kostenvoranschlag}
