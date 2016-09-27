@@ -1,4 +1,4 @@
-traceroute ier1 to br1_sr1
+traceroute ier1 to br1_s1
 Tracing the route to 172.16.252.2
 VRF info: (vrf in name/id, vrf out name/id)
   1 172.16.254.65 0 msec 0 msec 4 msec

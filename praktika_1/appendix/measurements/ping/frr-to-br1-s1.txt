@@ -1,4 +1,4 @@
-ping frr to br1_sr1
+ping frr to br1_s1
 ping 172.16.252.2
 Type escape sequence to abort.
 Sending 5, 100-byte ICMP Echos to 172.16.252.2, timeout is 2 seconds:
