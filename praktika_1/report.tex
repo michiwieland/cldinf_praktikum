@@ -148,8 +148,13 @@ Auf OSI Layer 1 wurden keine Fehler gefunden.
 \subsubsection{VLAN}
 \begin{itemize}
 	\item VLAN1 auf HQ\_AS1 ist Administratively Down
-	\item Nur Fa0/2, Gi0/1, Gi0/2 sind auf HQ\_AS1 für VLAN1 konfiguriert, andere Ifs sind nicht eingerichtet
-	\item
+	\item Nur Fa0/2, Gi0/1, Gi0/2 sind auf HQ\_AS1 für VLAN1 konfiguriert
+	\item Die meisten Interfaces auf HQ\_AS1 sind im VLAN 21; dies ist in der VLAN Konfiguration nicht eingerichtet.
+	\item Beim HQ\_AS7 sind VLAN 10 und 11 auf Ports eingerichtet, aber nicht in der VLAN-Konfiguration
+	\item Beim HQ\_AS3 sind VLAN 100 und 200 auf Ports eingerichtet, aber nicht in der VLAN-Konfiguration.
+	\item Beim HQ\_AS8 ist VLAN 20 auf Ports eingerichtet, aber nicht in der VLAN-Konfiguration.
+	\item Beim HQ\_AS9 VLAN 10 und VLAN 20 auf Ports eingerichtet, aber nicht in der VLAN-Konfiguration.
+	\item Beim HQ\_AS10 VLAN 11 auf Ports eingerichtet, aber nicht in der VLAN-Konfiguration.
 \end{itemize}
 
 \subsection{Layer 3}
