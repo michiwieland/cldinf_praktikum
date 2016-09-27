@@ -1,0 +1,211 @@
+2_S3#show spanning
+
+VLAN0001
+  Spanning tree enabled protocol ieee
+  Root ID    Priority    32769
+             Address     24b6.5725.d180
+             Cost        38
+             Port        24 (FastEthernet0/24)
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32769  (priority 32768 sys-id-ext 1)
+             Address     f025.72f7.e680
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  300 sec
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Fa0/23              Desg BKN*19        128.23   P2p Edge *TYPE_Inc
+Fa0/24              Root FWD 19        128.24   P2p
+
+
+
+VLAN0002
+  Spanning tree enabled protocol ieee
+  Root ID    Priority    32770
+             Address     24b6.5725.d180
+             Cost        38
+             Port        24 (FastEthernet0/24)
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32770  (priority 32768 sys-id-ext 2)
+             Address     f025.72f7.e680
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  300 sec
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Fa0/24              Root FWD 19        128.24   P2p
+
+
+
+VLAN0003
+  Spanning tree enabled protocol ieee
+  Root ID    Priority    32771
+             Address     24b6.5725.d180
+             Cost        38
+             Port        24 (FastEthernet0/24)
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32771  (priority 32768 sys-id-ext 3)
+             Address     f025.72f7.e680
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  300 sec
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Fa0/24              Root FWD 19        128.24   P2p
+
+
+
+VLAN0004
+  Spanning tree enabled protocol ieee
+  Root ID    Priority    32772
+             Address     24b6.5725.d180
+             Cost        38
+             Port        24 (FastEthernet0/24)
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32772  (priority 32768 sys-id-ext 4)
+             Address     f025.72f7.e680
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  300 sec
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Fa0/24              Root FWD 19        128.24   P2p
+
+
+
+VLAN0005
+  Spanning tree enabled protocol ieee
+  Root ID    Priority    32773
+             Address     24b6.5725.d180
+             Cost        38
+             Port        24 (FastEthernet0/24)
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32773  (priority 32768 sys-id-ext 5)
+             Address     f025.72f7.e680
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  300 sec
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Fa0/24              Root FWD 19        128.24   P2p
+
+
+
+VLAN0010
+  Spanning tree enabled protocol ieee
+  Root ID    Priority    32778
+             Address     24b6.5725.d180
+             Cost        38
+             Port        24 (FastEthernet0/24)
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32778  (priority 32768 sys-id-ext 10)
+             Address     f025.72f7.e680
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  300 sec
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Fa0/24              Root FWD 19        128.24   P2p
+
+
+
+VLAN0011
+  Spanning tree enabled protocol ieee
+  Root ID    Priority    32779
+             Address     24b6.5725.d180
+             Cost        38
+             Port        24 (FastEthernet0/24)
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32779  (priority 32768 sys-id-ext 11)
+             Address     f025.72f7.e680
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  300 sec
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Fa0/24              Root FWD 19        128.24   P2p
+
+
+
+VLAN0017
+  Spanning tree enabled protocol ieee
+  Root ID    Priority    32785
+             Address     24b6.5725.d180
+             Cost        38
+             Port        24 (FastEthernet0/24)
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32785  (priority 32768 sys-id-ext 17)
+             Address     f025.72f7.e680
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  300 sec
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Fa0/24              Root FWD 19        128.24   P2p
+
+
+
+VLAN0019
+  Spanning tree enabled protocol ieee
+  Root ID    Priority    32787
+             Address     24b6.5725.d180
+             Cost        38
+             Port        24 (FastEthernet0/24)
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32787  (priority 32768 sys-id-ext 19)
+             Address     f025.72f7.e680
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  300 sec
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Fa0/24              Root FWD 19        128.24   P2p
+
+
+
+VLAN0046
+  Spanning tree enabled protocol ieee
+  Root ID    Priority    32814
+             Address     24b6.5725.d180
+             Cost        38
+             Port        24 (FastEthernet0/24)
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32814  (priority 32768 sys-id-ext 46)
+             Address     f025.72f7.e680
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  300 sec
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Fa0/24              Root FWD 19        128.24   P2p
+
+
+
+VLAN1006
+  Spanning tree enabled protocol ieee
+  Root ID    Priority    33774
+             Address     24b6.5725.d180
+             Cost        38
+             Port        24 (FastEthernet0/24)
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    33774  (priority 32768 sys-id-ext 1006)
+             Address     f025.72f7.e680
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  300 sec
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Fa0/24              Root FWD 19        128.24   P2p
+
+

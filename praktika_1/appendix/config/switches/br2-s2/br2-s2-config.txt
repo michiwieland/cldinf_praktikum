@@ -1,0 +1,197 @@
+BR2_S2#show run
+Building configuration...
+
+Current configuration : 3097 bytes
+!
+! Last configuration change at 13:11:20 UTC Mon Mar 1 1993
+!
+version 15.0
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname BR2_S2
+!
+boot-start-marker
+boot-end-marker
+!
+enable secret 5 $1$GtpN$haY30dKGDmWJMguQrdwfF.
+!
+username ins password 0 ins@lab
+no aaa new-model
+system mtu routing 1500
+vtp domain CCIE
+vtp mode transparent
+no ip domain-lookup
+!
+!
+!
+!
+crypto pki trustpoint HTTPS_SS_CERT_KEYPAIR
+ enrollment selfsigned
+ serial-number
+ revocation-check none
+ rsakeypair HTTPS_SS_CERT_KEYPAIR
+!
+!
+crypto pki certificate chain HTTPS_SS_CERT_KEYPAIR
+ certificate self-signed 01
+        quit
+!
+!
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+!
+vlan 2-5
+!
+vlan 10
+ name HR
+!
+vlan 11
+ name IT
+!
+vlan 17,19,46,1006
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface FastEthernet0/1
+ switchport mode access
+ spanning-tree portfast
+!
+interface FastEthernet0/2
+ switchport mode access
+ spanning-tree portfast
+!
+interface FastEthernet0/3
+ switchport mode access
+ spanning-tree portfast
+!
+interface FastEthernet0/4
+ switchport mode access
+ spanning-tree portfast
+!
+interface FastEthernet0/5
+ switchport mode access
+ spanning-tree portfast
+!
+interface FastEthernet0/6
+ switchport mode access
+ spanning-tree portfast
+!
+interface FastEthernet0/7
+ switchport mode access
+ spanning-tree portfast
+!
+interface FastEthernet0/8
+ switchport mode access
+ spanning-tree portfast
+!
+interface FastEthernet0/9
+ switchport mode access
+ spanning-tree portfast
+!
+interface FastEthernet0/10
+ switchport mode access
+ spanning-tree portfast
+!
+interface FastEthernet0/11
+ switchport mode access
+ spanning-tree portfast
+!
+interface FastEthernet0/12
+ switchport mode access
+ spanning-tree portfast
+!
+interface FastEthernet0/13
+ switchport mode access
+ spanning-tree portfast
+!
+interface FastEthernet0/14
+ switchport mode access
+ spanning-tree portfast
+!
+interface FastEthernet0/15
+ switchport mode access
+ spanning-tree portfast
+!
+interface FastEthernet0/16
+ switchport mode access
+ spanning-tree portfast
+!
+interface FastEthernet0/17
+ switchport mode access
+ spanning-tree portfast
+!
+interface FastEthernet0/18
+ switchport mode access
+ spanning-tree portfast
+!
+interface FastEthernet0/19
+ switchport mode access
+ spanning-tree portfast
+!
+interface FastEthernet0/20
+ switchport mode access
+ spanning-tree portfast
+!
+interface FastEthernet0/21
+ switchport mode access
+ spanning-tree portfast
+!
+interface FastEthernet0/22
+ switchport mode access
+ spanning-tree portfast
+!
+interface FastEthernet0/23
+ switchport mode access
+ spanning-tree portfast
+!
+interface FastEthernet0/24
+!
+interface GigabitEthernet0/1
+!
+interface GigabitEthernet0/2
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+interface Vlan103
+ ip address 172.16.23.2 255.255.255.0
+!
+ip default-gateway 172.16.23.1
+ip http server
+ip http secure-server
+!
+!
+ip sla enable reaction-alerts
+snmp-server community private RW
+snmp-server community public RO
+!
+!
+line con 0
+line vty 0 4
+ password cisco
+ login
+line vty 5 15
+ password cisco
+ login
+!
+end

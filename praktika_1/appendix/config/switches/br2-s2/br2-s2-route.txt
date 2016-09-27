@@ -1,0 +1,6 @@
+BR2_S2#show ip route
+Default gateway is 172.16.23.1
+
+Host               Gateway           Last Use    Total Uses  Interface
+ICMP redirect cache is empty
+

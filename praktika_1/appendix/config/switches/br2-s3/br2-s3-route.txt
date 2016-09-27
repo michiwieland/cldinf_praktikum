@@ -1,0 +1,5 @@
+BR2_S3# show ip route
+                 ^
+% Invalid input detected at '^' marker.
+
+
