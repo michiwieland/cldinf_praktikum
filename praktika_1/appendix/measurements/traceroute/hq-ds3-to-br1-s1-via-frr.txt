@@ -1,0 +1,10 @@
+hq_ds3 to br1_s1 via frr
+Tracing the route to 172.16.100.2
+
+  1 172.16.254.21 0 msec 0 msec 0 msec
+  2 172.16.254.5 0 msec 0 msec 8 msec
+  3 172.16.254.2 0 msec 0 msec 8 msec
+  4 172.16.254.58 0 msec 0 msec 9 msec
+  5 172.16.254.62 0 msec 0 msec 0 msec
+  6 172.16.252.2 34 msec 25 msec 34 msec
+  7 172.16.100.2 33 msec 25 msec *

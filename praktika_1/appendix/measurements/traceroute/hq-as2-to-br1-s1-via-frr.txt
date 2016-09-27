@@ -1,0 +1,10 @@
+hq_as2 to br1_s1 via frr
+Tracing route to 172.16.100.2 over a maximum of 30 hops
+
+  1     1 ms     1 ms     1 ms  172.16.17.1
+  2     3 ms     2 ms     2 ms  172.16.19.253
+  3     1 ms     1 ms    <1 ms  172.16.254.50
+  4     1 ms     1 ms     1 ms  172.16.254.58
+  5     1 ms     1 ms     1 ms  172.16.254.62
+  6    44 ms    44 ms    44 ms  172.16.252.2
+  7    57 ms    54 ms    54 ms  172.16.100.2
