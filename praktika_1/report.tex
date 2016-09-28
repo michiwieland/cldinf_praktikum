@@ -16,7 +16,6 @@
 %TODO: Empfehlungen für Anpassungen am Netzwerk
 %TODO: Kostenvoranschlag für das Beheben der Fehler. Lösung mit dem kleinsten Einfluss auf das Produktive System und geringste Kosten
 
-
 \section{Informationsbeschaffung}
 In einem ersten Schritt wurden sämtliche Konfigurationen mit dem Tool Tftpd64 von den Router und Switches kopiert. Diese wurden dann in einem nächsten Schritt auf Fehlkonfigurationen analysiert. Dabei gingen wir nach folgendem Schema vor:
 
@@ -193,8 +192,11 @@ Auf Layer 1 (dem physischen Netzwerk) gibt es gemäss der Vorgabe dieses Repots 
 
 \subsubsection{Interfaces / Router Connection Groups}
 \begin{itemize}
-	\item Die Port Channel Group 4 beim HQ\_CS1 ist auf Half Duplex 100Mbit/s eingestellt.
 	\item Die Port Channel Group 2 bei HQ\_CS2 ist auf 10Mbit/s eingestellt. 
+	\item Die Port Channel Group 1 bei HQ\_CS4 ist auf 10Mbit/s eingestellt. 
+	\item Die Port Channel Group 6 bei HQ\_AS6 ist auf 10Mbit/s eingestellt. Zusätzlich haben sie den Status \lstinline|err-disabled|
+	\item Die Port Channel Group 1 bei HQ\_DS2 hat den Status \lstinline|err-disabled|
+	\item Der Port Fa0/21 bei HQ\_DS2 hat den Status \lstinline|err-disabled|
 \end{itemize}
 
 \subsubsection{Spanning Tree}
@@ -261,15 +263,13 @@ Beim Spanning Tree ist HQ\_AS1 als Root in diversen VLAN's eingetragen, dies ist
 \subsection{Layer 3}
 
 \subsubsection{Routen}
-
+%TODO Michi Routen erklärung: Warum 1x über FRR und 1x über Router!!!!!
 \begin{description}
 	\item[FrameRelayRouter] \hfill
 		\begin{itemize}
 			\item Die Routen über das FrameRelay sind überall sehr hoch. Ist dies bewusst aufgrund der Kosten gewählt?
 		\end{itemize}
 \end{description}
-
-\subsubsection{OSPF}
 
 \section{Folgerungen}
 Während der, sich als sehr aufwändig gestaltenden, Analyse, sind uns viele Fehlkonfigurationen und Unschönheiten aufgefallen. Diese gilt es nun in einem letzten Schritt zu beheben. Die Korrektur der erkannten Fehler ist im Abschnitt \ref{sec:recommedations} beschrieben, wobei wir auf eine Lösung möglichst kleinem Einfluss auf das produktive System geachtet haben. Zusätzlich versuchten diese Punkte zu ändern, bei denen möglichst wenig Kosten anfallen würden.
@@ -286,12 +286,15 @@ Aufgrund der vorangehenden Erkenntnissen empfehlen wir, an folgenden Punkten anz
 Für die Umsetzung unserer Empfehlungen würden folgende Kosten anfallen.
 \begin{table}[h]
 	\centering
-	\begin{tabu} to \linewidth {l l l l}
+	\begin{tabu} to \linewidth {X[3] X X X}
 		\toprule 
 		Beschreibung & Zeitaufwand in h  & Stundenansatz in CHF & Total \\
 		\midrule
-		&&& \\
-		\textbf{Total} & & & \underline{\underline{1 Million}} \\
+		VLAN Konsistenz erstellen & 8 & 150 & 1200 \\
+		Linkgeschwindigkeiten und Duplexmodus anpassen & 1 & 150 & 150 \\
+		Zusätzliche Anbindung der Branches über HQ\_CS4 & 6 & 150 & 900 \\
+		
+		\textbf{Total} & & & \underline{\underline{2250 CHF}} \\
 		\bottomrule 
 	\end{tabu} 
 	\caption{Kostenvoranschlag}
