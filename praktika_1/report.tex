@@ -88,22 +88,58 @@ Folgende Tabellen dienen als Erweiterung zu den graphischen Schemas.
 \end{table}
 
 \subsection{VLAN}
-IEEE 802.1Q = Paketbasierte tagged VLAN's
+Aus der Tabelle \ref{tbl:vlan_all} ist ersichtlich, dass unterschiedliche Namen für die verschiedenen VLAN's verwendet wurden. In der folgenden Tabelle sind alle VLAN's ersichtlich, die über das gesamte Netzwerk über, konsistent auftreten.
+\begin{table}[h]
+	\centering
+	\begin{tabu} to \linewidth {l l}
+		\toprule 
+		VLAN & Bedeutung \\
+		\midrule
+		VLAN 10 & HR \\
+		VLAN 11 & IT \\
+		VLAN 150 & iwas \\
+		\bottomrule 
+	\end{tabu} 
+	\label{tbl:vlan_all}
+	\caption{Übersicht konsistente VLAN's}
+\end{table}
+
 \begin{table}[h]
 	\centering
 	\begin{tabu} to \linewidth {l l l}
 		\toprule 
-		VLAN & Name & Bedeutung \\
+		Gerät & VLAN & Bedeutung \\
 		\midrule
-		VLAN 10 & HR & Personalabteilung \\
-		VLAN 11 & IT & IT Abteilung \\
-		VLAN 99 & MGMT & Management\\
-		VLAN 100 & STAFF & Mitarbeiter\\
-		VLAN 150 & IWAS & ???\\
-		VLAN 200 & STUDENTS & Studenten\\
+		BR2\_S1	& VLAN 10 & HR \\
+				& VLAN 11 & IT \\
+		HQ\_CS3	& VLAN 99 & MGMT \\
+				& VLAN 100 & Staff \\
+				& VLAN 150 & iwas \\
+				& VLAN 200 & students \\
+		HQ\_DS1	& VLAN 99  & Management \\
+		HQ\_DS2	& VLAN 99  & Management \\
+		HQ\_AS1	& VLAN 99  & Management \\
+		HQ\_AS2	& VLAN 99  & Management \\
+				& VLAN 100 & MGMT \\
+				& VLAN 200 & Staff \\	
+		HQ\_AS3 & VLAN 30  & Server \\
+				& VLAN 100 & MGMT \\
+				& VLAN 200 & Staff \\
+		HQ\_AS11& VLAN 10 & HR \\
+				& VLAN 20 & students \\
+				& VLAN 30 & guest \\
+				& VLAN 99 & management \\
+				& VLAN 101 & MGMT \\
+		BR2\_S1 & VLAN 10 & HR \\
+				& VLAN 11 & IT \\
+		BR2\_S2 & VLAN 10 & HR \\
+				& VLAN 11 & IT \\
+		BR2\_S3 & VLAN 10 & HR \\
+				& VLAN 11 & IT \\
 		\bottomrule 
 	\end{tabu} 
-	\caption{VLAN's}
+	\label{tbl:vlan_all}
+	\caption{Geräte und VLAN's}
 \end{table}
 
 \begin{table}[h]
@@ -112,7 +148,6 @@ IEEE 802.1Q = Paketbasierte tagged VLAN's
 		\toprule 
 		VLAN & Subnetz & Bemerkung \\
 		\midrule
-		VLAN1 & 172.16.103.0/24 & \\
 		VLAN10 & 172.16.1.0/24 & \\
 		VLAN11 & 172.16.2.0/24 & \\
 		VLAN20 & no ip addr assigned & (router ospf) \\
@@ -173,42 +208,43 @@ Beim Spanning Tree ist HQ\_AS1 als Root in diversen VLAN's eingetragen, dies ist
 	  \end{itemize}
 	\item[HQ\_AS6] Die Link-Gruppe 6 des Uplink ist als shutdown eingestellt, deshalb hat der Switch keinen Uplink.
 	\item[HQ\_AS7] Beim HQ\_AS7 sind VLAN 10 und 11 auf Ports eingerichtet, aber nicht in der VLAN-Konfiguration
-	\item[HQ\_AS3] Beim HQ\_AS3 sind VLAN 100 und 200 auf Ports eingerichtet, aber nicht in der VLAN-Konfiguration.
+	\item[HQ\_AS3] \hfill 
+	\begin{itemize}
+		\item Beim HQ\_AS3 sind VLAN 100 und 200 auf Ports eingerichtet, aber nicht in der VLAN-Konfiguration.
+	\end{itemize}
 	\item[HQ\_AS8] Beim HQ\_AS8 ist VLAN 20 auf Ports eingerichtet, aber nicht in der VLAN-Konfiguration.
 	\item[HQ\_AS9] Beim HQ\_AS9 VLAN 10 und VLAN 20 auf Ports eingerichtet, aber nicht in der VLAN-Konfiguration.
 	\item[HQ\_AS10] Beim HQ\_AS10 VLAN 11 auf Ports eingerichtet, aber nicht in der VLAN-Konfiguration.
-
-	\item[BR1\_S2] \hfill \\
+	\item[BR1\_S2] \hfill
 	  \begin{itemize} 
 		  \item Die VLANs nicht auf den Ports zugeordnet.
 		  \item Die Trunk-Ports zum Router sind nicht richtig konfiguriert (nämlich auf access und spanning-tree portfast)
 	  \end{itemize}
-	\item[BR1\_S3] \hfill \\
+	\item[BR1\_S3] \hfill
 	  \begin{itemize} 
 		  \item Die VLANs nicht auf den Ports zugeordnet. 
 		  \item Die Trunk-Ports zum Router sind nicht richtig konfiguriert (nämlich auf access und spanning-tree portfast)
 	  \end{itemize}
-	\item[BR1\_S4] \hfill \\
+	\item[BR1\_S4] \hfill
 	  \begin{itemize} 
 		  \item Die VLANs nicht auf den Ports zugeordnet. 
 		  \item Die Trunk-Ports zum Router sind nicht richtig konfiguriert (nämlich auf access und spanning-tree portfast)
 	  \end{itemize}
-	
-	\item[BR2\_S1] \\ \hfill
+	\item[BR2\_S1] \hfill
 		\begin{itemize}
 			\item VLAN1 ist shutdown, darum gehen die Access-Switches im ganzen BR2 nicht.
 		\end{itemize}
-	\item[BR2\_S2] \\ \hfill
+	\item[BR2\_S2] \hfill
 	  \begin{itemize}
 		  \item Die VLANs nicht auf den Ports zugeordnet.
 		  \item VLAN103 ist als Virtuelles Interface eingerichtet, allerdings nicht in der vlan.dat eingetragen.
 		\end{itemize}
-	\item[BR2\_S3] \\ \hfill
+	\item[BR2\_S3] \hfill
 	  \begin{itemize}
 	  	\item Die VLANs nicht auf den Ports zugeordnet.
 		  \item VLAN103 ist als Virtuelles Interface eingerichtet, allerdings nicht in der vlan.dat eingetragen.
 		\end{itemize}
-	\item[BR2\_S4] \\ \hfill
+	\item[BR2\_S4] \hfill
 	  \begin{itemize}
 	  	\item Die VLANs nicht auf den Ports zugeordnet.
 		  \item VLAN103 ist als Virtuelles Interface eingerichtet, allerdings nicht in der vlan.dat eingetragen.
@@ -222,9 +258,10 @@ Beim Spanning Tree ist HQ\_AS1 als Root in diversen VLAN's eingetragen, dies ist
 \subsubsection{Routen}
 
 \begin{description}
-	\item[FrameRelayRouter] \hfill \\
+	\item[FrameRelayRouter] \hfill
 		\begin{itemize}
 			\item Die Routen über das FrameRelay sind überall sehr hoch. Ist dies bewusst aufgrund der Kosten gewählt?
+		\end{itemize}
 \end{description}
 
 \subsubsection{OSPF}
