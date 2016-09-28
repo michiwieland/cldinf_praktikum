@@ -1,32 +1,30 @@
-BR1_S1#show interface status
-
-Port      Name               Status       Vlan       Duplex  Speed Type
-Fa0/1                        connected    routed     a-full  a-100 10/100BaseTX
-Fa0/2                        connected    trunk      a-full  a-100 10/100BaseTX
-Fa0/3                        notconnect   1            auto   auto 10/100BaseTX
-Fa0/4                        connected    trunk      a-full  a-100 10/100BaseTX
-Fa0/5                        connected    trunk      a-full  a-100 10/100BaseTX
-Fa0/6                        connected    trunk      a-full  a-100 10/100BaseTX
-Fa0/7                        connected    trunk      a-full  a-100 10/100BaseTX
-Fa0/8                        notconnect   1            auto   auto 10/100BaseTX
-Fa0/9                        notconnect   1            auto   auto 10/100BaseTX
-Fa0/10                       notconnect   1            auto   auto 10/100BaseTX
-Fa0/11                       notconnect   1            auto   auto 10/100BaseTX
-Fa0/12                       connected    1          a-full  a-100 10/100BaseTX
-Fa0/13                       notconnect   1            auto   auto 10/100BaseTX
-Fa0/14                       notconnect   1            auto   auto 10/100BaseTX
-Fa0/15                       notconnect   1            auto   auto 10/100BaseTX
-Fa0/16                       notconnect   1            auto   auto 10/100BaseTX
-Fa0/17                       notconnect   1            auto   auto 10/100BaseTX
-Fa0/18                       notconnect   1            auto   auto 10/100BaseTX
-Fa0/19                       notconnect   1            auto   auto 10/100BaseTX
-Fa0/20                       notconnect   1            auto   auto 10/100BaseTX
-Fa0/21                       notconnect   1            auto   auto 10/100BaseTX
-
-Port      Name               Status       Vlan       Duplex  Speed Type
-Fa0/22                       notconnect   1            auto   auto 10/100BaseTX
-Fa0/23                       notconnect   1            auto   auto 10/100BaseTX
-Fa0/24                       notconnect   1            auto   auto 10/100BaseTX
-Gi0/1                        notconnect   1            auto   auto Not Present
-Gi0/2                        notconnect   1            auto   auto Not Present
-
+BR1_S1#show ip interface brief
+Interface              IP-Address      OK? Method Status                Protocol
+Vlan1                  172.16.101.1    YES manual up                    up
+Vlan102                172.16.22.1     YES manual down                  down
+FastEthernet0/1        172.16.100.2    YES manual up                    up
+FastEthernet0/2        unassigned      YES unset  up                    up
+FastEthernet0/3        unassigned      YES unset  down                  down
+FastEthernet0/4        unassigned      YES unset  up                    up
+FastEthernet0/5        unassigned      YES unset  up                    up
+FastEthernet0/6        unassigned      YES unset  up                    up
+FastEthernet0/7        unassigned      YES unset  up                    up
+FastEthernet0/8        unassigned      YES unset  down                  down
+FastEthernet0/9        unassigned      YES unset  down                  down
+FastEthernet0/10       unassigned      YES unset  down                  down
+FastEthernet0/11       unassigned      YES unset  down                  down
+FastEthernet0/12       unassigned      YES unset  down                  down
+FastEthernet0/13       unassigned      YES unset  down                  down
+FastEthernet0/14       unassigned      YES unset  down                  down
+FastEthernet0/15       unassigned      YES unset  down                  down
+FastEthernet0/16       unassigned      YES unset  down                  down
+FastEthernet0/17       unassigned      YES unset  down                  down
+FastEthernet0/18       unassigned      YES unset  down                  down
+FastEthernet0/19       unassigned      YES unset  down                  down
+FastEthernet0/20       unassigned      YES unset  down                  down
+FastEthernet0/21       unassigned      YES unset  down                  down
+FastEthernet0/22       unassigned      YES unset  down                  down
+FastEthernet0/23       unassigned      YES unset  down                  down
+FastEthernet0/24       unassigned      YES unset  down                  down
+GigabitEthernet0/1     unassigned      YES unset  down                  down
+GigabitEthernet0/2     unassigned      YES unset  down                  down
