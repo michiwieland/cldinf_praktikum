@@ -132,22 +132,26 @@ IEEE 802.1Q = Paketbasierte tagged VLAN's
 \includepdf[pages={1},landscape=true]{appendix/schemes/vlan.pdf}
 \includepdf[pages={1},landscape=true]{appendix/schemes/L1.pdf}
 
-\section{Gefundene Fehler}
+\section{Gefundene Fehler und Verbesserungsvorschläge}
 
-Unschön: Bei vertippern im Komando wird immer nache dem Nameserver gesucht.
+
+\subsection{Allgemeine Verbesserungsvorschläge}
+
+\begin{itemize}
+	\item Auf allen Routern sollte der DNS-Lookup bei einem Tippfehler deaktiviert werden.
+	\item Die Geräte z.B. Switche in den Branches und Headquarter sind inkonsistent benannt.
+\end{itemize}
 
 \subsection{Layer 1}
-Auf OSI Layer 1 wurden keine Fehler gefunden.
+Auf Layer 1 (dem physischen Netzwerk) gibt es gemäss der Vorgabe dieses Repots keine Fehler.
 
 \subsection{Layer 2}
-%TODO Auf CCNA-CCNP-FRSwitch ist CDP (Cisco ???) nicht aktiviert
-
 \subsubsection{Design}
 \begin{itemize}
 	\item HQ\_CS2 bildet die einzige Verbindung zu den Branches. Es bildet somit einen Single Point of Failure
 \end{itemize}
 
-\subsubsection{Speed}
+\subsubsection{Interfaces / Router Connection Groups}
 \begin{itemize}
 	\item Die Port Channel Group 4 beim HQ\_CS1 ist auf Half Duplex 100Mbit/s eingestellt.
 	\item Die Port Channel Group 2 bei HQ\_CS2 ist auf 10Mbit/s eingestellt. 
@@ -155,27 +159,75 @@ Auf OSI Layer 1 wurden keine Fehler gefunden.
 
 \subsubsection{Spanning Tree}
 
+Beim Spanning Tree ist HQ\_AS1 als Root in diversen VLAN's eingetragen, dies ist jedoch eher eine Suboptimale Wahl, da so unnötig Traffic über die Verbindung zu DS1 gespielt wird.
+%TODO: Auf welchen VLAN's ist HQ_AS1 root?
+%TODO: Genauer anschauen bei anderen Geräten.
+
 \subsubsection{VLAN}
-\begin{itemize}
-	\item VLAN1 auf HQ\_AS1 ist Administratively Down
-	\item Nur Fa0/2, Gi0/1, Gi0/2 sind auf HQ\_AS1 für VLAN1 konfiguriert
-	\item Die meisten Interfaces auf HQ\_AS1 sind im VLAN 21; dies ist in der VLAN Konfiguration nicht eingerichtet.
-	\item Beim HQ\_AS7 sind VLAN 10 und 11 auf Ports eingerichtet, aber nicht in der VLAN-Konfiguration
-	\item Beim HQ\_AS3 sind VLAN 100 und 200 auf Ports eingerichtet, aber nicht in der VLAN-Konfiguration.
-	\item Beim HQ\_AS8 ist VLAN 20 auf Ports eingerichtet, aber nicht in der VLAN-Konfiguration.
-	\item Beim HQ\_AS9 VLAN 10 und VLAN 20 auf Ports eingerichtet, aber nicht in der VLAN-Konfiguration.
-	\item Beim HQ\_AS10 VLAN 11 auf Ports eingerichtet, aber nicht in der VLAN-Konfiguration.
-	% BR netze
-	\item Bei den Switches in den Branches sind die VLANs nicht auf den Ports zugeordner.
-	\item Beim BR1\_S2, BR1\_S3, BR1\_S4 sind die Trunk-Ports zum Router nicht richtig konfiguriert (nämlich access und spanning-tree portfast)
-\end{itemize}
+\begin{description}
+	\item[HQ\_AS1] \hfill \\
+	  \begin{itemize}
+		  \item VLAN1 ist Administratively Down
+		  \item Nur Fa0/2, Gi0/1, Gi0/2 sind auf HQ\_AS1 für VLAN1 konfiguriert
+		  \item Die meisten Interfaces auf HQ\_AS1 sind im VLAN 21; dies ist in  der VLAN Konfiguration nicht eingerichtet.
+	  \end{itemize}
+	\item[HQ\_AS6] Die Link-Gruppe 6 des Uplink ist als shutdown eingestellt, deshalb hat der Switch keinen Uplink.
+	\item[HQ\_AS7] Beim HQ\_AS7 sind VLAN 10 und 11 auf Ports eingerichtet, aber nicht in der VLAN-Konfiguration
+	\item[HQ\_AS3] Beim HQ\_AS3 sind VLAN 100 und 200 auf Ports eingerichtet, aber nicht in der VLAN-Konfiguration.
+	\item[HQ\_AS8] Beim HQ\_AS8 ist VLAN 20 auf Ports eingerichtet, aber nicht in der VLAN-Konfiguration.
+	\item[HQ\_AS9] Beim HQ\_AS9 VLAN 10 und VLAN 20 auf Ports eingerichtet, aber nicht in der VLAN-Konfiguration.
+	\item[HQ\_AS10] Beim HQ\_AS10 VLAN 11 auf Ports eingerichtet, aber nicht in der VLAN-Konfiguration.
+
+	\item[BR1\_S2] \hfill \\
+	  \begin{itemize} 
+		  \item Die VLANs nicht auf den Ports zugeordnet.
+		  \item Die Trunk-Ports zum Router sind nicht richtig konfiguriert (nämlich auf access und spanning-tree portfast)
+	  \end{itemize}
+	\item[BR1\_S3] \hfill \\
+	  \begin{itemize} 
+		  \item Die VLANs nicht auf den Ports zugeordnet. 
+		  \item Die Trunk-Ports zum Router sind nicht richtig konfiguriert (nämlich auf access und spanning-tree portfast)
+	  \end{itemize}
+	\item[BR1\_S4] \hfill \\
+	  \begin{itemize} 
+		  \item Die VLANs nicht auf den Ports zugeordnet. 
+		  \item Die Trunk-Ports zum Router sind nicht richtig konfiguriert (nämlich auf access und spanning-tree portfast)
+	  \end{itemize}
+	
+	\item[BR2\_S1] \\ \hfill
+		\begin{itemize}
+			\item VLAN1 ist shutdown, darum gehen die Access-Switches im ganzen BR2 nicht.
+		\end{itemize}
+	\item[BR2\_S2] \\ \hfill
+	  \begin{itemize}
+		  \item Die VLANs nicht auf den Ports zugeordnet.
+		  \item VLAN103 ist als Virtuelles Interface eingerichtet, allerdings nicht in der vlan.dat eingetragen.
+		\end{itemize}
+	\item[BR2\_S3] \\ \hfill
+	  \begin{itemize}
+	  	\item Die VLANs nicht auf den Ports zugeordnet.
+		  \item VLAN103 ist als Virtuelles Interface eingerichtet, allerdings nicht in der vlan.dat eingetragen.
+		\end{itemize}
+	\item[BR2\_S4] \\ \hfill
+	  \begin{itemize}
+	  	\item Die VLANs nicht auf den Ports zugeordnet.
+		  \item VLAN103 ist als Virtuelles Interface eingerichtet, allerdings nicht in der vlan.dat eingetragen.
+		\end{itemize}
+\end{description}
+
+\subsubsection{Frame Relay}
 
 \subsection{Layer 3}
 
 \subsubsection{Routen}
 
-\subsubsection{OSPF}
+\begin{description}
+	\item[FrameRelayRouter] \hfill \\
+		\begin{itemize}
+			\item Die Routen über das FrameRelay sind überall sehr hoch. Ist dies bewusst aufgrund der Kosten gewählt?
+\end{description}
 
+\subsubsection{OSPF}
 
 \section{Messungen}
 Alle Durchgeführten Messungen sind im Anhang \ref{appendix:measures} zu finden.
