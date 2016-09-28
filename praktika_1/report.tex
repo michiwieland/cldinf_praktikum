@@ -66,6 +66,9 @@ show spanning
 
 \subsection{Analyse des Konfigurationen}
 Folgende Tabellen dienen als Erweiterung zu den graphischen Schemas.
+\subsection{Messungen}
+Alle Durchgeführten Messungen sind im Anhang \ref{appendix:measures} zu finden.
+
 \subsection{DHCP}
 \begin{table}[h]
 	\centering
@@ -167,6 +170,7 @@ Aus der Tabelle \ref{tbl:vlan_all} ist ersichtlich, dass unterschiedliche Namen 
 \includepdf[pages={1},landscape=true]{appendix/schemes/vlan.pdf}
 \includepdf[pages={1},landscape=true]{appendix/schemes/L1.pdf}
 
+
 \section{Gefundene Fehler und Verbesserungsvorschläge}
 
 
@@ -174,7 +178,8 @@ Aus der Tabelle \ref{tbl:vlan_all} ist ersichtlich, dass unterschiedliche Namen 
 
 \begin{itemize}
 	\item Auf allen Routern sollte der DNS-Lookup bei einem Tippfehler deaktiviert werden.
-	\item Die Geräte z.B. Switche in den Branches und Headquarter sind inkonsistent benannt.
+	\item Die Geräte z.B. Switches in den Branches und Headquarter sind inkonsistent benannt.
+	\item Der DHCP Pool für das VLAN 11 (IT) wurde nicht gleich wie das VLAN benannt
 \end{itemize}
 
 \subsection{Layer 1}
@@ -266,17 +271,11 @@ Beim Spanning Tree ist HQ\_AS1 als Root in diversen VLAN's eingetragen, dies ist
 
 \subsubsection{OSPF}
 
-\section{Messungen}
-Alle Durchgeführten Messungen sind im Anhang \ref{appendix:measures} zu finden.
+\section{Folgerungen}
+Während der, sich als sehr aufwändig gestaltenden, Analyse, sind uns viele Fehlkonfigurationen und Unschönheiten aufgefallen. Diese gilt es nun in einem letzten Schritt zu beheben. Die Korrektur der erkannten Fehler ist im Abschnitt \ref{sec:recommedations} beschrieben, wobei wir auf eine Lösung möglichst kleinem Einfluss auf das produktive System geachtet haben. Zusätzlich versuchten diese Punkte zu ändern, bei denen möglichst wenig Kosten anfallen würden.
 
-\subsection{Folgerungen}
-% TODO add folgerungen
-
-
-%TODO Ist ein Port mit langsamem Durchsatz konfiguriert?
-
-
-\section{Empfehlungen}
+\subsection{Empfehlungen}
+\label{sec:recommedations}
 Aufgrund der vorangehenden Erkenntnissen empfehlen wir, an folgenden Punkten anzusetzen:
 %TODO add recommedations
 \begin{enumerate}
