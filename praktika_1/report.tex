@@ -179,6 +179,7 @@ Aus der Tabelle \ref{tbl:vlan_all} ist ersichtlich, dass unterschiedliche Namen 
 	\item Auf allen Routern sollte der DNS-Lookup bei einem Tippfehler deaktiviert werden, um die Administration zu vereinfachen.
 	\item Die Geräte z.B. Switches in den Branches und Headquarter sind inkonsistent benannt.
 	\item Der DHCP Pool für das VLAN 11 (IT) wurde nicht gleich wie das VLAN benannt
+	\item Die Zeit auf den Geräten ist nicht richtig überall gleich bzw. zum Teil komplett falsch.
 \end{itemize}
 
 \subsection{Layer 1}
@@ -300,6 +301,10 @@ Sehr wahrscheinlich bestehen noch mehr Fehler auf Layer 3 als hier vermerkt, die
 
 \subsubsection{Routen}
 %TODO Michi Routen erklärung: Warum 1x über FRR und 1x über Router!!!!!
+% NOTE von Fabian: - Falsche Subnetmaske 200.200.200.;
+% NOTE             - BR1-R1: "no fair-queue" und "no frame-relay inverse-arp IP 203"?
+
+%TODO: Die Tunnel im Netzwerkdiagramm nachtragen.
 \begin{description}
 	\item[HQ\_DS1] \hfill \\
 	 Beim HQ\_DS1 ist die Verbindung zu HQ\_DS2 inaktiv, weil die Channel Group 1 keine IP zugeordnet hat.
@@ -319,12 +324,15 @@ Sehr wahrscheinlich bestehen noch mehr Fehler auf Layer 3 als hier vermerkt, die
 \end{description}
 
 \section{Folgerungen}
-Während der, sich als sehr aufwändig gestaltenden, Analyse, sind uns viele Fehlkonfigurationen und Unschönheiten aufgefallen. Diese gilt es nun in einem letzten Schritt zu beheben. Die Korrektur der erkannten Fehler ist im Abschnitt \ref{sec:recommedations} beschrieben, wobei wir auf eine Lösung möglichst kleinem Einfluss auf das produktive System geachtet haben. Zusätzlich versuchten diese Punkte zu ändern, bei denen möglichst wenig Kosten anfallen würden.
+Während der sich als sehr aufwändig gestaltenden Analyse, sind uns viele Fehlkonfigurationen und Unschönheiten aufgefallen. Diese gilt es nun in einem nächsten Schritt zu beheben. Die Korrektur der erkannten Fehler ist im Abschnitt \ref{sec:recommedations} beschrieben, wobei wir auf eine Lösung möglichst kleinem Einfluss auf das produktive System geachtet haben. Zusätzlich versuchen wir, die Punkte zu ändern, bei denen möglichst wenig Kosten anfallen werden.
 
 \subsection{Empfehlungen}
 \label{sec:recommedations}
 Aufgrund der vorangehenden Erkenntnissen empfehlen wir, an folgenden Punkten anzusetzen:
 %TODO add recommedations
+
+Nach den Behebungen empfehlen wir unbedingt eine weitere Analyse des Netzwerkes, aufgrund der durchzogen unvollständigen Konfiguration sollten weitere Fehler dringend ausgeschlossen werden.
+
 \begin{enumerate}
 	\item Alle 10 und 100Mbit/s Leitung auf den maximal physisch möglichen Durchsatz aufschrauben.
 \end{enumerate}
