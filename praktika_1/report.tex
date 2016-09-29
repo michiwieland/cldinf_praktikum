@@ -36,6 +36,24 @@ Für die Analyse wurden folgende Tools verwendet
 	\item Putty für die Telnet und Serielle Verbindung zu den Router und Switches
 \end{enumerate}
 
+\subsection{Protokolle}
+\begin{multicols}{2}
+\begin{itemize}
+	\item Layer 2
+	\begin{itemize}
+		\item Ethernet (IEEE 802.1q)
+		\item VTP
+		\item STP
+		\item Frame Relay
+	\end{itemize}
+	\item Layer 3
+	\begin{itemize}
+		\item IPv4
+		\item OSPF
+	\end{itemize}
+\end{itemize}
+\end{multicols}
+
 \subsection{Terminologie}
 Damit die Namen mehr an Bedeutung gewinnen, sollen folgend einige Abkürzungen nach bestem Wissen ausgeschrieben werden.
 \begin{multicols}{2}
@@ -112,8 +130,6 @@ Aus der Tabelle \ref{tbl:vlan_all} ist ersichtlich, dass unterschiedliche Namen 
 		\toprule 
 		Gerät & VLAN & Bedeutung \\
 		\midrule
-		BR2\_S1	& VLAN 10 & HR \\
-				& VLAN 11 & IT \\
 		HQ\_CS3	& VLAN 99 & MGMT \\
 				& VLAN 100 & Staff \\
 				& VLAN 150 & iwas \\
@@ -200,10 +216,7 @@ Auf Layer 1 (dem physischen Netzwerk) gibt es gemäss der Vorgabe dieses Repots 
 \end{itemize}
 
 \subsubsection{Spanning Tree}
-
 Beim Spanning Tree ist HQ\_AS1 als Root in diversen VLAN's eingetragen, dies ist jedoch eher eine Suboptimale Wahl, da so unnötig Traffic über die Verbindung zu DS1 gespielt wird.
-%TODO: Auf welchen VLAN's ist HQ_AS1 root?
-%TODO: Genauer anschauen bei anderen Geräten.
 
 \subsubsection{VLAN}
 \begin{description}
@@ -258,16 +271,17 @@ Beim Spanning Tree ist HQ\_AS1 als Root in diversen VLAN's eingetragen, dies ist
 		\end{itemize}
 \end{description}
 
-\subsubsection{Frame Relay}
-
 \subsection{Layer 3}
-
 \subsubsection{Routen}
-%TODO Michi Routen erklärung: Warum 1x über FRR und 1x über Router!!!!!
 \begin{description}
+	\item[BR2\_R1] \hfill 
+		\begin{itemize}
+			\item Standardmässig wird über den Provider Switch nach HQ\_IER1 geroutet, obschon die Kosten bei 1000 liegen. Die Kosten über den Framerelay Switch liegen hingegen bei 64.
+			\item Wie in der jPerf Messung von BR1-S2 nach HQ-AS2 ersichtlich, ist die Verbindung über den FrameRelay Router von Packet Loss geprägt. Die Verbindung ist langsam und unzuverlässig.
+		\end{itemize}
 	\item[FrameRelayRouter] \hfill
 		\begin{itemize}
-			\item Die Routen über das FrameRelay sind überall sehr hoch. Ist dies bewusst aufgrund der Kosten gewählt?
+			\item Wie in den Tracerouts ersichtlich, sind die Response Zeiten über das FrameRelay überall sehr hoch.
 		\end{itemize}
 \end{description}
 
@@ -279,7 +293,7 @@ Während der, sich als sehr aufwändig gestaltenden, Analyse, sind uns viele Feh
 Aufgrund der vorangehenden Erkenntnissen empfehlen wir, an folgenden Punkten anzusetzen:
 %TODO add recommedations
 \begin{enumerate}
-	\item Alle 10 und 100Mbit/s Leitung auf den maximal physisch möglichen Durchsatz aufschrauben.
+	\item Alle 10sMbit/s Leitung auf den maximal physisch möglichen Durchsatz aufschrauben.
 \end{enumerate}
 
 \subsection{Kostenvoranschlag}
