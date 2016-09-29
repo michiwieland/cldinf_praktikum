@@ -194,6 +194,7 @@ Aus der Tabelle \ref{tbl:vlan_all} ist ersichtlich, dass unterschiedliche Namen 
 	\item Die Geräte z.B. Switches in den Branches und Headquarter sind inkonsistent benannt.
 	\item Der DHCP Pool für das VLAN 11 (IT) wurde nicht gleich wie das VLAN benannt
 	\item Die Zeit auf den Geräten ist nicht richtig überall gleich bzw. zum Teil komplett falsch.
+	\item Der Tunnel den Branches ist geht unverschlüsselt über das Internet
 \end{itemize}
 
 \subsection{Layer 1}
@@ -315,7 +316,6 @@ Sehr wahrscheinlich bestehen noch mehr Fehler auf Layer 3 als hier vermerkt, die
 	Das Routing zu den Branches ist inkonsistent. Eventuell besteht ein Problem bei den Internet / WAN-Verbindungen. Dies muss in weiteren Abklärungen festgestellt werden.
 	\item[HQ\_DS1] \hfill \\
 	Beim HQ\_DS1 ist die Verbindung zu HQ\_DS2 inaktiv, weil die Channel Group 1 keine IP zugeordnet hat.
-	\item[BR1\_R1 und BR2\_R2] hier sind unterschiedliche Netzmasken für 200.200.200.0 eingetragen.
 	\item[BR2\_R1] \hfill 
 		\begin{itemize}
 			\item Standardmässig wird über den Provider Switch nach HQ\_IER1 geroutet, obschon die Kosten bei 1000 liegen. Die Kosten über den Framerelay Switch liegen hingegen bei 64.
@@ -328,36 +328,45 @@ Sehr wahrscheinlich bestehen noch mehr Fehler auf Layer 3 als hier vermerkt, die
 		\end{itemize}
 \end{description}
 	
-
 \section{Folgerungen}
 Während der sich als sehr aufwändig gestaltenden Analyse, sind uns viele Fehlkonfigurationen und Unschönheiten aufgefallen. Diese gilt es nun in einem nächsten Schritt zu beheben. Die Korrektur der erkannten Fehler ist im Abschnitt \ref{sec:recommedations} beschrieben. 
 
 \subsection{Empfehlungen}
 \label{sec:recommedations}
 Aufgrund der vorangehenden Erkenntnissen empfehlen wir, an folgenden Punkten anzusetzen:
-\begin{itemize}
-	\item 
-\end{itemize}
-
+\begin{enumerate}
+	\item Namenschema für Geräte, VLAN und DHCP Pools konsistent konfigurieren
+	\item Zeitkonfiguration korrigieren und NTP Zeitserver aufsetzen
+	\item Alle 10sMbit/s Leitung auf den maximal physisch möglichen Durchsatz aufschrauben. 
+	\item HQ\_CS2 redundant machen. Anschluss der Branches über HQ\_CS4.
+	\item MTU Grösse vereinheitlichen auf 1500
+	\item Linkgeschwindigkeiten und Duplexmodi korrigieren 
+	\item VLAN und Port Konfiguration korrigieren und Verteilen der Konfiguration mit VLAN Controller.
+	\item OSPF Routing bei WAN, Internet und Branches weiter analysieren und korrigieren
+	\item IP Adressfehler im Core korrigieren
+	\item Verschlüsselung für Kommunikation zu den Branches einrichten
+\end{enumerate}
 Nach den Behebungen empfehlen wir unbedingt eine weitere Analyse des Netzwerkes, aufgrund der durchzogen unvollständigen Konfiguration sollten weitere Fehler dringend ausgeschlossen werden.
 
-\begin{enumerate}
-	\item Alle 10sMbit/s Leitung auf den maximal physisch möglichen Durchsatz aufschrauben.
-\end{enumerate}
-
 \subsection{Kostenvoranschlag}
-Für die Umsetzung unserer Empfehlungen würden folgende Kosten anfallen.
+Für die Umsetzung unserer Empfehlungen würden folgende Kosten anfallen. Der Studenansatz ist bei 160 CHF exkl. MwSt.
 \begin{table}[h]
 	\centering
-	\begin{tabu} to \linewidth {X[3] X X X}
+	\begin{tabu} to \linewidth {X[3] r r}
 		\toprule 
-		Beschreibung & Zeitaufwand in h  & Stundenansatz in CHF & Total \\
+		Beschreibung & Zeitaufwand in h & Total \\
 		\midrule
-		VLAN Konsistenz erstellen & 8 & 150 & 1200 \\
-		Linkgeschwindigkeiten und Duplexmodus anpassen & 1 & 150 & 150 \\
-		Zusätzliche Anbindung der Branches über HQ\_CS4 & 6 & 150 & 900 \\
-		
-		\textbf{Total} & & & \underline{\underline{2250 CHF}} \\
+		Konsistentes Namensschema aufsetzen & 1   &  160 \\
+		Zeitkonfiguration korrigieren und Zeitserver aufsetzen & 2   & 320 \\
+		Redundante Verbindung zu den Branches & 8   & 1280 \\
+		MTU Grössen vereinheitlichen & 0.5   & 80 \\
+		Linkgeschwindigkeiten und Duplexmodus korrigieren & 2   & 320\\
+		VLAN und Port Konfiguration  vereinheitlichen, Controller aufsetzen & 10  & 1600 \\
+		Routing bei zu den Branch Verbindungen analysieren & 4 & 640  \\
+		IP Adressfehler im Core korrigieren & 1 & 160 \\
+		Verschlüsselung Verbindung Branches & 6 & 960 \\
+		\midrule
+		\textbf{Total} & & \underline{\underline{5520 CHF}} \\
 		\bottomrule 
 	\end{tabu} 
 	\caption{Kostenvoranschlag}
