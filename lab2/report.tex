@@ -80,9 +80,6 @@ Da Geschwindigkeit eine Kernanforderung in dem Trading Geschäft ist, haben wir 
 \subsubsection{Logische Netzwerkkarte}
 Das gesamte Netzwerk ist auf strikt nach den empfohlenen drei Ebenen ''Access'', ''Distribution'' und ''Core'' designed. Wir verwenden durchgehend Layer 3 Switches, damit wir komplett auf STP verzichten können. Spanning Tree wird in Computernetzen dieser Grössenordnung nicht empfohlen, da sie eine grosse Konvergenz aufweisen. VLAN's werden nur bis zu den Access Switches zur Trennung von VoIP Phones und Workstation verwendet. 
 
-%MUST cover reasoning for design
-%MUST cover reasoning for design
-
 \subsection{WAN Network Design}
 
 Bei den WAN-Netzwerken ist es für diesen Kunden essenziell, dass eine schnelle und stabile Anbindung an das Headquarter existiert, da die Mitarbeiter jeweils auf den Terminal-Servern im Datacenter arbeiten. Zudem soll es einfach möglich sein, neue Standorte hinzuzufügen.
@@ -225,12 +222,10 @@ Wir verzichten auf STP, da wir für alle Bereiche eigene IP Subnetze verwenden.
 Für die Anbindung der Branches haben wir uns für MPLS entschieden. Es bietet entscheidende Vorteile gegenüber einer Mitleitung oder einer Anbindung über Framerelay. So kann ein neuer Branch ohne grossen Aufwand in die MPLS Cloud eingefügt werden.
 
 \subsubsection{Layer 3}
-Für das Routing wird OSPF verwendet.
+Für das Routing wird OSPF verwendet. Mehrere redundante Default-Gateways werden über HSRP ermöglicht.
 
 \subsection{VoIP}
 Grundsätzlich sind alle Workstations mit dem VoIP Phone an einem einzelnen Access Port angeschlossen. Der Verkehr wird über verschiedenen VLAN's strikt getrennt. Eine Ausnahme bildet einzig die Trading Abteilung, da diese auf eine hohe Verfügbarkeit der Telefone und Workstations angewiesen sind. Wir setzen für die Trading Abteilung deshalb auf separate Access Ports für die Workstation und das VoIP Telefon. Im Falle eines Ausfalls einer Komponente kann der Trade so trotzdem mit der zweiten weiterarbeiten, bis das Problem behoben ist.
-
-%TODO: HSRP, VRRP, GLBP
 
 \subsection{Benötigte Komponenten}
 \subsubsection{Access Ports}
