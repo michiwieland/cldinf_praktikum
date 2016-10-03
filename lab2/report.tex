@@ -49,7 +49,7 @@ Major traffic flows
 
 Application QoS requirements
 
-expected growth in the comming 5 years
+expected growth in the comming 5 years -> 20%
 
 
 \subsection{Campus LAN Design}
@@ -62,12 +62,76 @@ expected growth in the comming 5 years
 %MUST cover reasoning for design
 
 \subsubsection{Adressierungs- \& Namensschema}
+\paragraph{IPv4} 
+\begin{table}[h]
+	\centering
+	\begin{tabu} to \linewidth {l l l}
+		\toprule 
+		Subnetz & VLAN & Beschreibung \\
+		\midrule
+		
+		\bottomrule 
+	\end{tabu} 
+	\caption{IPv4 Addressing Scheme}
+\end{table}
+
+\paragraph{IPv6}
+\begin{table}[h]
+	\centering
+	\begin{tabu} to \linewidth {l l l}
+		\toprule 
+		Subnetz & VLAN & Beschreibung \\
+		\midrule
+	
+		\bottomrule 
+	\end{tabu} 
+	\caption{IPv6 Addressing Scheme}
+\end{table}
+
 
 \subsection{Technologie \& Protokolle}
 \subsubsection{Layer 2}
 \subsubsection{Layer 3}
+Für das Routing wird OSPF verwendet. 
 
 \subsection{Benötigte Komponenten}
+\subsubsection{Access Ports}
+\begin{table}[h]
+	\centering
+	\begin{tabu} to \linewidth {l l l l l}
+		\toprule 
+		Location & Abteilung & Anz. Mitarbeiter & Anz. Drucker & Benötigte Access Ports \\
+		\midrule
+		HQ 1. Stock & Banking und Gäste & 150 & 15 & $150 + 15 + 1 = 166$ \\ 
+		HQ 2. Stock & Banking & 150 & 15 & $150 + 15 = 165$ \\
+		HQ 3. Stock & Trading & 30 & 3 & $2 \cdot 30 + 3 = 63$ \\ 
+		HQ 4. Stock & IT und HR & $10 + 20 = 30$ & 3 & $30 + 3 = 33$\\
+		Branch  & Banking & 20 & 2 & $20 + 2 = 22$\\
+		\bottomrule 
+	\end{tabu} 
+	\label{tbl:require_access_ports}
+	\caption{Benötigte Access Ports}
+\end{table}
+
+\subsection{Switches}
+Die Trading Abteilung wird speziell redundant angebunden. Um die Ausfallsicherheit zu erhöhen, werden je 8 Mitarbeiter an einen Switch angeschlossen. Jeder Mitarbeiter benötigt 2 Access Ports, da die VoIP Phones eigenständig angeschlossen werden. Alle übrigen Abteilungen werden gemäss ihrer Mitarbeiteranzahl angeschlossen, wobei ein Wachstum einberechnet ist. 
+Wie in Tabelle \ref{tbl:require_access_ports} ersichtlich, müssen folgende Switchs angeschafft werden:
+%TODO abklären wie viele ports maximal bei switches üblich sind
+%TODO Backupswitch und verfahren bei ausfall irgendwo notieren
+\begin{table}[h]
+	\centering
+	\begin{tabu} to \linewidth {l l l X X}
+		\toprule 
+		Abteilung & Anzahl & Komponenten & Hostname & Bemerkung \\
+		\midrule
+		Banking 1.Stock & 8x 24Port Switch & 192 &  & \\
+		Banking 2.Stock & 8x 24Port Switch & 192 &  & \\
+		Trading 3. Stock & 4x 24-Port Switch & 96 & $16 + 16 + 16 + 12 + 3 = 63$ & Jeder Mitarbeiter benötigt 2 Ports (Computer + VoIP Phone)\\
+		IT und HR 4. Stock & 2x 24 Port Switch & 48 &  & \\
+		\bottomrule 
+	\end{tabu} 
+	\caption{Benötigte Switches}
+\end{table}
 
 \section{WAN Design}
 
