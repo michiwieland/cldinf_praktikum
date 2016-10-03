@@ -70,20 +70,27 @@ Zum sicherstellen der obenstehenden Geschwindigkeiten muss auf allen Routern ein
 
 
 \paragraph{Firmenwachstum}
-Bei den Schätzungen der Firmengrösse sind wir von einem Wachstum von $10\%$ pro Jahr qua Mitarbeiterzahl bzw. benötigten Geräten ausgegangen. Dies bedeutet auf eine 5-Jahres-Frist ein Wachstum von ca. $160\%$.
+Bei den Schätzungen der Firmengrösse sind wir von einem Wachstum von $10\%$ pro Jahr qua Mitarbeiterzahl bzw. benötigten Geräten ausgegangen. Dies bedeutet auf eine 5-Jahres-Frist ein Wachstum von ca. $160\%$. 
 
 \subsection{Campus LAN Design}
 
+\subsubsection{Physische Netzwerkkarte}
+Da Geschwindigkeit eine Kernanforderung in dem Trading Geschäft ist, haben wir im gesamten Netzwerk Gigabit Verbindungen aufgezogen. Im Core setzen zusätzlich auf Glasfasern.
+
 \subsubsection{Logische Netzwerkkarte}
+Das gesamte Netzwerk ist auf strikt nach den empfohlenen drei Ebenen ''Access'', ''Distribution'' und ''Core'' designed. Wir verwenden durchgehend Layer 3 Switches, damit wir komplett auf STP verzichten können. Spanning Tree wird in Computernetzen dieser Grössenordnung nicht empfohlen, da sie eine grosse Konvergenz aufweisen. VLAN's werden nur bis zu den Access Switches zur Trennung von VoIP Phones und Workstation verwendet. 
+
 %MUST cover WAN access
 %MUST cover Internet access
 %MUST cover reasoning for design
-\subsubsection{Physische Netzwerkkarte}
+
+
 %MUST cover reasoning for design
 
 \subsubsection{Adressierungs- \& Namensschema}
-\paragraph{IPv4}
+Das Basisnetz ist 10.0.0.0/8
 
+\paragraph{IPv4}
 Die internen IPv4 Adressen werden gemäss folgendem Schema aufgebaut: 
 
  \lstinline|10.<Standort>.<Abteilung>.0/24|
@@ -176,16 +183,23 @@ Die internen IPv6 Adressen werden gemäss folgendem Schema aufgebaut:
 \subsubsection{Layer 2}
 Wir verzichten auf STP, da wir für alle Bereiche eigene IP Subnetze verwenden. 
 
+\subsubsection{MPLS}
+Für die Anbindung der Branches haben wir uns für MPLS entschieden. Es bietet entscheidende Vorteile gegenüber einer Mitleitung oder einer Anbindung über Framerelay. So kann ein neuer Branch ohne grossen Aufwand in die MPLS Cloud eingefügt werden.
+
 \subsubsection{Layer 3}
-Für das Routing wird OSPF verwendet. 
+Für das Routing wird OSPF verwendet.
+
+\subsection{VoIP}
+Grundsätzlich sind alle Workstations mit dem VoIP Phone an einem einzelnen Access Port angeschlossen. Der Verkehr wird über verschiedenen VLAN's strikt getrennt. Eine Ausnahme bildet einzig die Trading Abteilung, da diese auf eine hohe Verfügbarkeit der Telefone und Workstations angewiesen sind. Wir setzen für die Trading Abteilung deshalb auf separate Access Ports für die Workstation und das VoIP Telefon. Im Falle eines Ausfalls einer Komponente kann der Trade so trotzdem mit der zweiten weiterarbeiten, bis das Problem behoben ist.
 
 \subsection{Benötigte Komponenten}
 \subsubsection{Access Ports}
+Minimal werden für das Netzwerk folgen Anzahl Access Ports benötigt. 
 \begin{table}[h]
 	\centering
 	\begin{tabu} to \linewidth {l l l l l}
 		\toprule 
-		Location & Abteilung & Anz. Mitarbeiter & Anz. Drucker & Benötigte Access Ports \\
+		Ort & Abteilung & Anz. Mitarbeiter & Anz. Drucker & Benötigte Access Ports \\
 		\midrule
 		HQ 1. Stock & Banking und Gäste & 150 & 15 & $150 + 15 + 1 = 166$ \\ 
 		HQ 2. Stock & Banking & 150 & 15 & $150 + 15 = 165$ \\
@@ -202,22 +216,30 @@ Für das Routing wird OSPF verwendet.
 Wir setzen im gesamten Netzwerk Cisco Catalyst 3750-48TS mit je 48 Ports ein. Diese bieten die Möglichkeit die L3-Switches als Stack zu organisieren. Jeder Stack wird über einen eigenen logischen Hostnamen angesprochen. Um die hohe Verfügbarkeit für die Trading Abteilung zu garantieren, schliessen wir die VoIP Phone an einem separaten Access Port an. Die 30 Trader werden zu jede 15 Personen an einen L3 Switch angeschlossen. So bleiben bei einem Ausfall immer die Hälte der Trader voll operationsfähig. Um einen Ausfall möglichst zu vermeiden, sind alle Switches an einer USV angeschlossen. Da bei einem Ausfall der Switches in der Trading Abteilung grosse Kosten entstehen, hält sich die IT einen vorkonfigurierten Backup Switch in Ihrem Stockwerk. Damit kann im Notfall der Switch ohne grössere Zeitverluste ausgetauscht werden. Alle weiteren Abteilungen haben eine normale Wichtigkeit und werden gemäss ihrer Mitarbeiterzahl angeschlossen. Es wurde aber auch bei Ihnen ein Wachstum eingerechnet. Aus der Tabelle \ref{tbl:require_access_ports} folgt, dass folgende Switches angeschafft werden müssen. 
 \begin{table}[h]
 	\centering
-	\begin{tabu} to \linewidth {l l l X X}
+	\begin{tabu} to \linewidth {l l l X }
 		\toprule 
-		Bereich & Anzahl & Komponente & Hostname & Bemerkung \\
+		Bereich & Anzahl & Komponente & Hostname \\
 		\midrule
-		Guest WLAN & 1x & IEEE 802.11ac Access Point & HQ\_AP\_1 & \\
-		Banking HQ 1. floor & 4x & 48 Port Catalyst 3750-48TS & HQ\_AS\_1 & \\
-		Banking HQ 2. floor & 4x & 48 Port Catalyst 3750-48TS & HQ\_AS\_2 & \\
-		Trading HQ 3. floor & 2x & 48 Port Catalyst 3750-48TS & HQ\_AS\_3 & \\
-		IT und HR HQ 4. floor & 1x & 48 Port Catalyst 3750-48TS & HQ\_AS\_4 & \\
-		Branch 1 & 1x & 48 Port Catalyst 3750-48TS & BR1\_AS\_1 & \\
-		Branch 2 & 1x & 48 Port Catalyst 3750-48TS & BR2\_AS\_2 & \\
-		Branch 3 & 1x & 48 Port Catalyst 3750-48TS & BR3\_AS\_3 & \\
+		Guest WLAN & 1x & IEEE 802.11ac Access Point & HQ\_AP\_1 \\
+		Banking HQ 1. floor & 4x & 48 Port Switch & HQ\_AS\_1 \\
+		Banking HQ 2. floor & 4x & 48 Port Switch & HQ\_AS\_2 \\
+		Trading HQ 3. floor & 2x & 48 Port Switch & HQ\_AS\_3 \\
+		IT und HR HQ 4. floor & 1x & 48 Port Switch & HQ\_AS\_4 \\
+		\midrule
+		HQ Firewall & 2x & 8 Port Firewall & HQ\_FW\_x \\
+		HQ MPLS Customer Edge Router & 2x & 8 Port Router & HQ\_CE\_x \\
+		\midrule
+		Branch 1 & 1x & 48 Port Switch & BR1\_AS\_1 \\
+		Branch 2 & 1x & 48 Port Switch & BR2\_AS\_2 \\
+		Branch 3 & 1x & 48 Port Switch & BR3\_AS\_3 \\
+		BR MPLS Customer Edge Router & 3x & 8 Port Router & BR\_CE\_x \\
 		\bottomrule 
 	\end{tabu} 
 	\caption{Benötigte Switches}
 \end{table}
+
+\subsection{Firewalls}
+Wir verwenden zwei Firewall die untereinander Load Balancing machen. Fällt eine aus, läuft kann der komplette Verkehr über die zweite Firewall nach wie vor ins Internet geroutet werden.
 
 \section{WAN Design}
 
