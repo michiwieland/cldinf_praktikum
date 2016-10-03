@@ -82,6 +82,37 @@ Bei den Schätzungen der Firmengrösse sind wir von einem Wachstum von $10\%$ pr
 %MUST cover reasoning for design
 
 \subsubsection{Adressierungs- \& Namensschema}
+
+Die IP-Adressierung wird optimiert auf Wachstumsmöglichkeiten und schnelles Routing über mehrere Standorte (mittels einfachem Zusammenfassen von Routen an den gleichen Standort.)
+
+\paragraph{Namensschema}
+
+Die Netzwerkgeräte werden jeweils nach dem Standorttyp, falls vorhanden der Gebäudenummer, dem Gerätetyp und einer aufsteigenden Nummer (ohne führenden Nullen) benannt:
+
+\lstinline|<Standort<Nummer>>\_<Geraetetyp><Geraetenummer>|
+
+\begin{table}[h]
+	\centering
+	\begin{tabu}{l l}
+		\toprule 
+		Geräteort/Typ & Bezeichnung \\
+		\midrule
+		Headquarter & \lstinline|HQ|\\
+		Standort / Branch & \lstinline|BRx| \\
+		\midrule
+		Access Switch & \lstinline|ASx|\\
+		Distribution Switch & \lstinline|DSx|\\
+		Core Switch & \lstinline|CSx|\\
+		MPLS CE Router & \lstinline|CE|\\
+		Firewall & \lstinline|FWx| \\
+		Access Point & \lstinline|APx| \\
+		ISP-Router & \lstinline|ISPx| \\
+		\bottomrule
+	\end{tabu}
+	\label{tbl:abteilung_ipv4_adressblock}
+	\caption{Namensschema Netzwerkgeräte}
+\end{table}
+
 \paragraph{IPv4}
 
 Die internen IPv4 Adressen werden gemäss folgendem Schema aufgebaut: 
@@ -100,13 +131,15 @@ Die internen IPv4 Adressen werden gemäss folgendem Schema aufgebaut:
   	HR & \lstinline|10.x.4.|\\
 	 	Gäste & \lstinline|10.x.5.|\\
 	 	(Datacenter \& Routing) & \lstinline|10.x.200.|\\
+	 	(VoIP) & \lstinline|10.x.250.|\\
 	 	\bottomrule
   \end{tabu}
   \label{tbl:abteilung_ipv4_adressblock}
   \caption{Abteilung IPv4-Adressblock}
 \end{table}
 
-%TODO: VOIP?!
+Beispiel: HQ\_AS3, BR3\_AS1
+
 \begin{table}[h]
 	\centering
 	\begin{tabu}{l l}
@@ -132,7 +165,7 @@ Die internen IPv4 Adressen werden gemäss folgendem Schema aufgebaut:
 
 Die internen IPv6 Adressen werden gemäss folgendem Schema aufgebaut: 
 
-\lstinline|<Provider-Prefix>:<Abteilung><Standort>:<autoconf-eui-64>|
+\lstinline|<Provider-Prefix>:<Standort><Abteilung>:<autoconf-eui-64>|
 
 \begin{table}[h]
 	\centering
@@ -146,6 +179,7 @@ Die internen IPv6 Adressen werden gemäss folgendem Schema aufgebaut:
 		HR & \lstinline|04|\\
 		Gäste & \lstinline|05|\\
 		(Datacenter \& Routing) & \lstinline|C8|\\
+		(VoIP) & \lstinline|FA|\\
 		\bottomrule
 	\end{tabu}
 	  \label{tbl:abteilung_ipv6_adressblock}
@@ -223,11 +257,19 @@ Wir setzen im gesamten Netzwerk Cisco Catalyst 3750-48TS mit je 48 Ports ein. Di
 
 \subsection{Kundenansprüche an das Netzwerk}
 
+Bei den WAN-Netzwerken ist es für diesen Kunden essenziell, dass eine schnelle und stabile Anbindung an das Headquarter existiert, da die Mitarbeiter jeweils auf den Terminal-Servern im Datacenter arbeiten. Zudem soll es einfach möglich sein, neue Standorte hinzuzufügen.
+
+Any-to-Any Konnektivität zum Senken der Latenzzeiten wäre zudem wünschenswert.
+
+Ein kosteneffizienter, schneller und latenzarmer Ansatz wäre es daher, sich über einen Provider mittels Redundant angelegtem MPLS-Backbone zu verbinden. Mit dem Serviceprovider kann ein passendes SLA für die benötigten Verfügbarkeitszeiten ausgehandelt werden. So sollte das Netzwerk mindestens 99.99\% der Zeit voll funktionsfähig sein.
+
 \subsection{WAN Network Design}
 %MUST cover remote locations, external services like web, mail
 %MUST include security considerations
 
 \subsubsection{Adressierungs- \& Namensschema}
+
+Grundsätzlich gilt im WAN Bereich das gleiche Adress- und Namenskonzept wie innerhalb der LANs.
 
 \subsubsection{Logische Netzwerkkarte}
 %MUST cover HQ and 3 Branch Offices
