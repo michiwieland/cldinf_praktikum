@@ -80,18 +80,22 @@ Da Geschwindigkeit eine Kernanforderung in dem Trading Geschäft ist, haben wir 
 \subsubsection{Logische Netzwerkkarte}
 Das gesamte Netzwerk ist auf strikt nach den empfohlenen drei Ebenen ''Access'', ''Distribution'' und ''Core'' designed. Wir verwenden durchgehend Layer 3 Switches, damit wir komplett auf STP verzichten können. Spanning Tree wird in Computernetzen dieser Grössenordnung nicht empfohlen, da sie eine grosse Konvergenz aufweisen. VLAN's werden nur bis zu den Access Switches zur Trennung von VoIP Phones und Workstation verwendet. 
 
-%MUST cover WAN access
-%MUST cover Internet access
+%MUST cover reasoning for design
 %MUST cover reasoning for design
 
+\subsection{WAN Network Design}
 
-%MUST cover reasoning for design
+Bei den WAN-Netzwerken ist es für diesen Kunden essenziell, dass eine schnelle und stabile Anbindung an das Headquarter existiert, da die Mitarbeiter jeweils auf den Terminal-Servern im Datacenter arbeiten. Zudem soll es einfach möglich sein, neue Standorte hinzuzufügen.
 
-\subsubsection{Adressierungs- \& Namensschema}
+Any-to-Any Konnektivität zum Senken der Latenzzeiten wäre zudem wünschenswert.
+
+Ein kosteneffizienter, schneller und latenzarmer Ansatz wäre es daher, sich über einen Provider mittels Redundant angelegtem MPLS-Backbone zu verbinden. Mit dem Serviceprovider kann ein passendes SLA für die benötigten Verfügbarkeitszeiten ausgehandelt werden. So sollte das Netzwerk mindestens 99.99\% der Zeit voll funktionsfähig sein.
+
+\subsection{Adressierungs- \& Namensschema}
 
 Die IP-Adressierung wird optimiert auf Wachstumsmöglichkeiten und schnelles Routing über mehrere Standorte (mittels einfachem Zusammenfassen von Routen an den gleichen Standort.)
 
-\paragraph{Namensschema}
+\subsubsection{Namensschema}
 
 Die Netzwerkgeräte werden jeweils nach dem Standorttyp, falls vorhanden der Gebäudenummer, dem Gerätetyp und einer aufsteigenden Nummer (ohne führenden Nullen) benannt:
 
@@ -119,7 +123,7 @@ Die Netzwerkgeräte werden jeweils nach dem Standorttyp, falls vorhanden der Geb
 	\caption{Namensschema Netzwerkgeräte}
 \end{table}
 
-\paragraph{IPv4}
+\subsubsection{IPv4}
 Die internen IPv4 Adressen werden gemäss folgendem Schema aufgebaut: 
 
  \lstinline|10.<Standort>.<Abteilung>.0/24|
@@ -168,7 +172,7 @@ Beispiel: HQ\_AS3, BR3\_AS1
 	\caption{Standorte IPv4-Adressblock}
 \end{table}
 
-\paragraph{IPv6}
+\subsubsection{IPv6}
 
 Die internen IPv6 Adressen werden gemäss folgendem Schema aufgebaut: 
 
@@ -225,6 +229,8 @@ Für das Routing wird OSPF verwendet.
 
 \subsection{VoIP}
 Grundsätzlich sind alle Workstations mit dem VoIP Phone an einem einzelnen Access Port angeschlossen. Der Verkehr wird über verschiedenen VLAN's strikt getrennt. Eine Ausnahme bildet einzig die Trading Abteilung, da diese auf eine hohe Verfügbarkeit der Telefone und Workstations angewiesen sind. Wir setzen für die Trading Abteilung deshalb auf separate Access Ports für die Workstation und das VoIP Telefon. Im Falle eines Ausfalls einer Komponente kann der Trade so trotzdem mit der zweiten weiterarbeiten, bis das Problem behoben ist.
+
+%TODO: HSRP, VRRP, GLBP
 
 \subsection{Benötigte Komponenten}
 \subsubsection{Access Ports}
@@ -291,37 +297,6 @@ Weitere Zugriffsberechtigungen können aus der IP-Adresse der Standorte und Abte
 \subsubsection{DMZ}
 
 Zur Trennung der internen Netzwerke und Internetdiensten wurde eine Demilitarisierte Zone (DMZ) für z.B. Webserver und Mailserver im Datacenter eingeplant.
- 
-
-
-
-\section{WAN Design}
-
-\subsection{Kundenansprüche an das Netzwerk}
-
-Bei den WAN-Netzwerken ist es für diesen Kunden essenziell, dass eine schnelle und stabile Anbindung an das Headquarter existiert, da die Mitarbeiter jeweils auf den Terminal-Servern im Datacenter arbeiten. Zudem soll es einfach möglich sein, neue Standorte hinzuzufügen.
-
-Any-to-Any Konnektivität zum Senken der Latenzzeiten wäre zudem wünschenswert.
-
-Ein kosteneffizienter, schneller und latenzarmer Ansatz wäre es daher, sich über einen Provider mittels Redundant angelegtem MPLS-Backbone zu verbinden. Mit dem Serviceprovider kann ein passendes SLA für die benötigten Verfügbarkeitszeiten ausgehandelt werden. So sollte das Netzwerk mindestens 99.99\% der Zeit voll funktionsfähig sein.
-
-\subsection{WAN Network Design}
-%MUST cover remote locations, external services like web, mail
-%MUST include security considerations
-
-\subsubsection{Adressierungs- \& Namensschema}
-
-Grundsätzlich gilt im WAN Bereich das gleiche Adress- und Namenskonzept wie innerhalb der LANs.
-
-\subsubsection{Logische Netzwerkkarte}
-%MUST cover HQ and 3 Branch Offices
-\subsubsection{Physische Netzwerkkarte}
-
-\subsection{Technologie \& Protokolle}
-\subsubsection{Layer 2}
-\subsubsection{Layer 3}
-
-\subsection{Benötigte Komponenten}
 
 \section{Organisation IT-Applikationen}
 
