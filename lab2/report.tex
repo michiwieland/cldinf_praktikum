@@ -42,14 +42,35 @@ Gemäss der Aufgabenstellung
 
 \subsection{Kundenansprüche an das Netzwerk}
 
-Availability / Redundancy requirements
+\subsubsection{Ansprüche Verfügbarkeit / Redundanz }
+Da die Firma im Highspeed-Finanztrading arbeitet, ist eine zuverlässige Anbindung in und an die Firmeninfrastruktur essenziell. Besonders kommt dies bei der Trading-Abteilung zum tragen: Diese muss mit sehr grossen Beträgen in kurzer Zeit, ohne Unterbrüche handeln können. Deshalb sollte die Trading-Abteilung zusätzlich Redundant angeschlossen werden.
 
-Major traffic flows
+Grundsätzlich sind für die meisten Mitarbeiter eine Verfügbarkeit von ca. 99.99\% ausreichend, für die Trading-Abteilung sollte eine Verfügbarkeit von 99.999\% angestrebt werden.
 
-Application QoS requirements
+Um diese Zahlen zu erreichen, müssen nahezu alle Geräte redundant ausgelegt sein (eine Doppelredundanz wird angestrebt; eine Dreifachredundanz würden Komplexität und Kosten zu stark erhöhen). Zudem müssen in der IT-Abteilung Strikte Verfahren festgelegt werden, welche die Konfiguration des Netzwerkes nur noch nach dem Vieraugenprinzip erlaubt. Damit wird die Fehlerwahrscheinlichkeit gesenkt.
 
-expected growth in the comming 5 years -> 20%
+\subsubsection{Datenfluss Netzwerk}
 
+Der meiste Datenfluss im Netzwerk wird wohl von den Tradern ausgehen, da diese immer über aktuelle Ereignisse informiert sein müssen sowie häufig und viele Trading-Aktionen auslösen. Die anderen Abteilungen haben einen geringen bis mittleren Bedarf an Internet und internen Daten, sowie Anspruch an eine latenzarme Telefonielösung.
+
+\paragraph{Datacenter}
+Das Datacenter hat einen, durch die zentrale Funktion bedingten, höheren Netzwerk- und Redundanzbedarf. Das Datacenter stellt zudem Internetdienste (wie E-Mail und Webseite) sowie Terminal- und Telefonieserver im internen Netz für das Headquarter und die Branches zur Verfügung, und bedarf deshalb ein sehr Ausfallsicheres Netzwerk.
+
+\paragraph{Aussenstandorte}
+
+Die Aussenstandorte, welche über die MPLS-Cloud angeschlossen sind, benötigen einen stabile und performante Anbindung an das Datacenter, da die Mitarbeiter in erster Linie auf den Terminal-Servern und internen Cloud-Diensten arbeiten.
+
+\subsubsection{Application QoS Ansprüche}
+
+Der Latenzzeit bei BetaHouse Inc. ist insbesondere bei den Highspeed-Tradern sowie der Telefonie Beachtung zu schenken. Beim Highspeed-Trading kann die Konkurrenz schon nach wenigen Milisekunden einen Vorteil erwirtschaften; dies kann zu grossen Verlusten führen.
+
+Bei der Telefonie ist es wichtig, dass die Latenzzeit unter 200ms, wenn möglich aber unter 100ms Ende-zu-Ende-Latenz liegen soll.
+
+Zum sicherstellen der obenstehenden Geschwindigkeiten muss auf allen Routern ein QoS auf das Trading-Netzwerk sowie auf SIP/RTP bzw. SIPS/RTPS.
+
+
+\paragraph{Firmenwachstum}
+Bei den Schätzungen der Firmengrösse sind wir von einem Wachstum von $10\%$ pro Jahr qua Mitarbeiterzahl bzw. benötigten Geräten ausgegangen. Dies bedeutet auf eine 5-Jahres-Frist ein Wachstum von ca. $160\%$.
 
 \subsection{Campus LAN Design}
 
@@ -61,32 +82,92 @@ expected growth in the comming 5 years -> 20%
 %MUST cover reasoning for design
 
 \subsubsection{Adressierungs- \& Namensschema}
-\paragraph{IPv4} 
+\paragraph{IPv4}
+
+Die internen IPv4 Adressen werden gemäss folgendem Schema aufgebaut: 
+
+ \lstinline|10.<Abteilung>.<Standort>.0/24|
+ 
 \begin{table}[h]
 	\centering
-	\begin{tabu} to \linewidth {l l l}
-		\toprule 
-		Subnetz & VLAN & Beschreibung \\
+  \begin{tabu}{l l}
+  	\toprule 
+  	Abteilung & Netzbereich \\
+  	\midrule
+  	IT & \lstinline|10.1.|\\
+  	Trading & \lstinline|10.2.| \\
+  	Banking & \lstinline|10.3.|\\
+  	HR & \lstinline|10.4.|\\
+	 	Gäste & \lstinline|10.5.|\\
+	 	(Datacenter \& Routing) & \lstinline|10.200.|\\
+	 	\bottomrule
+  \end{tabu}
+  \caption{Abteilung IPv4-Adressblock}
+\end{table}
+
+\begin{table}[h]
+	\centering
+	\begin{tabu}{l l}
+		\toprule
+		Standort & Netzbereich \\
 		\midrule
-		
-		\bottomrule 
-	\end{tabu} 
-	\caption{IPv4 Addressing Scheme}
+		0. Floor & \lstinline|10.x.0.| \\
+		1. Floor & \lstinline|10.x.1.| \\
+		2. Floor & \lstinline|10.x.2.| \\
+		3. Floor & \lstinline|10.x.3.| \\
+		4. Floor & \lstinline|10.x.4.| \\
+		Branch 1 & \lstinline|10.x.11.| \\
+		Branch 2 & \lstinline|10.x.12.| \\
+		Branch 3 & \lstinline|10.x.13.| \\
+		Datacenter & \lstinline|10.x.200.| \\
+		Datacenter DMZ & \lstinline|10.x.224.| \\
+		\bottomrule
+	\end{tabu}
+	\caption{Standorte IPv4-Adressblock}
 \end{table}
 
 \paragraph{IPv6}
+
+Die internen IPv6 Adressen werden gemäss folgendem Schema aufgebaut: 
+
+\lstinline|<Provider-Prefix>:<Abteilung><Standort>:<autoconf-eui-64>|
+
 \begin{table}[h]
 	\centering
-	\begin{tabu} to \linewidth {l l l}
+	\begin{tabu}{l l}
 		\toprule 
-		Subnetz & VLAN & Beschreibung \\
+		Abteilung & Netzbereich \\
 		\midrule
-	
-		\bottomrule 
-	\end{tabu} 
-	\caption{IPv6 Addressing Scheme}
+		IT & \lstinline|01|\\
+		Trading & \lstinline|02| \\
+		Banking & \lstinline|03|\\
+		HR & \lstinline|04|\\
+		Gäste & \lstinline|05|\\
+		(Datacenter \& Routing) & \lstinline|C8|\\
+		\bottomrule
+	\end{tabu}
+	\caption{Abteilung IPv6-Adressblock}
 \end{table}
 
+\begin{table}[h]
+	\centering
+	\begin{tabu}{l l}
+		\toprule
+		Standort & Netzbereich \\
+		\midrule
+		0. Floor & \lstinline|00| \\
+		1. Floor & \lstinline|01| \\
+		2. Floor & \lstinline|02| \\
+		3. Floor & \lstinline|03| \\
+		4. Floor & \lstinline|04| \\
+		Branch 1 & \lstinline|0B| \\
+		Branch 2 & \lstinline|0C| \\
+		Branch 3 & \lstinline|0D| \\
+		Datacenter & \lstinline|C8| \\
+		\bottomrule
+	\end{tabu}
+	\caption{Standorte IPv6-Adressblock}
+\end{table}
 
 \subsection{Technologie \& Protokolle}
 \subsubsection{Layer 2}
@@ -160,10 +241,30 @@ Wir setzen im gesamten Netzwerk Cisco Catalyst 3750-48TS mit je 48 Ports ein. Di
 \subsection{Positionierung Applikationsserver}
 %Where	would	you	place	servers	in	your	network?	Decide	for	each	of	the	following	applications,	where	to	place	them	and	why?	Domain-Control	Servers,	Mainframe	for	Banking-Application,	High-Frequency-Trading-Server,	VoIP	Server,	Backup	Server
 
-Um eine ausfallsichere und schnelle Applikations-Infrastruktur zu ermöglichen, empfiehlt es sich, die Applikationsserver folgendermassen zu verteilen.
+Um eine ausfallsichere und schnelle Applikations-Infrastruktur zu ermöglichen, empfiehlt es sich, die Applikationsserver in erster Linie im Datacenter aufzustellen. Für einige Applikationen kann es zur Verbesserung der Redundanz oder Latenzzeiten ein zusätzliches Gerät bei allen grösseren Aussenstandorten aufgestellt werden. 
+
+\begin{table}[h]
+	\centering
+	\begin{tabu} to \linewidth {l l}
+		\toprule 
+		Dienst & Standort(e) \\
+		\midrule
+		Domain Controller & Headquarter und Branches \\
+		Mainfram for Banking-Application & Headquarter \\
+		High Freuency Trading-Server &  \\
+		VoIP-Server & \\
+		Backup Server & \\
+		\bottomrule 
+	\end{tabu} 
+	\label{tbl:require_access_ports}
+	\caption{Benötigte Access Ports}
+\end{table}
 
 \subsection{Cloud Dienste}
-%Describe	possible	limitations	with	this	design	if	the	company	would	be	starting	to	use	cloud	services.	Describe	possible	limitations	with	this	design	if	the	company	would	be	starting	to	use	cloud	services.	s
+
+Für den zukünftigen Ausbau in der Benutzung von Cloud-Infrastrukturen würde es sich empfehlen, Standorte mit vielen Mitarbeitern neu direkt an das Internet anzubinden, anstatt wie bisher über das Headquarter
+
+Dies hätte mehrere Vorteile; zum einen würde das WAN-Netzwerk weniger belastet, zum anderen sinken Latenzzeiten und steigt der mögliche Netzwerkdurchsatz. Ein weitere Nachteil wäre, dass neu an mehreren Standorten Firewall-Geräte notwendig sind. Dies steigert Kosten und Komplexität in der Konfiguration \& Routing.
 
 
 \input{appendix.tex}
