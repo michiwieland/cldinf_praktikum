@@ -272,8 +272,28 @@ Wir setzen im gesamten Netzwerk Cisco Catalyst 3750-48TS mit je 48 Ports ein. Di
 	\caption{Benötigte Switches}
 \end{table}
 
-\subsection{Firewalls}
+\subsection{Security}
+
+\subsubsection{Firewall}
 Wir verwenden zwei Firewall die untereinander Load Balancing machen. Fällt eine aus, läuft kann der komplette Verkehr über die zweite Firewall nach wie vor ins Internet geroutet werden.
+
+Die Firewalls stellen sicher, dass kein unerlaubter Verkehr aus dem Internet in die DMZ oder ein internes Netzwerk gelangt, und umgekehrt.
+
+\subsubsection{WAN}
+Die sichere Übertragung über das WAN wird über das MPLS-Netzwerk des Providers abgewickelt. Die Daten, welche über das MPLS-Netzwerk fliessen, sind nicht verschlüsselt, aber Physich und Logisch nur sehr schwer zugänglich. Sollte eine weitere Verschlüsselung gewünscht sein, müssten teure Hardware-Verschlüsselungsgeräte für jeden Standort angeschafft werden. Um dies entscheiden zu können, müsste die Architektur und Details der Applikationen bekannt sein.
+
+\subsubsection{Interne Netzwerke}
+
+Die internen Netzwerke sind von den Layer 3 Switches in einzelne IP-Subnetze und z.T. VLANs unterteilt. Dies stellt sicher, dass nur die Mitarbeiter der jeweiligen Abteilung in die betreffenden Netzwerke gelangen können.
+
+Weitere Zugriffsberechtigungen können aus der IP-Adresse der Standorte und Abteilungen abgeleitet werden.
+
+\subsubsection{DMZ}
+
+Zur Trennung der internen Netzwerke und Internetdiensten wurde eine Demilitarisierte Zone (DMZ) für z.B. Webserver und Mailserver im Datacenter eingeplant.
+ 
+
+
 
 \section{WAN Design}
 
