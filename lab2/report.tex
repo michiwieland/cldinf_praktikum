@@ -239,10 +239,30 @@ Wie in Tabelle \ref{tbl:require_access_ports} ersichtlich, müssen folgende Swit
 \subsection{Positionierung Applikationsserver}
 %Where	would	you	place	servers	in	your	network?	Decide	for	each	of	the	following	applications,	where	to	place	them	and	why?	Domain-Control	Servers,	Mainframe	for	Banking-Application,	High-Frequency-Trading-Server,	VoIP	Server,	Backup	Server
 
-Um eine ausfallsichere und schnelle Applikations-Infrastruktur zu ermöglichen, empfiehlt es sich, die Applikationsserver folgendermassen zu verteilen.
+Um eine ausfallsichere und schnelle Applikations-Infrastruktur zu ermöglichen, empfiehlt es sich, die Applikationsserver in erster Linie im Datacenter aufzustellen. Für einige Applikationen kann es zur Verbesserung der Redundanz oder Latenzzeiten ein zusätzliches Gerät bei allen grösseren Aussenstandorten aufgestellt werden. 
+
+\begin{table}[h]
+	\centering
+	\begin{tabu} to \linewidth {l l}
+		\toprule 
+		Dienst & Standort(e) \\
+		\midrule
+		Domain Controller & Headquarter und Branches \\
+		Mainfram for Banking-Application & Headquarter \\
+		High Freuency Trading-Server &  \\
+		VoIP-Server & \\
+		Backup Server & \\
+		\bottomrule 
+	\end{tabu} 
+	\label{tbl:require_access_ports}
+	\caption{Benötigte Access Ports}
+\end{table}
 
 \subsection{Cloud Dienste}
-%Describe	possible	limitations	with	this	design	if	the	company	would	be	starting	to	use	cloud	services.	Describe	possible	limitations	with	this	design	if	the	company	would	be	starting	to	use	cloud	services.	s
+
+Für den zukünftigen Ausbau in der Benutzung von Cloud-Infrastrukturen würde es sich empfehlen, Standorte mit vielen Mitarbeitern neu direkt an das Internet anzubinden, anstatt wie bisher über das Headquarter
+
+Dies hätte mehrere Vorteile; zum einen würde das WAN-Netzwerk weniger belastet, zum anderen sinken Latenzzeiten und steigt der mögliche Netzwerkdurchsatz. Ein weitere Nachteil wäre, dass neu an mehreren Standorten Firewall-Geräte notwendig sind. Dies steigert Kosten und Komplexität in der Konfiguration \& Routing.
 
 
 \input{appendix.tex}
