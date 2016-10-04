@@ -8,6 +8,10 @@
 
 % 06.10.2016, 23:55, as PDF to beat.stettler@ins.hsr.ch
 
+%TODO Adressplan im Visio erstellen
+%TODO Hostname pro Stack? i.O???
+%TODO VLAN oder separate Subnetze?
+
 \section{Aufgabenstellung}
 \subsection{Einleitung}
 Gemäss der Aufgabenstellung
@@ -38,7 +42,7 @@ Gemäss der Aufgabenstellung
 	\item Analysieren Nutzung von Cloud Diensten
 \end{enumerate}
 
-\section{LAN Design Headquarter}
+\section{Design Headquarter}
 
 \subsection{Kundenansprüche an das Netzwerk}
 
@@ -96,7 +100,7 @@ Die IP-Adressierung wird optimiert auf Wachstumsmöglichkeiten und schnelles Rou
 
 Die Netzwerkgeräte werden jeweils nach dem Standorttyp, falls vorhanden der Gebäudenummer, dem Gerätetyp und einer aufsteigenden Nummer (ohne führenden Nullen) benannt:
 
-\lstinline|<Standort<Nummer>>\_<Geraetetyp><Geraetenummer>|
+\lstinline|<Standort<Nummer>>_<Geraetetyp><Geraetenummer>|
 
 \begin{table}[h]
 	\centering
@@ -125,7 +129,7 @@ Die internen IPv4 Adressen werden gemäss folgendem Schema aufgebaut:
 
  \lstinline|10.<Standort>.<Abteilung>.0/24|
  
- Das Basisnetz ist 10.0.0.0/8.
+ Das Basisnetz ist 10.0.0.0/8. Für die Links werden je /30 Netze beginnend bei 10.0.0.0/30 erstellt.
  
 \begin{table}[h]
 	\centering
@@ -137,10 +141,10 @@ Die internen IPv4 Adressen werden gemäss folgendem Schema aufgebaut:
   	Trading & \lstinline|10.x.2.| \\
   	Banking & \lstinline|10.x.3.|\\
   	HR & \lstinline|10.x.4.|\\
-	 	Gäste & \lstinline|10.x.5.|\\
-	 	(Datacenter \& Routing) & \lstinline|10.x.200.|\\
-	 	(VoIP) & \lstinline|10.x.250.|\\
-	 	\bottomrule
+ 	Gäste & \lstinline|10.x.5.|\\
+ 	(Datacenter \& Routing) & \lstinline|10.x.200.|\\
+ 	(VoIP) & \lstinline|10.x.250.|\\ 
+ 	\bottomrule
   \end{tabu}
   \label{tbl:abteilung_ipv4_adressblock}
   \caption{Abteilung IPv4-Adressblock}
@@ -154,11 +158,12 @@ Beispiel: HQ\_AS3, BR3\_AS1
 		\toprule
 		Standort & Netzbereich \\
 		\midrule
-		0. Floor & \lstinline|10.0.| \\
-		1. Floor & \lstinline|10.1.| \\
-		2. Floor & \lstinline|10.2.| \\
-		3. Floor & \lstinline|10.3.| \\
-		4. Floor & \lstinline|10.4.| \\
+		Links & \lstinline|10.0.0.0/30 .. 10.0.0.254/30| \\
+		0. Floor & \lstinline|10.1.| \\
+		1. Floor & \lstinline|10.2.| \\
+		2. Floor & \lstinline|10.3.| \\
+		3. Floor & \lstinline|10.4.| \\
+		4. Floor & \lstinline|10.5.| \\
 		Branch 1 & \lstinline|10.11.| \\
 		Branch 2 & \lstinline|10.12.| \\
 		Branch 3 & \lstinline|10.13.| \\
@@ -200,11 +205,12 @@ Die internen IPv6 Adressen werden gemäss folgendem Schema aufgebaut:
 		\toprule
 		Standort & Netzbereich \\
 		\midrule
-		0. Floor & \lstinline|00| \\
-		1. Floor & \lstinline|01| \\
-		2. Floor & \lstinline|02| \\
-		3. Floor & \lstinline|03| \\
-		4. Floor & \lstinline|04| \\
+		Links & \lstinline|00| \\
+		0. Floor & \lstinline|01| \\
+		1. Floor & \lstinline|02| \\
+		2. Floor & \lstinline|03| \\
+		3. Floor & \lstinline|04| \\
+		4. Floor & \lstinline|05| \\
 		Branch 1 & \lstinline|0B| \\
 		Branch 2 & \lstinline|0C| \\
 		Branch 3 & \lstinline|0D| \\
@@ -213,19 +219,9 @@ Die internen IPv6 Adressen werden gemäss folgendem Schema aufgebaut:
 	\end{tabu}
 	\caption{Standorte IPv6-Adressblock}
 \end{table}
+\clearpage
 
-\subsection{Technologie \& Protokolle}
-\subsubsection{Layer 2}
-Wir verzichten auf STP, da wir für alle Bereiche eigene IP Subnetze verwenden. 
-
-\subsubsection{MPLS}
-Für die Anbindung der Branches haben wir uns für MPLS entschieden. Es bietet entscheidende Vorteile gegenüber einer Mitleitung oder einer Anbindung über Framerelay. So kann ein neuer Branch ohne grossen Aufwand in die MPLS Cloud eingefügt werden.
-
-\subsubsection{Layer 3}
-Für das Routing wird OSPF verwendet. Mehrere redundante Default-Gateways werden über HSRP ermöglicht.
-
-\subsection{VoIP}
-Grundsätzlich sind alle Workstations mit dem VoIP Phone an einem einzelnen Access Port angeschlossen. Der Verkehr wird über verschiedenen VLAN's strikt getrennt. Eine Ausnahme bildet einzig die Trading Abteilung, da diese auf eine hohe Verfügbarkeit der Telefone und Workstations angewiesen sind. Wir setzen für die Trading Abteilung deshalb auf separate Access Ports für die Workstation und das VoIP Telefon. Im Falle eines Ausfalls einer Komponente kann der Trade so trotzdem mit der zweiten weiterarbeiten, bis das Problem behoben ist.
+\includepdf[pages={1},landscape=true]{appendix/schemes/addressing.pdf}
 
 \subsection{Benötigte Komponenten}
 \subsubsection{Access Ports}
@@ -247,8 +243,8 @@ Minimal werden für das Netzwerk folgen Anzahl Access Ports benötigt.
 	\caption{Benötigte Access Ports}
 \end{table}
 
-\subsection{Switches}
-Wir setzen im gesamten Netzwerk Cisco Catalyst 3750-48TS mit je 48 Ports ein. Diese bieten die Möglichkeit die L3-Switches als Stack zu organisieren. Jeder Stack wird über einen eigenen logischen Hostnamen angesprochen. Um die hohe Verfügbarkeit für die Trading Abteilung zu garantieren, schliessen wir die VoIP Phone an einem separaten Access Port an. Die 30 Trader werden zu jede 15 Personen an einen L3 Switch angeschlossen. So bleiben bei einem Ausfall immer die Hälte der Trader voll operationsfähig. Um einen Ausfall möglichst zu vermeiden, sind alle Switches an einer USV angeschlossen. Da bei einem Ausfall der Switches in der Trading Abteilung grosse Kosten entstehen, hält sich die IT einen vorkonfigurierten Backup Switch in Ihrem Stockwerk. Damit kann im Notfall der Switch ohne grössere Zeitverluste ausgetauscht werden. Alle weiteren Abteilungen haben eine normale Wichtigkeit und werden gemäss ihrer Mitarbeiterzahl angeschlossen. Es wurde aber auch bei Ihnen ein Wachstum eingerechnet. Aus der Tabelle \ref{tbl:require_access_ports} folgt, dass folgende Switches angeschafft werden müssen. 
+\subsubsection{Switches}
+Wir setzen im gesamten Netzwerk Cisco Layer 3 Switches mit je 48 Ports ein. Diese bieten die Möglichkeit sich als Stack zu organisieren. Jeder Stack wird über einen eigenen logischen Hostnamen angesprochen. Um die hohe Verfügbarkeit für die Trading Abteilung zu garantieren, schliessen wir die VoIP Phone an einem separaten Access Port an. Die 30 Trader werden zu jede 15 Personen an einen L3 Switch angeschlossen. So bleiben bei einem Ausfall immer die Hälfte der Trader voll operationsfähig. Um einen Ausfall möglichst zu vermeiden, sind alle Switches an einer USV angeschlossen. Da bei einem Ausfall der Switches in der Trading Abteilung grosse Kosten entstehen, hält sich die IT einen vorkonfigurierten Backup Switch in Ihrem Stockwerk. Damit kann im Notfall der Switch ohne grössere Zeitverluste ausgetauscht werden. Alle weiteren Abteilungen haben eine normale Wichtigkeit und werden gemäss ihrer Mitarbeiterzahl angeschlossen. Es wurde aber auch bei Ihnen ein Wachstum eingerechnet. Bei den VoIP Phones verwenden wir das Single Cable Design. Das bedeutet, dass die Workstations mit dem VoIP Phone verbunden und das Phone dann an den Access Switch angeschlossen wird. Die Daten werden mit tagged VLAN's getrennt. Aus der Tabelle \ref{tbl:require_access_ports} folgt, dass folgende Switches angeschafft werden müssen. 
 \begin{table}[h]
 	\centering
 	\begin{tabu} to \linewidth {l l l X }
@@ -272,6 +268,19 @@ Wir setzen im gesamten Netzwerk Cisco Catalyst 3750-48TS mit je 48 Ports ein. Di
 	\end{tabu} 
 	\caption{Benötigte Switches}
 \end{table}
+
+\subsection{Technologie \& Protokolle}
+\subsubsection{Layer 2}
+Wir verzichten auf STP, da wir für alle Bereiche eigene IP Subnetze verwenden. 
+
+\subsubsection{MPLS}
+Für die Anbindung der Branches haben wir uns für MPLS entschieden. Es bietet entscheidende Vorteile gegenüber einer Mitleitung oder einer Anbindung über Framerelay. So kann ein neuer Branch ohne grossen Aufwand in die MPLS Cloud eingefügt werden.
+
+\subsubsection{Layer 3}
+Für das Routing wird OSPF verwendet. Mehrere redundante Default-Gateways werden über HSRP ermöglicht.
+
+\subsubsection{VoIP}
+Grundsätzlich sind alle Workstations mit dem VoIP Phone an einem einzelnen Access Port angeschlossen. Der Verkehr wird über verschiedenen VLAN's strikt getrennt. Eine Ausnahme bildet einzig die Trading Abteilung, da diese auf eine hohe Verfügbarkeit der Telefone und Workstations angewiesen sind. Wir setzen für die Trading Abteilung deshalb auf separate Access Ports für die Workstation und das VoIP Telefon. Im Falle eines Ausfalls einer Komponente kann der Trade so trotzdem mit der zweiten weiterarbeiten, bis das Problem behoben ist.
 
 \subsection{Security}
 
