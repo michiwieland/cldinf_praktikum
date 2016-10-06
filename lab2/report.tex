@@ -8,9 +8,7 @@
 
 % 06.10.2016, 23:55, as PDF to beat.stettler@ins.hsr.ch
 
-%TODO Adressplan im Visio erstellen
-%TODO Hostname pro Stack? i.O???
-%TODO VLAN oder separate Subnetze?
+%TODO Hostname pro Stock? i.O??? -> ??Um was ging's da schon wieder genau??
 
 \section{Aufgabenstellung}
 \subsection{Einleitung}
@@ -105,7 +103,7 @@ Die Netzwerkgeräte werden jeweils nach dem Standorttyp, falls vorhanden der Geb
 \begin{table}[h]
 	\centering
 	\begin{tabu}{l l}
-		\toprule 
+		\toprule
 		Geräteort/Typ & Bezeichnung \\
 		\midrule
 		Headquarter & \lstinline|HQ|\\
@@ -120,9 +118,34 @@ Die Netzwerkgeräte werden jeweils nach dem Standorttyp, falls vorhanden der Geb
 		ISP-Router & \lstinline|ISPx| \\
 		\bottomrule
 	\end{tabu}
-	\label{tbl:abteilung_ipv4_adressblock}
+	\label{tbl:nameing_scheme}
 	\caption{Namensschema Netzwerkgeräte}
 \end{table}
+
+Beispiele: HQ\_AS3, BR3\_AS1
+
+\subsubsection{VLAN}
+Die VLANs werden intern in den Access-Switches verwendet, um die Port-Gerät Zuordnung festzulegen und einen entsprechenden virtuellen Routing-Port anzulegen. Die VLANs haben keinen Einfluss auf den weiteren Netzwerk-Pfad (Dieser wird auf Layer 3 behandelt, siehe Netzwerk-Diagramm)
+
+\begin{table}[h]
+	\centering
+	\begin{tabu}{l l}
+		\toprule
+		Abteilung & Netzbereich \\
+		\midrule
+		IT & \lstinline|VLAN0001|\\
+		Trading & \lstinline|VLAN0002| \\
+		Banking & \lstinline|VLAN0003|\\
+		HR & \lstinline|VLAN0004|\\
+		Gäste & \lstinline|VLAN0005|\\
+		(Datacenter \& Routing) & \lstinline|VLAN0006|\\
+		(VoIP) & \lstinline|VLAN0250|\\
+		\bottomrule
+	\end{tabu}
+	\label{tbl:vlans}
+	\caption{VLAN-Abteilung-Zuordnung}
+\end{table}
+
 
 \subsubsection{IPv4}
 Die internen IPv4 Adressen werden gemäss folgendem Schema aufgebaut: 
@@ -134,7 +157,7 @@ Die internen IPv4 Adressen werden gemäss folgendem Schema aufgebaut:
 \begin{table}[h]
 	\centering
   \begin{tabu}{l l}
-  	\toprule 
+  	\toprule
   	Abteilung & Netzbereich \\
   	\midrule
   	IT & \lstinline|10.x.1.|\\
@@ -143,14 +166,12 @@ Die internen IPv4 Adressen werden gemäss folgendem Schema aufgebaut:
   	HR & \lstinline|10.x.4.|\\
  	Gäste & \lstinline|10.x.5.|\\
  	(Datacenter \& Routing) & \lstinline|10.x.200.|\\
- 	(VoIP) & \lstinline|10.x.250.|\\ 
+ 	(VoIP) & \lstinline|10.x.250.|\\
  	\bottomrule
   \end{tabu}
   \label{tbl:abteilung_ipv4_adressblock}
   \caption{Abteilung IPv4-Adressblock}
 \end{table}
-
-Beispiel: HQ\_AS3, BR3\_AS1
 
 \begin{table}[h]
 	\centering
@@ -229,16 +250,16 @@ Minimal werden für das Netzwerk folgen Anzahl Access Ports benötigt.
 \begin{table}[h]
 	\centering
 	\begin{tabu} to \linewidth {l l l l l}
-		\toprule 
+		\toprule
 		Ort & Abteilung & Anz. Mitarbeiter & Anz. Drucker & Benötigte Access Ports \\
 		\midrule
-		HQ 1. Stock & Banking und Gäste & 150 & 15 & $150 + 15 + 1 = 166$ \\ 
+		HQ 1. Stock & Banking und Gäste & 150 & 15 & $150 + 15 + 1 = 166$ \\
 		HQ 2. Stock & Banking & 150 & 15 & $150 + 15 = 165$ \\
-		HQ 3. Stock & Trading & 30 & 3 & $2 \cdot 30 + 3 = 63$ \\ 
+		HQ 3. Stock & Trading & 30 & 3 & $2 \cdot 30 + 3 = 63$ \\
 		HQ 4. Stock & IT und HR & $10 + 20 = 30$ & 3 & $30 + 3 = 33$\\
 		Branch  & Banking & 20 & 2 & $20 + 2 = 22$\\
 		\bottomrule 
-	\end{tabu} 
+	\end{tabu}
 	\label{tbl:require_access_ports}
 	\caption{Benötigte Access Ports}
 \end{table}
@@ -313,7 +334,7 @@ Für das High-Frequency-Trading ist eine kurze Leitung und Latenzfreie Verbindun
 \begin{table}[h]
 	\centering
 	\begin{tabu} to \linewidth {l l}
-		\toprule 
+		\toprule
 		Dienst & Standort(e) \\
 		\midrule
 		Domain Controller & Datacenter und Branches \\
@@ -321,7 +342,7 @@ Für das High-Frequency-Trading ist eine kurze Leitung und Latenzfreie Verbindun
 		High Freuency Trading-Server & Datacenter oder Standort nahe Börse \\
 		VoIP-Server & Datacenter sowie evtl. in Branches\\
 		Backup Server & Datacenter \\
-		\bottomrule 
+		\bottomrule
 	\end{tabu} 
 	\label{tbl:server_standorte}
 	\caption{Serverstandorte Netzwerk}
