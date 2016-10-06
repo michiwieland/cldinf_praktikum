@@ -54,7 +54,7 @@ Um diese Zahlen zu erreichen, müssen nahezu alle Geräte redundant ausgelegt se
 Der meiste Datenfluss im Netzwerk wird wohl von den Tradern ausgehen, da diese immer über aktuelle Ereignisse informiert sein müssen sowie häufig und viele Trading-Aktionen auslösen. Die anderen Abteilungen haben einen geringen bis mittleren Bedarf an Internet und internen Daten, sowie Anspruch an eine latenzarme Telefonielösung.
 
 \paragraph{Datacenter}
-Das Datacenter hat einen, durch die zentrale Funktion bedingten, höheren Netzwerk- und Redundanzbedarf. Das Datacenter stellt zudem Internetdienste (wie E-Mail und Webseite) sowie Terminal- und Telefonieserver im internen Netz für das Headquarter und die Branches zur Verfügung, und bedarf deshalb ein sehr Ausfallsicheres Netzwerk.
+Das Datacenter hat einen, durch die zentrale Funktion bedingten, höheren Netzwerk- und Redundanzbedarf. Das Datacenter stellt zudem Internetdienste (wie E-Mail und Webseite) sowie Terminal- und Telefonieserver im internen Netz für das Headquarter und die Branches zur Verfügung, und bedarf deshalb ein sehr Ausfallsicheres Netzwerk. Im Untergeschoss des Headquarters wird ein Dieselgenerator sowie mehrere USV's betrieben, um Stromausfälle unbeschadet überbrücken zu können. 
 
 \paragraph{Aussenstandorte}
 
@@ -78,7 +78,7 @@ Bei den Schätzungen der Firmengrösse sind wir von einem Wachstum von $10\%$ pr
 Da Geschwindigkeit eine Kernanforderung in dem Trading Geschäft ist, haben wir im gesamten Netzwerk Gigabit Verbindungen aufgezogen. Im Core setzen zusätzlich auf Glasfasern.
 
 \subsubsection{Logische Netzwerkkarte}
-Das gesamte Netzwerk ist auf strikt nach den empfohlenen drei Ebenen ''Access'', ''Distribution'' und ''Core'' designed. Wir verwenden durchgehend Layer 3 Switches, damit wir komplett auf STP verzichten können. Spanning Tree wird in Computernetzen dieser Grössenordnung nicht empfohlen, da sie eine grosse Konvergenz aufweisen. VLAN's werden nur bis zu den Access Switches zur Trennung von VoIP Phones und Workstation verwendet.
+Das gesamte Netzwerk ist strikt nach den empfohlenen drei Ebenen ''Access'', ''Distribution'' und ''Core'' designed. Wir verwenden durchgehend Layer 3 Switches, damit wir komplett auf STP verzichten können. Durch die relativ lange Konvergenz des STP Protokolls, sollte man bei Netzen dieser Grösse wenn möglich auf Spanning Tree verzichten. Insbesondere im High Frequency Trading Sektor kann man sich länger Ausfälle nicht leisten. VLAN's werden nur bis zu den Access Switches zur Trennung von VoIP Phones und Workstation verwendet.
 
 \subsection{WAN Network Design}
 
@@ -266,7 +266,7 @@ Minimal werden für das Netzwerk folgen Anzahl Access Ports benötigt.
 \subsubsection{Switches}
 Wir setzen im gesamten Netzwerk Cisco Layer 3 Switches mit je 48 Ports ein. Diese bieten die Möglichkeit sich als Stack zusammenzuschliessen. Jeder Stack wird über einen eigenen logischen Hostnamen angesprochen. Um die hohe Verfügbarkeit für die Trading Abteilung zu garantieren, schliessen wir die VoIP Phone an einem separaten Access Port an. Die 30 Trader werden zu jede 15 Personen an einen L3 Switch angeschlossen. So bleiben bei einem Ausfall immer die Hälfte der Trader voll operationsfähig. Um einen Ausfall möglichst zu vermeiden, sind alle Switches zusätzlich an einer USV angeschlossen. Da bei einem Ausfall der Switches in der Trading Abteilung grosse Kosten entstehen, hält sich die IT einen vorkonfigurierten Backup Switch in Ihrem Stockwerk. Damit kann im Notfall der Switch ohne grössere Zeitverluste ausgetauscht werden. Alle weiteren Abteilungen haben eine normale Wichtigkeit und werden gemäss ihrer Mitarbeiterzahl angeschlossen. Es wurde aber auch bei Ihnen ein Wachstum eingerechnet. Bei den VoIP Phones verwenden wir das Single Cable Design. Das bedeutet, dass die Workstations mit dem VoIP Phone verbunden und das Phone dann an den Access Switch angeschlossen wird. Die Daten werden mit tagged VLAN's getrennt. Aus der Tabelle \ref{tbl:require_access_ports} folgt, dass folgende Switches angeschafft werden müssen.
 
-Die anzuschaffenden Switches und müssen alle sowohl IPv4 als auch IPv6 unterstützen; das IPv6 Netzwerk wird allerdings erst zu einem späteren Zeitpunkt ausgerollt.
+Die anzuschaffenden Netzwerkgeräte müssen alle sowohl IPv4 als auch IPv6 unterstützen; das IPv6 Netzwerk wird allerdings erst zu einem späteren Zeitpunkt ausgerollt.
 
 \begin{table}[h]
 	\centering
@@ -300,7 +300,7 @@ Die anzuschaffenden Switches und müssen alle sowohl IPv4 als auch IPv6 unterst�
 Wir verzichten auf STP, da wir für alle Bereiche eigene IP Subnetze verwenden. 
 
 \subsubsection{MPLS}
-Für die Anbindung der Branches haben wir uns für MPLS entschieden. Es bietet entscheidende Vorteile gegenüber einer Mitleitung oder einer Anbindung über Framerelay. So kann ein neuer Branch ohne grossen Aufwand in die MPLS Cloud eingefügt werden.
+Für die Anbindung der Branches haben wir uns für MPLS entschieden. Es bietet entscheidende Vorteile gegenüber einer Mitleitung oder einer Anbindung über Framerelay. MPLS liefert eine höhere Bandbreite wie FrameRelay, was wichtig ist, damit die Aussenstellen ohne Unterbrüche auf den Terminalserver arbeiten können. Zudem können neue Branches wesentlich einfacher in die MPLS Cloud eingefügt werden, als dass dies mit einer Mitleitung möglich wäre.
 
 \subsubsection{Layer 3}
 Für das Routing wird OSPF verwendet. Mehrere redundante Default-Gateways werden über HSRP ermöglicht.
@@ -343,7 +343,7 @@ Für das High-Frequency-Trading ist eine kurze Leitung und Latenzfreie Verbindun
 		Dienst & Standort(e) \\
 		\midrule
 		Domain Controller & Datacenter und Branches \\
-		Mainfram for Banking-Application & Datacenter \\
+		Mainframe for Banking-Application & Datacenter \\
 		High Freuency Trading-Server & Datacenter oder Standort nahe Börse \\
 		VoIP-Server & Datacenter sowie evtl. in Branches\\
 		Backup Server & Datacenter \\
