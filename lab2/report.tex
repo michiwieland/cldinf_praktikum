@@ -8,8 +8,6 @@
 
 % 06.10.2016, 23:55, as PDF to beat.stettler@ins.hsr.ch
 
-%TODO Hostname pro Stock? i.O??? -> ??Um was ging's da schon wieder genau??
-
 \section{Aufgabenstellung}
 \subsection{Einleitung}
 Gemäss der Aufgabenstellung
@@ -80,7 +78,7 @@ Bei den Schätzungen der Firmengrösse sind wir von einem Wachstum von $10\%$ pr
 Da Geschwindigkeit eine Kernanforderung in dem Trading Geschäft ist, haben wir im gesamten Netzwerk Gigabit Verbindungen aufgezogen. Im Core setzen zusätzlich auf Glasfasern.
 
 \subsubsection{Logische Netzwerkkarte}
-Das gesamte Netzwerk ist auf strikt nach den empfohlenen drei Ebenen ''Access'', ''Distribution'' und ''Core'' designed. Wir verwenden durchgehend Layer 3 Switches, damit wir komplett auf STP verzichten können. Spanning Tree wird in Computernetzen dieser Grössenordnung nicht empfohlen, da sie eine grosse Konvergenz aufweisen. VLAN's werden nur bis zu den Access Switches zur Trennung von VoIP Phones und Workstation verwendet. 
+Das gesamte Netzwerk ist auf strikt nach den empfohlenen drei Ebenen ''Access'', ''Distribution'' und ''Core'' designed. Wir verwenden durchgehend Layer 3 Switches, damit wir komplett auf STP verzichten können. Spanning Tree wird in Computernetzen dieser Grössenordnung nicht empfohlen, da sie eine grosse Konvergenz aufweisen. VLAN's werden nur bis zu den Access Switches zur Trennung von VoIP Phones und Workstation verwendet.
 
 \subsection{WAN Network Design}
 
@@ -197,7 +195,7 @@ Die internen IPv4 Adressen werden gemäss folgendem Schema aufgebaut:
 
 \subsubsection{IPv6}
 
-Die internen IPv6 Adressen werden gemäss folgendem Schema aufgebaut: 
+Die internen IPv6 Adressen werden gemäss dem Schema in Tabelle \ref{tbl:abteilung_ipv6_adressblock} bzw. Tabelle  \ref{tbl:standorte_ipv6_adressblock} aufgebaut. Im aktuellen Netzwerkplan sind noch keine IPv6 Adressen verzeichnet, da diese erst zu einem späteren Zeitpunkt ausgerollt werden.
 
 \lstinline|<Provider-Prefix>:<Standort><Abteilung>:<autoconf-eui-64>|
 
@@ -216,7 +214,7 @@ Die internen IPv6 Adressen werden gemäss folgendem Schema aufgebaut:
 		(VoIP) & \lstinline|FA|\\
 		\bottomrule
 	\end{tabu}
-	  \label{tbl:abteilung_ipv6_adressblock}
+	\label{tbl:abteilung_ipv6_adressblock}
 	\caption{Abteilung IPv6-Adressblock}
 \end{table}
 
@@ -238,6 +236,7 @@ Die internen IPv6 Adressen werden gemäss folgendem Schema aufgebaut:
 		Datacenter & \lstinline|C8| \\
 		\bottomrule
 	\end{tabu}
+	\label{tbl:standorte_ipv6_adressblock}
 	\caption{Standorte IPv6-Adressblock}
 \end{table}
 \clearpage
@@ -265,26 +264,32 @@ Minimal werden für das Netzwerk folgen Anzahl Access Ports benötigt.
 \end{table}
 
 \subsubsection{Switches}
-Wir setzen im gesamten Netzwerk Cisco Layer 3 Switches mit je 48 Ports ein. Diese bieten die Möglichkeit sich als Stack zu organisieren. Jeder Stack wird über einen eigenen logischen Hostnamen angesprochen. Um die hohe Verfügbarkeit für die Trading Abteilung zu garantieren, schliessen wir die VoIP Phone an einem separaten Access Port an. Die 30 Trader werden zu jede 15 Personen an einen L3 Switch angeschlossen. So bleiben bei einem Ausfall immer die Hälfte der Trader voll operationsfähig. Um einen Ausfall möglichst zu vermeiden, sind alle Switches an einer USV angeschlossen. Da bei einem Ausfall der Switches in der Trading Abteilung grosse Kosten entstehen, hält sich die IT einen vorkonfigurierten Backup Switch in Ihrem Stockwerk. Damit kann im Notfall der Switch ohne grössere Zeitverluste ausgetauscht werden. Alle weiteren Abteilungen haben eine normale Wichtigkeit und werden gemäss ihrer Mitarbeiterzahl angeschlossen. Es wurde aber auch bei Ihnen ein Wachstum eingerechnet. Bei den VoIP Phones verwenden wir das Single Cable Design. Das bedeutet, dass die Workstations mit dem VoIP Phone verbunden und das Phone dann an den Access Switch angeschlossen wird. Die Daten werden mit tagged VLAN's getrennt. Aus der Tabelle \ref{tbl:require_access_ports} folgt, dass folgende Switches angeschafft werden müssen. 
+Wir setzen im gesamten Netzwerk Cisco Layer 3 Switches mit je 48 Ports ein. Diese bieten die Möglichkeit sich als Stack zusammenzuschliessen. Jeder Stack wird über einen eigenen logischen Hostnamen angesprochen. Um die hohe Verfügbarkeit für die Trading Abteilung zu garantieren, schliessen wir die VoIP Phone an einem separaten Access Port an. Die 30 Trader werden zu jede 15 Personen an einen L3 Switch angeschlossen. So bleiben bei einem Ausfall immer die Hälfte der Trader voll operationsfähig. Um einen Ausfall möglichst zu vermeiden, sind alle Switches zusätzlich an einer USV angeschlossen. Da bei einem Ausfall der Switches in der Trading Abteilung grosse Kosten entstehen, hält sich die IT einen vorkonfigurierten Backup Switch in Ihrem Stockwerk. Damit kann im Notfall der Switch ohne grössere Zeitverluste ausgetauscht werden. Alle weiteren Abteilungen haben eine normale Wichtigkeit und werden gemäss ihrer Mitarbeiterzahl angeschlossen. Es wurde aber auch bei Ihnen ein Wachstum eingerechnet. Bei den VoIP Phones verwenden wir das Single Cable Design. Das bedeutet, dass die Workstations mit dem VoIP Phone verbunden und das Phone dann an den Access Switch angeschlossen wird. Die Daten werden mit tagged VLAN's getrennt. Aus der Tabelle \ref{tbl:require_access_ports} folgt, dass folgende Switches angeschafft werden müssen.
+
+Die anzuschaffenden Switches und müssen alle sowohl IPv4 als auch IPv6 unterstützen; das IPv6 Netzwerk wird allerdings erst zu einem späteren Zeitpunkt ausgerollt.
+
 \begin{table}[h]
 	\centering
 	\begin{tabu} to \linewidth {l l l X }
 		\toprule 
 		Bereich & Anzahl & Komponente & Hostname \\
 		\midrule
-		Guest WLAN & 1x & IEEE 802.11ac Access Point & HQ\_AP\_1 \\
-		Banking HQ 1. floor & 4x & 48 Port Switch & HQ\_AS\_1 \\
-		Banking HQ 2. floor & 4x & 48 Port Switch & HQ\_AS\_2 \\
-		Trading HQ 3. floor & 2x & 48 Port Switch & HQ\_AS\_3 \\
-		IT und HR HQ 4. floor & 1x & 48 Port Switch & HQ\_AS\_4 \\
+		Guest WLAN & 1x & IEEE 802.11ac Access Point & HQ\_AP1 \\
+		Banking HQ 1. floor & 4x & 48 Port Switch & HQ\_AS1 \\
+		Banking HQ 2. floor & 4x & 48 Port Switch & HQ\_AS2 \\
+		Trading HQ 3. floor & 2x & 48 Port Switch & HQ\_AS3 \\
+		IT und HR HQ 4. floor & 1x & 48 Port Switch & HQ\_AS4 \\
 		\midrule
-		HQ Firewall & 2x & 8 Port Firewall & HQ\_FW\_x \\
-		HQ MPLS Customer Edge Router & 2x & 8 Port Router & HQ\_CE\_x \\
+		HQ Distribution Switch & 2x & 12 Port Switch & HQ\_DSx \\
+		HQ Core Switch & 2x & 12 Port Switch & HQ\_CSx \\
 		\midrule
-		Branch 1 & 1x & 48 Port Switch & BR1\_AS\_1 \\
-		Branch 2 & 1x & 48 Port Switch & BR2\_AS\_2 \\
-		Branch 3 & 1x & 48 Port Switch & BR3\_AS\_3 \\
-		BR MPLS Customer Edge Router & 3x & 8 Port Router & BR\_CE\_x \\
+		HQ Firewall & 2x & 8 Port Firewall & HQ\_FWx \\
+		HQ MPLS Customer Edge Router & 2x & 8 Port Router & HQ\_CEx \\
+		\midrule
+		Branch 1 & 1x & 48 Port Switch & BR1\_AS1 \\
+		Branch 2 & 1x & 48 Port Switch & BR2\_AS2 \\
+		Branch 3 & 1x & 48 Port Switch & BR3\_AS3 \\
+		BR MPLS Customer Edge Router & 3x & 8 Port Router & BR\_CEx \\
 		\bottomrule 
 	\end{tabu} 
 	\caption{Benötigte Switches}
