@@ -6,7 +6,7 @@
 
 \input{../front.tex}
 
-% 06.10.2016, 23:55, as PDF to beat.stettler@ins.hsr.ch
+% 07.10.2016, 23:55, as PDF to beat.stettler@ins.hsr.ch
 
 \section{Aufgabenstellung}
 \subsection{Einleitung}
@@ -159,11 +159,11 @@ Die internen IPv4 Adressen werden gemäss folgendem Schema aufgebaut:
   	Abteilung & Netzbereich \\
   	\midrule
   	IT & \lstinline|10.x.1.|\\
-  	Trading & \lstinline|10.x.2.| \\
+  	Trading & \lstinline|10.x.2.|\\
   	Banking & \lstinline|10.x.3.|\\
   	HR & \lstinline|10.x.4.|\\
  	Gäste & \lstinline|10.x.5.|\\
- 	(Datacenter \& Routing) & \lstinline|10.x.200.|\\
+ 	(Datacenter \& Routing) & \lstinline|10.x.200.| (wird jeweils in kleinere Subnetze unterteilt.\\
  	(VoIP) & \lstinline|10.x.250.|\\
  	\bottomrule
   \end{tabu}
@@ -297,7 +297,7 @@ Die anzuschaffenden Netzwerkgeräte müssen alle sowohl IPv4 als auch IPv6 unter
 
 \subsection{Technologie \& Protokolle}
 \subsubsection{Layer 2}
-Wir verzichten auf STP, da wir für alle Bereiche eigene IP Subnetze verwenden. 
+Wir verzichten auf STP, da wir für alle Bereiche eigene IP Subnetze verwenden. Um die einzelnen Abteilungen voneinander zu trennen, verwenden wir auf den Access-L3-Switches VLANs; um Routing zwischen den einzelnen Abteilungen zu Verhindern, wird der Traffic der Abteilungen mittels VRF auf die Firewall geroutet.
 
 \subsubsection{MPLS}
 Für die Anbindung der Branches haben wir uns für MPLS entschieden. Es bietet entscheidende Vorteile gegenüber einer Mitleitung oder einer Anbindung über Framerelay. MPLS liefert eine höhere Bandbreite wie FrameRelay, was wichtig ist, damit die Aussenstellen ohne Unterbrüche auf den Terminalserver arbeiten können. Zudem können neue Branches wesentlich einfacher in die MPLS Cloud eingefügt werden, als dass dies mit einer Mitleitung möglich wäre.
@@ -309,6 +309,9 @@ Für das Routing wird OSPF verwendet. Mehrere redundante Default-Gateways werden
 Grundsätzlich sind alle Workstations mit dem VoIP Phone an einem einzelnen Access Port angeschlossen. Der Verkehr wird über verschiedenen VLAN's strikt getrennt. Eine Ausnahme bildet einzig die Trading Abteilung, da diese auf eine hohe Verfügbarkeit der Telefone und Workstations angewiesen sind. Wir setzen für die Trading Abteilung deshalb auf separate Access Ports für die Workstation und das VoIP Telefon. Im Falle eines Ausfalls einer Komponente kann der Trade so trotzdem mit der zweiten weiterarbeiten, bis das Problem behoben ist.
 
 \subsection{Security}
+
+\subsubsection{VRF}
+Um die einzelnen Abteilungen sauber voneinander zu trennen, arbeiten wir mit VRF, welches ein getrenntes Routing auf die Firewall vornimmt.
 
 \subsubsection{Firewall}
 Wir verwenden zwei Firewall die untereinander Load Balancing machen. Fällt eine aus, läuft kann der komplette Verkehr über die zweite Firewall nach wie vor ins Internet geroutet werden.
