@@ -8,5 +8,135 @@
 
 % 14.10.2016, 23:55, as PDF to beat.stettler@ins.hsr.ch
 
+\section{Datacenter Design}
+
+\subsection{Grundlegendes}
+Wie auch im Campus Network wird auch das Datacenter in drei Layer unterteilt. 
+\begin{description}
+	\item[Access Layer] \hfill \\
+	Verbindet die Endgeräte mit dem weiteren Netzwerk. Regelt Port Security, VLAN's und PoE.
+	\item[Aggregation Layer] \hfill \\
+	Switches fassen Datenströme aus dem Access Layer zusammen. Regelt das Routing zwischen den VLANs und QoS.
+	\item[Core Layer] \hfill \\
+	Regelt den Verkehr im Backbone
+\end{description}
+
+\subsection{Anforderungen}
+% TODO define guidelines how to seperate the tiers
+Für die Firma BetaHouse Inc. muss ein hochverfügbares, skalierbares und redundantes Datacenter designed werden, welches Platz für folgende Geräte bietet.
+\begin{table}[h]
+	\centering
+	\begin{tabu}{l l l}
+		\toprule
+		Anzahl & Typ & Bereich \\
+		\midrule
+		30 & Server & IT \\
+		30 & Server & HR \\
+		30 & Server & Trading \\
+		2  & Core Switch & Core Tier \\
+		3  & Aggregation Switch & Aggregation Tier \\
+		3  & Access Switch & Access Tier \\
+		x  & Load Balancer & TODO \\
+		x  & Firewalls & TODO \\
+		\bottomrule
+	\end{tabu}
+	\caption{Server}
+\end{table}
+
+\subsubsection{Verfügbarkeit und Redundanz}
+In Punkte Ausfallsicherheit wird ein Tier-3 Datacenter angestrebt, was eine Verfügbarkeit von 99.982\% verspricht. Das Datencenter muss rund um die Uhr betriebsbereit zur Verfügung stehen und Wartungen müssen unbemerkt bleiben. Das Netzwerk besteht aus mehreren Pfaden, wobei durch STP immer nur einer aktiv verwendet wird.  
+\begin{table}[h]
+	\centering
+	\begin{tabu}{l l}
+		\toprule
+		Beschreibung & Anforderung \\
+		\midrule
+		Versorgungswege Elektro/Kühlung & 1 aktiv, 1 passiv \\
+		Redundanz Aktivkomponenten & N + 1 \\
+		Backbone Redundanz & ja\\
+		Redundanz Horizontaltverkabelung & nein\\
+		USV und Generator & ja\\
+		Unterbruchsfreie Wartung & ja\\
+		Verfügbarkeit & 99.982\% \\
+		\bottomrule
+	\end{tabu}
+	\caption{Tier 3 Infrastruktur}
+\end{table}
+
+\subsubsection{Infrastruktur}
+Ein Datacenter stellt naturgemäss folgende Anforderungen an die Gebäudeinfrastruktur.
+\begin{itemize}
+	\item Geeignetes Kühlungssystem
+	\item Schutz gegen Stromausfälle mittels USV und Dieselgeneratoren
+	\item Erdung und Schutz gegen Spannungsschwankungen
+	\item Zugangsschutz gegen unerlaubten Zutritt
+	\item Schutz gegen externe Gefahrenfaktoren wie Naturkatastrophen, Luftverkehr und andere Gefahren die von der Umgebung ausgehen können.
+\end{itemize}
+
+\subsubsection{Core Layer}
+Im Core Layer geht es im speziellen um Hochverfügbarkeit und Redundanz. Da im Core die Daten des Aggregation Layer zusammengefasst werden, müssen grosse Datenmengen performant verarbeitet werden können. Dadurch entstehen hohe Betriebstemperaturen, weshalb die Geräte im Core permanent herunter gekühlt werden müssen.
+
+\subsubsection{Verkabelung}
+Bei der Verkabelung wird bis zu den Access Switches Glasfasern eingesetzt. 
+
+\subsubsection{Server}
+Auch bei den Server ist Redundanz gefordert, weshalb alle Server über 5 Anschlüsse verfügen müssen. 
+\begin{itemize}
+	\item 2 für das LAN 
+	\item 2 für das SAN (Fibre Channel übers Glas oder FCoE)
+	\item 1 für KVM (Keyboard/Video/Mouse)
+\end{itemize}
+
+\subsection{Physisches Design}
+Die Netzwerkgeräte werden gemäss der Top of Rack (ToR) Architektur organisiert. Diese eignet sich insbesondere für Hochgeschwindigkeitsverbindungen, welche im Highfrequency Trading gefordert sind. Mit der gewählten Architektur können 10Gib-Ethernet Anforderungen leicht bewältigt werden. Im oberen Bereich eines jeden Racks wird ein Access Switch positioniert. Die Architektur bietet klare Vorteile:
+\begin{itemize}
+	\item kleineres Kabelvolumen, was das System wartbarer macht. Zusätzlich sind die Installationskosten geringer
+	\item geeignet für hohe Serverdichte, wie dies bei 90 Server zuzüglich Switches der Fall ist
+	\item neue Geräte lassen sich relativ einfach hinzufügen
+\end{itemize}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\linewidth]{images/tor_architecture}
+\caption{ToR Architektur in der Cisco Variante}
+\label{fig:torarchitecture}
+\end{figure}
+
+
+% TODO anz racks
+% TODO how many servers per rack
+% TODO vorteile nachteile von TOR/EOR. erklären!
+
+\subsection{Access Layer}
+\paragraph{Layer 2}
+Die Server im Access Layer sind als Looped Triangle organisiert. Dieser Design Ansatz ist weit verbreitet und verfügt über eine schnelle Konvergenz durch RSTP (802.1w) und MSTP (802.1s). Zusätzlich ist es einfach Load Balancer und Firewalls im Aggregation Layer zu deployen. Um Layer 2 Loops zu verhindern wird Rapid PVST+ eingesetzt. Ein Access Switch übernimmt die Funktion des Primary Root und der zweite dient als Backup (Standby). Um die Verfügbarkeit der Standardgateways hoch zu halten, wird das Cisco propertietäre HSRP (Hot Standby Protocol) eingesetzt.  Dabei werden mehrere physische Router zu einer logischen Gruppe zusammengefasst. Fällt ein Switch der logischen Gruppe aus, können die Server stets noch über den Standby Switch auf das Netzwerk zugreifen. 
+
+\paragraph{Layer 3}
+OSPF
+% TODO Layer 2 Topologie? looped or loop free
+% TODO STP root/backup root, blocked links, default gateway etc.
+
+\subsection{Aggregation Layer}
+Der Aggregation Layer 
+%TODO firewalls, ssl, load balancing
+
+
+% TODO michi: link aggregation(LACP)/etherchannel für höheren durchsatz.
+
+\subsection{Core Layer}
+Bei einem Datacenter dieser Grösse ist der Einsatz eines Core Layers von Vorteil. Der Core bündelt die Geräte im Aggregation Layer, was zu einer besseren Skalierbarkeit führt. Ebenfalls kann im Core ein gewisses Load Balancing zwischen dem Campus Core und dem Aggregation Layer implementiert werden. Für das Routing bis zum Access Layer wird OSPF verwendet.  
+% TODO begründen warum core layer nötig
+
+\subsection{Multitenancy}
+% TODO end to end separation of departments
+% TODO which protocols needed -> choose one solution
+
+
+\section{Schemes}
+% TODO physical topology (map of the network, datacenter outlet)
+%\includepdf[pages={1},landscape=true]{appendix/schemes/datacenter.pdf}
+
+% TODO logical topology (map of the network, building block view, layer2 map(vlan), layer 3 map (ospf, areas??) )
+%\includepdf[pages={1},landscape=true]{appendix/schemes/vlan.pdf}
 
 \input{appendix.tex}
