@@ -42,9 +42,10 @@ Für die Firma BetaHouse Inc. muss ein hochverfügbares, skalierbares und redund
 	\end{tabu}
 	\caption{Server}
 \end{table}
+Die Abteilungen werden bis zum Access Layer mit VLANs und ab dem Access Layer auf Layer 3 getrennt. 
 
 \subsubsection{Verfügbarkeit und Redundanz}
-In Punkte Ausfallsicherheit wird ein Tier-3 Datacenter angestrebt, was eine Verfügbarkeit von 99.982\% verspricht. Das Datencenter muss rund um die Uhr betriebsbereit zur Verfügung stehen und Wartungen müssen unbemerkt bleiben. Das Netzwerk besteht aus mehreren Pfaden, wobei durch STP immer nur einer aktiv verwendet wird.  
+In Punkto Ausfallsicherheit wird ein Tier-3 Datacenter angestrebt, was eine Verfügbarkeit von 99.982\% verspricht. Das Datencenter muss rund um die Uhr betriebsbereit zur Verfügung stehen und Wartungen müssen unbemerkt bleiben. Das Netzwerk besteht aus mehreren Pfaden, wobei durch STP immer nur einer aktiv verwendet wird.  
 \begin{table}[h]
 	\centering
 	\begin{tabu}{l l}
@@ -62,6 +63,12 @@ In Punkte Ausfallsicherheit wird ein Tier-3 Datacenter angestrebt, was eine Verf
 	\end{tabu}
 	\caption{Tier 3 Infrastruktur}
 \end{table}
+
+\paragraph{Geo Redundanz}
+Bei Datacenter von diesem Umfang, sollte eine geografische Redundanz in Betracht gezogen werden. Dabei wird ein zweites Datacenter an einem anderen Standort aufgebaut. Im Fehlerfall kann auf dieses umgeschalten werden. 
+
+\subsection{Skalierbarkeit}
+Das Datacenter sollte so skalierbar sein, dass es dem Wachstum einer Firma nachkommen kann. Dies bedingt einem Einsatz eines Core Layers, damit der Aggregation Layer ohne weiteres ausgebaut werden kann.
 
 \subsubsection{Infrastruktur}
 Ein Datacenter stellt naturgemäss folgende Anforderungen an die Gebäudeinfrastruktur.
@@ -108,35 +115,69 @@ Die Netzwerkgeräte werden gemäss der Top of Rack (ToR) Architektur organisiert
 % TODO vorteile nachteile von TOR/EOR. erklären!
 
 \subsection{Access Layer}
+\paragraph{Physical}
+Die Server werden mit je zwei Gigabit Kupfer Kabel beim Access Switch angeschlossen. Die beiden Interfaces bekommen die selbe IP Adresse. Fällt ein Interfaces aus, gibt es ein Failover vom Primary zum Secondary.
+
 \paragraph{Layer 2}
 Die Server im Access Layer sind als Looped Triangle organisiert. Dieser Design Ansatz ist weit verbreitet und verfügt über eine schnelle Konvergenz durch RSTP (802.1w) und MSTP (802.1s). Zusätzlich ist es einfach Load Balancer und Firewalls im Aggregation Layer zu deployen. Um Layer 2 Loops zu verhindern wird Rapid PVST+ eingesetzt. Ein Access Switch übernimmt die Funktion des Primary Root und der zweite dient als Backup (Standby). Um die Verfügbarkeit der Standardgateways hoch zu halten, wird das Cisco propertietäre HSRP (Hot Standby Protocol) eingesetzt.  Dabei werden mehrere physische Router zu einer logischen Gruppe zusammengefasst. Fällt ein Switch der logischen Gruppe aus, können die Server stets noch über den Standby Switch auf das Netzwerk zugreifen. 
 
 \paragraph{Layer 3}
-OSPF
 % TODO Layer 2 Topologie? looped or loop free
 % TODO STP root/backup root, blocked links, default gateway etc.
+Der gesamte Traffic wird bis zum Access Layer mit OSPF geroutet. Dies erlaubt es, die Broadcast Domäne der einzelnen Subnetze so klein wie möglich zu halten.
+
+\subsubsection{3 Tier Organisation im Access Layer}
+Alle externen Zugriffe auf die einzelnen Tiers werden mit Firewalls im Aggregation Layer kontrolliert. Der Zugriffsfluss geht grundsätzlich von oben nach unten. Erlaubt sind nur Zugriffe auf den jeweils nächsten Tier. Also WEB $\rightarrow$ Application $\rightarrow$ Database. Die Kommunikation verläuft dann jedoch trotzdem über den Aggregation Layer, der die Zugriffe auf ihre Korrektheit überprüft.
+\paragraph{1. WEB Tier} 
+Beinhaltet die Webserver
+
+\paragraph{2. Application Tier}
+Beinhaltet die bankenspezifischen Services fürs Trading
+
+\paragraph{3. Database Tier}
+Beinhaltet alle Datenbanken.
+
+\paragraph{VLAN}
+\begin{table}[h]
+	\centering
+	\begin{tabu}{l l l}
+		\toprule
+		VLAN & Subnetz & Beschreibung \\
+		\midrule
+		21 & 10.200.2.1/26 & Webserver \\
+		22 & 10.200.2.65/26 & Application \\
+		23 & 10.200.2.129/26 & Database \\
+		\bottomrule
+	\end{tabu}
+	\caption{Tier 3 Infrastruktur}
+\end{table}
+
 
 \subsection{Aggregation Layer}
-Der Aggregation Layer 
-%TODO firewalls, ssl, load balancing
+% TODO firewalls, ssl, load balancing
+% TODO: link aggregation(LACP)/etherchannel für höheren durchsatz.
+Im Aggregation Layer ist die Security Logik implementiert. Die Requests der Server werden über den Access Layer in den Aggregation Layer weitergeleitet und dort auf ihre Gültigkeit überprüft. Unerlaubte Zugriffe auf fremde VLAN's werden dort von der Firewall blockiert. 
 
-
-% TODO michi: link aggregation(LACP)/etherchannel für höheren durchsatz.
 
 \subsection{Core Layer}
 Bei einem Datacenter dieser Grösse ist der Einsatz eines Core Layers von Vorteil. Der Core bündelt die Geräte im Aggregation Layer, was zu einer besseren Skalierbarkeit führt. Ebenfalls kann im Core ein gewisses Load Balancing zwischen dem Campus Core und dem Aggregation Layer implementiert werden. Für das Routing bis zum Access Layer wird OSPF verwendet.  
 % TODO begründen warum core layer nötig
 
+
 \subsection{Multitenancy}
+Durch den Einsatz von L3 Technologien bis zum Access Layer ist die Verwendung von VRF's nötig, um Multitenancy umzusetzen.
+% TODO https://www.cisco.com/c/en/us/td/docs/solutions/Enterprise/Data_Center/VMDC/2-2/design_guide/vmdcDesign22/VMDC_2-2_DG_2.html
 % TODO end to end separation of departments
 % TODO which protocols needed -> choose one solution
 
 
 \section{Schemes}
 % TODO physical topology (map of the network, datacenter outlet)
-%\includepdf[pages={1},landscape=true]{appendix/schemes/datacenter.pdf}
-
 % TODO logical topology (map of the network, building block view, layer2 map(vlan), layer 3 map (ospf, areas??) )
-%\includepdf[pages={1},landscape=true]{appendix/schemes/vlan.pdf}
+\subsection{Datacenter Design}
+Das Schema ist im Ahang \ref{apdx: datacenter} zu finden.
+
+
+
 
 \input{appendix.tex}
