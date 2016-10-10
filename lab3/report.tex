@@ -78,10 +78,10 @@ Ein Datacenter stellt naturgemäss folgende Anforderungen an die Gebäudeinfrast
 \end{itemize}
 
 \subsubsection{Core Layer}
-Im Core Layer geht es im speziellen um Hochverfügbarkeit und Redundanz. Da im Core die Daten des Aggregation Layer zusammengefasst werden, müssen grosse Datenmengen performant verarbeitet werden können. Dadurch entstehen hohe Betriebstemperaturen, weshalb die Geräte im Core permanent herunter gekühlt werden müssen.
+Im Core Layer geht es im speziellen um die Geschwindigkeit sowie Hochverfügbarkeit und Redundanz. Da im Core die Daten des Aggregation Layer zusammengefasst werden, müssen grosse Datenmengen performant verarbeitet werden können. Dadurch entstehen hohe Betriebstemperaturen, weshalb die Geräte im Core permanent herunter gekühlt werden müssen.
 
 \subsubsection{Verkabelung}
-Bei der Verkabelung wird bis zu den Access Switches Glasfasern eingesetzt. 
+Bei der Verkabelung wird bis zu den Access Switches Glasfasern eingesetzt. Um Kosten zu sparen werden die Server aber mit Kupferkabel angeschlossen.
 
 \subsubsection{Server}
 Auch bei den Server ist Redundanz gefordert, weshalb alle Server über 5 Anschlüsse verfügen müssen. 
@@ -116,7 +116,7 @@ Die Netzwerkgeräte werden gemäss der Top of Rack (ToR) Architektur organisiert
 Die Server werden mit je zwei Gigabit Kupfer Kabel beim Access Switch angeschlossen. Die beiden Interfaces bekommen die selbe IP Adresse. Fällt ein Interfaces aus, gibt es ein Failover vom Primary zum Secondary.
 
 \paragraph{Layer 2}
-Die Server im Access Layer sind als Looped Triangle organisiert. Dieser Design Ansatz ist weit verbreitet und verfügt über eine schnelle Konvergenz durch RSTP (802.1w) und MSTP (802.1s). Zusätzlich ist es einfach Load Balancer und Firewalls im Aggregation Layer zu deployen. Um Layer 2 Loops zu verhindern wird Rapid PVST+ eingesetzt. Ein Access Switch übernimmt die Funktion des Primary Root und der zweite dient als Backup (Standby). Um die Verfügbarkeit der Standardgateways hoch zu halten, wird das Cisco propertietäre HSRP (Hot Standby Protocol) eingesetzt.  Dabei werden mehrere physische Router zu einer logischen Gruppe zusammengefasst. Fällt ein Switch der logischen Gruppe aus, können die Server stets noch über den Standby Switch auf das Netzwerk zugreifen. 
+Die Server im Access Layer sind als Looped Triangle organisiert. Dieser Design Ansatz ist weit verbreitet und verfügt über eine schnelle Konvergenz durch RSTP (802.1w) und MSTP (802.1s). Zusätzlich ist es einfach Load Balancer und Firewalls im Aggregation Layer zu deployen. Um Layer 2 Loops zu verhindern wird Rapid PVST+ eingesetzt. Ein Access Switch übernimmt die Funktion des Primary Root und der zweite dient als Backup (Standby). Um die Verfügbarkeit der Standardgateways hoch zu halten, wird das Cisco propertietäre HSRP (Hot Standby Routing Protocol) eingesetzt.  Dabei werden mehrere physische Router zu einer logischen Gruppe zusammengefasst. Fällt ein Switch der logischen Gruppe aus, können die Server stets noch über den Standby Switch auf das Netzwerk zugreifen. 
 
 \paragraph{Layer 3}
 % TODO Layer 2 Topologie? looped or loop free
@@ -162,7 +162,7 @@ Bei einem Datacenter dieser Grösse ist der Einsatz eines Core Layers von Vortei
 
 
 \subsection{Multitenancy}
-Mittels VRF's können die einzelnen Tenands auf Layer 3 voneinander getrennt werden.
+Mittels VRF's können die einzelnen Tenands auf Layer 3 voneinander getrennt werden. Somit kann eine strikte Trennung der einzelnen Abteilungen End zu End umgesetzt werden. Auf Layer 2 kann dies zusätzlich mit VLAN's umgesetzt werden. Dies ist jedoch erst ab dem Access Layer nötig. 
 % TODO https://www.cisco.com/c/en/us/td/docs/solutions/Enterprise/Data_Center/VMDC/2-2/design_guide/vmdcDesign22/VMDC_2-2_DG_2.html
 % TODO end to end separation of departments
 % TODO which protocols needed -> choose one solution
