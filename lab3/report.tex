@@ -22,7 +22,6 @@ Wie auch im Campus Network wird auch das Datacenter in drei Layer unterteilt.
 \end{description}
 
 \subsection{Anforderungen}
-% TODO define guidelines how to seperate the tiers
 Für die Firma BetaHouse Inc. muss ein hochverfügbares, skalierbares und redundantes Datacenter designed werden, welches Platz für folgende Geräte bietet.
 \begin{table}[h]
 	\centering
@@ -40,6 +39,9 @@ Für die Firma BetaHouse Inc. muss ein hochverfügbares, skalierbares und redund
 	\end{tabu}
 	\caption{Server und Switches}
 \end{table}
+
+\subsubsection{Sicherheit}
+Die einzelnen Netze der Abteilungen müssen strikt getrennt werden. Es darf keine Konnektivität zwischen den Abteilungen ohne explizite Ausnahme stattfinden.
 
 \subsubsection{Verfügbarkeit und Redundanz}
 In Punkto Ausfallsicherheit wird ein Tier-3 Datacenter angestrebt, was eine Verfügbarkeit von 99.982\% verspricht. Das Datencenter muss rund um die Uhr betriebsbereit zur Verfügung stehen und Wartungen müssen unbemerkt bleiben. Das Netzwerk besteht aus mehreren Pfaden, wobei durch STP immer nur ein Pfad aktiv verwendet wird.  
@@ -99,6 +101,15 @@ Die Netzwerkgeräte werden gemäss der Top of Rack (ToR) Architektur organisiert
 	\item neue Geräte lassen sich relativ einfach hinzufügen
 \end{itemize}
 
+Vorteile einer alternativen End of Row-Architektur wären:
+\begin{itemize}
+	\item Hohe Flexibilität, Skalierbarkeit und Zukunftssicherheit
+	\item Effizientere Belegung der LAN Ports und auslastung der Racks
+	\item Konzentration von Access-Switches macht Belegung und Änderungen einfacher
+\end{itemize}
+
+Aufgrund der Anforderungen des Kunden überwiegen die Vorteile der ToR-Architektur.
+
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.5\linewidth]{images/tor_architecture}
@@ -111,6 +122,22 @@ Die Netzwerkgeräte werden gemäss der Top of Rack (ToR) Architektur organisiert
 % TODO how many servers per rack
 % TODO vorteile nachteile von TOR/EOR. erklären!
 
+\begin{table}[h]
+	\centering
+	\begin{tabu}{l l l}
+		\toprule
+		Abteilung & Anzahl Racks & Gesamtzahl Server \\
+		\midrule
+		HR & 1 & 30 \\
+		IT & 1 & 30 \\
+		Trading & 1 & 30 \\
+		Netzwerk-Switches  & 1 & 5 \\
+		\bottomrule
+	\end{tabu}
+	\caption{Racks und Server je Abteilung}
+\end{table}
+
+
 \subsection{Access Layer}
 \paragraph{Physical}
 Die Server werden mit je zwei Gigabit Kupfer Kabel beim Access Switch angeschlossen. Die beiden Interfaces bekommen die selbe IP Adresse. Fällt ein Interfaces aus, gibt es ein Failover vom Primary zum Secondary.
@@ -119,8 +146,6 @@ Die Server werden mit je zwei Gigabit Kupfer Kabel beim Access Switch angeschlos
 Die Server im Access Layer sind als Looped Triangle organisiert. Dieser Design Ansatz ist weit verbreitet und verfügt über eine schnelle Konvergenz durch RSTP (802.1w) und MSTP (802.1s). Zusätzlich ist es einfach Load Balancer und Firewalls im Aggregation Layer zu deployen. Um Layer 2 Loops zu verhindern wird Rapid PVST+ eingesetzt. Ein Access Switch übernimmt die Funktion des Primary Root und der zweite dient als Backup (Standby). Um die Verfügbarkeit der Standardgateways hoch zu halten, wird das Cisco propertietäre HSRP (Hot Standby Routing Protocol) eingesetzt.  Dabei werden mehrere physische Router zu einer logischen Gruppe zusammengefasst. Fällt ein Switch der logischen Gruppe aus, können die Server stets noch über den Standby Switch auf das Netzwerk zugreifen. 
 
 \paragraph{Layer 3}
-% TODO Layer 2 Topologie? looped or loop free
-% TODO STP root/backup root, blocked links, default gateway etc.
 Der gesamte Traffic wird bis zum Access Layer mit OSPF geroutet. Dies erlaubt es, die Broadcast Domäne der einzelnen Subnetze so klein wie möglich zu halten.
 
 \subsubsection{3 Tier Organisation im Access Layer}
@@ -151,21 +176,17 @@ Beinhaltet alle Datenbanken.
 
 
 \subsection{Aggregation Layer}
-% TODO firewalls, ssl, load balancing
-% TODO: link aggregation(LACP)/etherchannel für höheren durchsatz.
-Im Aggregation Layer ist die Security Logik implementiert. Die Requests der Server werden über den Access Layer in den Aggregation Layer weitergeleitet und dort auf ihre Gültigkeit überprüft. Unerlaubte Zugriffe auf fremde VLAN's werden dort von der Firewall blockiert. 
+Im Aggregation Layer ist die Security Logik (Firewall etc.) implementiert. Die Requests der Server werden über den Access Layer in den Aggregation Layer weitergeleitet und dort auf ihre Gültigkeit überprüft. Unerlaubte Zugriffe auf fremde Netze werden dort von der Firewall blockiert. 
 
 
 \subsection{Core Layer}
 Bei einem Datacenter dieser Grösse ist der Einsatz eines Core Layers von Vorteil. Der Core bündelt die Geräte im Aggregation Layer, was zu einer besseren Skalierbarkeit führt. Ebenfalls kann im Core ein gewisses Load Balancing zwischen dem Campus Core und dem Aggregation Layer implementiert werden. Für das Routing bis zum Access Layer wird OSPF verwendet.  
-% TODO begründen warum core layer nötig
 
 
 \subsection{Multitenancy}
-Mittels VRF's können die einzelnen Tenands auf Layer 3 voneinander getrennt werden. Somit kann eine strikte Trennung der einzelnen Abteilungen End zu End umgesetzt werden. Auf Layer 2 kann dies zusätzlich mit VLAN's umgesetzt werden. Dies ist jedoch erst ab dem Access Layer nötig. 
-% TODO https://www.cisco.com/c/en/us/td/docs/solutions/Enterprise/Data_Center/VMDC/2-2/design_guide/vmdcDesign22/VMDC_2-2_DG_2.html
-% TODO end to end separation of departments
-% TODO which protocols needed -> choose one solution
+Mittels VRF's können die einzelnen Tenands auf Layer 3 voneinander getrennt werden. Somit kann eine strikte Trennung der einzelnen Abteilungen End zu End umgesetzt werden. Auf Layer 2 kann dies zusätzlich mit VLAN's umgesetzt werden. Dies ist jedoch erst ab dem Access Layer nötig.
+
+Eine alternative zu VRF's wäre es, den kompletten Backbone mit MPLS umzusetzen, welches eine saubere Trennung via VPNs erstellt.
 
 
 \input{appendix.tex}
