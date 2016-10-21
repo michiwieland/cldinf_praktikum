@@ -1,0 +1,82 @@
+\input{../template.tex}
+
+% Dokumentinformationen
+\newcommand{\SUBJECT}{Report}
+\newcommand{\TITLE}{Cloud Infrastructre Lab 4}
+
+\input{../front.tex}
+
+%  03.11.2016, 23:55, as PDF to beat.stettler@ins.hsr.ch. 
+
+% Describe how Qemu KVM and Docker work (technical explanation). Also make sure you highlight the 
+% differences, pro’s and con’s. 
+
+% Setup and configuration of the Qemu-KVM environment (with explanations) 
+
+% Qemu network configuration 
+
+% A short manual of how to get the ELK stack up and running in Docker 
+
+% Docker network configuration 
+
+% Docker Compose file for the ELK stack 
+
+% Qemu-KVM and Docker networking configuration files/scripts 
+
+\section{Qemu KVM}
+\subsection{Grundlegendes}
+
+\subsection{Beschreibung}
+\paragraph{Vorteile}
+\begin{itemize}
+	\item 
+\end{itemize}
+\paragraph{Nachteile}
+\begin{itemize}
+	\item 
+\end{itemize}
+
+\subsection{Setup}
+\subsubsection{Abhängigkeitn}
+\begin{enumerate}
+	\item \lstinline|sudo dnf install VirtualBox vagrant vagrant-libvirt|
+	\item \lstinline|sudo dnf install @virtualization docker-io libvirt-docs libvirt-wireshark|
+	\item \lstinline|sudo service libvirtd start|
+\end{enumerate}
+
+\subsubsection{Image herunterladen}
+\begin{enumerate}
+	\item Cirros Festplatten Image herunterladen: \url{http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img}
+	\item Festplatten Image nach \lstinline|/var/lib/libvirt/images/| verschieben
+	\item Virtmanager starten: \lstinline|sudo virt-manager|
+\end{enumerate}
+
+\subsection{Network Configuration}
+
+
+\section{Docker}
+\subsection{Grundlegendes}
+
+\subsection{Beschreibung}
+\paragraph{Vorteile}
+\begin{itemize}
+	\item 
+\end{itemize}
+\paragraph{Nachteile}
+\begin{itemize}
+	\item 
+\end{itemize}
+
+\subsection{ELK Stack Setup}
+
+\subsection{Network Configuration}
+
+\subsection{Docker Compose File ELK Stack}
+
+
+
+
+\section{Vergleich der Technologien}
+
+
+\input{appendix.tex}
