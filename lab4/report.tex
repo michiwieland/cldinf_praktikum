@@ -23,13 +23,33 @@
 
 % Qemu-KVM and Docker networking configuration files/scripts 
 
+\section{Grundlegendes}
+\subsection{Terminologie}
+\begin{description}
+	\item[Host System] \hfill \\
+	Beherbergt eine Virtualisierungslösung und stellt Funktionen zur Verfügung damit ein Gastsystem laufen kann.
+	\item[Guest System] \hfill \\
+	Läuft virtuell innerhalb des Host Systems. Befehle werden durch eine Virtualisierungslösung an die Hardware des Hosts weitergeleitet. 
+	\item[Container, VDI: Virtual Disk Image] \hfill \\
+	 Virtuelle Festplatte des Gastsystems. Es gibt statische und dynamische Container.
+\end{description}
+
+\subsection{KVM: Kernel-based Virtual Machine}
+KVM ist eine Virtualisierungslösung für Linux, die Gebrauch von Virtualisierungstechniken aktueller x86 Prozessoren macht. Um KVM nutzen zu können muss der Prozessor des Hostsystems Hardwarevirtualisierung unterstützen.  KVM an sich stellt die direkte Schnittstelle zum Linux-Kernel zur Verfügung, als Virtualisierungsumgebung kommt QEMU zum Einsatz.
+
+\subsection{QEMU}
+QEMU ist ein quelloffener Emulator und Virtualisierer der von KVM genutzt wird.  QEMU kommuniziert direkt mit dem Kernel, so dass das Gastsystem annähernd mit der Geschwindigkeit des Hosts läuft.
+
+\subsection{Docker}
+
+
 \section{Qemu KVM}
 \subsection{Grundlegendes}
 
 \subsection{Beschreibung}
 \paragraph{Vorteile}
 \begin{itemize}
-	\item 
+	\item Ein Vorteil von KVM ist, dass die Gastsysteme fast mit nativer Geschwindigkeit laufen, d.h. das Gastsystem reagiert nahezu so schnell wie ein natives System. 
 \end{itemize}
 \paragraph{Nachteile}
 \begin{itemize}
@@ -39,10 +59,36 @@
 \subsection{Setup}
 \subsubsection{Abhängigkeitn}
 \begin{enumerate}
-	\item \lstinline|sudo dnf install VirtualBox vagrant vagrant-libvirt|
-	\item \lstinline|sudo dnf install @virtualization docker-io libvirt-docs libvirt-wireshark|
+	\item \lstinline|sudo dnf install @virtualization docker-io libvirt-docs|
 	\item \lstinline|sudo service libvirtd start|
 \end{enumerate}
+
+\subsubsection{Vorraussetzung}
+\paragraph{Hardwarevirtualisierung} \hfill \\
+Damit KVM genutzt werden kann, muss die CPU Hardwarevirtualisierung unterstützen. Dies kann mit folgendem Befehl herausgefunden werden.
+\begin{lstlisting}[language=bash]
+# Eintrag VMX oder SVM sollten hervorgehoben werden
+egrep '(vmx|svm)' /proc/cpuinfo
+\end{lstlisting}
+
+Die nötigen Kernelmodule werden grundsätzlich automatisch geladen. Sollte dies nicht der Fall sein, können sie mit folgendem Befehl geladen werden.
+\begin{lstlisting}[language=bash]
+lsmod | grep kvm # Sollte kvm und kvm_intel ausgeben 
+
+# manuell laden
+sudo modprobe kvm
+sudo modprobe kvm_intel
+\end{lstlisting}
+
+\paragraph{Usergroups} \hfill \\
+Der aktuelle User sollte noch den Gruppen \lstinline|libvirt| und \lstinline|kvm| hinzugefügt werden.
+\begin{lstlisting}[language=bash]
+sudo usermod -aG libvirt, kvm $USER
+\end{lstlisting}
+
+
+
+
 
 \subsubsection{Image herunterladen}
 \begin{enumerate}
@@ -51,7 +97,79 @@
 	\item Virtmanager starten: \lstinline|sudo virt-manager|
 \end{enumerate}
 
+\subsubsection{Virt-Image}
+Um eine neue virtuelle Maschiene anzulegen, muss eine XML-Datei unter \lstinline|/etc/libvirt/qemu| erstellt werden. Die Datei beschreibt wie die VM auszusehen hat. 
+Wir erstellen für jede der drei VM's eine XML Datei, wobei die 
+
+\begin{lstlisting}[language=XML]
+ TODO copy xml vm1, vm2, vm3 from /etc/libvirt/qemu
+\end{lstlisting}
+
+\subsubsection{Virt-Install}
+
+\subsubsection{Virt-Clone}
+Die weiteren WM's wurden geklont und gemäss Ihren Anforderungen angepasst.
+\begin{lstlisting}[language=bash]
+
+\end{lstlisting}
+
+
 \subsection{Network Configuration}
+% TODO Remove sources
+% http://wiki.qemu.org/Documentation/Networking#Network_backend_types
+% http://wiki.libvirt.org/page/Networking#Debian.2FUbuntu_Bridging
+
+
+\subsubsection{Grundlegend}
+Per default existiert ein virtuelles Netzwerk im Adressraum 192.168.122.0/24, dass per NAT mit der realen Netzwerkkarte verbunden ist. Mit dieser Konfiguration kann jede virtuelle Maschine ins Internet. Der Host ist von einem Gastsystem aus über die IP-Adresse 10.0.2.2 erreichbar. QEMU legt für jede VM ein eigenes Netzwerk an. Es werden IP-Adressen aus dem Bereich 10.0.0.0/8 vergeben. Weiterhin befindet sich jede VM standardmäßig in einem eigenen Netz, sodass Anfragen ins Internet wie gewohnt funktionieren, die VMs sich aber weder untereinander sehen, noch mit physischen Geräten im LAN kommunizieren können. Möchte man die VM's im gleichen LAN wie die physischen Geräte betreibenm, müssen Network Bridges erstellt werden.
+
+
+\subsubsection{Host einrichten}
+\begin{lstlisting}[language=bash]
+virsh net-define /usr/share/libvirt/networks/default.xml
+virsh net-autostart default
+virsh net-start default
+\end{lstlisting}
+
+\subsubsection{Gast einrichten}
+\begin{lstlisting}[language=bash]
+  virsh edit <guest>
+\end{lstlisting}
+\begin{lstlisting}[language=xml]
+<interface type='network'>
+	<source network='default'/>
+	<mac address='00:16:3e:1a:b3:4a'/>  <!-- optional, automatically generated if omitted-->
+</interface>
+\end{lstlisting}
+
+
+
+
+\subsubsection{Bridge Erstellen}
+\lstinline|/etc/network/interfaces| editieren und \lstinline|eth0| als Bridge verwenden.
+\begin{lstlisting}[language=bash]
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+auto br0
+iface br0 inet static
+	address 192.168.0.101
+	netmask 255.255.255.0
+	network 192.168.0.0
+	broadcast 192.168.0.255
+	gateway 192.168.0.1
+	bridge_ports eth0
+	bridge_stp off
+	bridge_maxwait 5
+	# dns-* options are implemented by the resolvconf package, if installed
+	dns-nameservers 192.168.0.4
+	dns-search mydomain.net
+\end{lstlisting}
+\begin{lstlisting}[language=bash]
+sudo ifup br0
+\end{lstlisting}
 
 
 \section{Docker}
