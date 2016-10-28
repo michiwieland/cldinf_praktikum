@@ -35,12 +35,13 @@
 \end{description}
 
 \subsection{KVM: Kernel-based Virtual Machine}
-KVM ist eine Virtualisierungslösung für Linux, die Gebrauch von Virtualisierungstechniken aktueller x86 Prozessoren macht. Um KVM nutzen zu können muss der Prozessor des Hostsystems Hardwarevirtualisierung unterstützen.  KVM an sich stellt die direkte Schnittstelle zum Linux-Kernel zur Verfügung, als Virtualisierungsumgebung kommt QEMU zum Einsatz.
+KVM ist eine Virtualisierungslösung für Linux, die Gebrauch von Virtualisierungstechniken aktueller x86 Prozessoren macht. Um KVM nutzen zu können muss der Prozessor des Hostsystems Hardwarevirtualisierung unterstützen. KVM an sich stellt die direkte Schnittstelle zum Linux-Kernel zur Verfügung, als Virtualisierungsumgebung kommt QEMU zum Einsatz.
 
 \subsection{QEMU}
-QEMU ist ein quelloffener Emulator und Virtualisierer der von KVM genutzt wird.  QEMU kommuniziert direkt mit dem Kernel, so dass das Gastsystem annähernd mit der Geschwindigkeit des Hosts läuft.
+QEMU ist ein quelloffener Emulator und Virtualisierer. QEMU kommuniziert direkt mit dem Kernel, so dass das Gastsystem annähernd mit der Geschwindigkeit des Hosts läuft. 
 
 \subsection{Docker}
+Docker ist im Gegensatz zu KVM keine virtuelle Maschiene sondern basiert auf Linux Container (LXC). Ein LXC ist eine vom Betriebssystem bereitgestellte virtuelle Umgebung zur isolierten Ausführung von Prozessen. Docker packt eine Anwendung einschliesslich ihrer Abhängikeiten in einen Container. Das Betriebssystem des Container muss einzig den gleichen Kernel wie das Hostsystem verwenden. In Docker lassen sich Ketten von bis zu 127 Images erstellen, die dann von Docker zur Ausführung in einen Container zusammengafasst werden. Docker wird verwendet um Prozess isoliert voneinander auszuführen. 
 
 
 \section{Qemu KVM}
@@ -53,7 +54,7 @@ QEMU ist ein quelloffener Emulator und Virtualisierer der von KVM genutzt wird. 
 \end{itemize}
 \paragraph{Nachteile}
 \begin{itemize}
-	\item 
+	\item Hoher Bedarf an Festplatten und Arbeitsspeicher und langwieriger Ladevorgang beim Starten der virtuellen Maschienen
 \end{itemize}
 
 \subsection{Setup}
@@ -94,12 +95,11 @@ sudo usermod -aG libvirt, kvm $USER
 \begin{enumerate}
 	\item Cirros Festplatten Image herunterladen: \url{http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img}
 	\item Festplatten Image nach \lstinline|/var/lib/libvirt/images/| verschieben
-	\item Virtmanager starten: \lstinline|sudo virt-manager|
+	\item Für jede virtuelle Maschiene eine Kopie des Festplatten Image anlegen
 \end{enumerate}
 
 \subsubsection{Virt-Image}
 Um eine neue virtuelle Maschiene anzulegen, muss eine XML-Datei unter \lstinline|/etc/libvirt/qemu| erstellt werden. Die Datei beschreibt wie die VM auszusehen hat. 
-Wir erstellen für jede der drei VM's eine XML Datei, wobei die 
 
 \begin{lstlisting}[language=XML]
  TODO copy xml vm1, vm2, vm3 from /etc/libvirt/qemu
@@ -121,7 +121,14 @@ Die weiteren WM's wurden geklont und gemäss Ihren Anforderungen angepasst.
 
 
 \subsubsection{Grundlegend}
-Per default existiert ein virtuelles Netzwerk im Adressraum 192.168.122.0/24, dass per NAT mit der realen Netzwerkkarte verbunden ist. Mit dieser Konfiguration kann jede virtuelle Maschine ins Internet. Der Host ist von einem Gastsystem aus über die IP-Adresse 10.0.2.2 erreichbar. QEMU legt für jede VM ein eigenes Netzwerk an. Es werden IP-Adressen aus dem Bereich 10.0.0.0/8 vergeben. Weiterhin befindet sich jede VM standardmäßig in einem eigenen Netz, sodass Anfragen ins Internet wie gewohnt funktionieren, die VMs sich aber weder untereinander sehen, noch mit physischen Geräten im LAN kommunizieren können. Möchte man die VM's im gleichen LAN wie die physischen Geräte betreibenm, müssen Network Bridges erstellt werden.
+Für jedes virtuelle Netzwerk legt libvirt eine virtuelle Bridge an. Diese können auf dem Host mit \lstinline|brctl show| angezeigt werden. Zudem wird ein virtuelles Interface im zugewiesenen Adressraum (default: 192.168.122.0/24) erstellt, das per NAT mit der physischen Netzwerkkarte verbunden ist. Damit jeder virtuelle Maschine eine gültige IP Adresse kriegt, wird auf dem Host Interface ein DHCP Server (dnsmasq) eingerichtet. Mit dieser Konfiguration kann jede virtuelle Maschine ins Internet, hat jedoch keine Konnektivität zu den anderen VM's. 
+
+\begin{description}
+	\item[/var/lib/libvirt/dnsmasq] Die DHCP Konfigurations-Files 
+	\item[/etc/libvirt/qemu/networks] Netzwerk Konfigurations-Files
+\end{description}
+
+
 
 
 \subsubsection{Host einrichten}
@@ -129,63 +136,87 @@ Per default existiert ein virtuelles Netzwerk im Adressraum 192.168.122.0/24, da
 virsh net-define /usr/share/libvirt/networks/default.xml
 virsh net-autostart default
 virsh net-start default
-\end{lstlisting}
-
-\subsubsection{Gast einrichten}
-\begin{lstlisting}[language=bash]
-  virsh edit <guest>
-\end{lstlisting}
-\begin{lstlisting}[language=xml]
-<interface type='network'>
-	<source network='default'/>
-	<mac address='00:16:3e:1a:b3:4a'/>  <!-- optional, automatically generated if omitted-->
-</interface>
+virsh net-edit <network-name>
 \end{lstlisting}
 
 
-
+\lstinline|/etc/libvirt/qemu/networks|
 
 \subsubsection{Bridge Erstellen}
-\lstinline|/etc/network/interfaces| editieren und \lstinline|eth0| als Bridge verwenden.
-\begin{lstlisting}[language=bash]
-# The loopback network interface
-auto lo
-iface lo inet loopback
+\begin{lstlisting}[language=xml]
+<network>
+	<name>VM1_VM2</name>
+	<uuid>b7aca73a-21b9-43af-8c91-0af4f95bd29b</uuid>
+	<bridge name='virbr1' stp='on' delay='0'/>
+	<mac address='52:54:00:1e:b6:ae'/>
+	<domain name='VM1_VM2'/>
+	<ip address='192.168.100.1' netmask='255.255.255.0'>
+	<dhcp>
+	<range start='192.168.100.128' end='192.168.100.254'/>
+	</dhcp>
+	</ip>
+</network>
+\end{lstlisting}
 
-# The primary network interface
-auto br0
-iface br0 inet static
-	address 192.168.0.101
-	netmask 255.255.255.0
-	network 192.168.0.0
-	broadcast 192.168.0.255
-	gateway 192.168.0.1
-	bridge_ports eth0
-	bridge_stp off
-	bridge_maxwait 5
-	# dns-* options are implemented by the resolvconf package, if installed
-	dns-nameservers 192.168.0.4
-	dns-search mydomain.net
-\end{lstlisting}
-\begin{lstlisting}[language=bash]
-sudo ifup br0
-\end{lstlisting}
+
+
+
+
 
 
 \section{Docker}
 \subsection{Grundlegendes}
 
+\subsection{Docker IO}
+\begin{lstlisting}[language=bash]
+# docker container suchen
+docker sarch <package-name>
+
+# docker container herunterladen
+docker pull <package-name>
+
+# Image veroeffentlichen
+docker push <image name>
+
+# docker container starten
+docker run <package-name> <app to execute>
+
+# Aktuell ausgefuerten Container anzeigen
+docker ps
+
+# Liste alle lokal vorliegenden Images
+docker images
+
+# Image entfernen
+docker rmi <image>
+
+# Container entfernen
+docker rm <container>
+\end{lstlisting}
+
+
 \subsection{Beschreibung}
 \paragraph{Vorteile}
 \begin{itemize}
-	\item 
+	\item Äusserts sparsamer Umgang mit Ressourcen und eine kurze Startzeit	
+	\item Mit Hilfe von Vagrant äusserts einfach einen Docker Container zu installieren
+	\item Austausch von Images fällt durch den Gebrauch von öffentlichen Registries leicht.
 \end{itemize}
 \paragraph{Nachteile}
 \begin{itemize}
-	\item 
+	\item Da die Container auf den Linux Kernel zugreifen, ist es nicht möglich Windows Anwendungen in einem Docker Container auszuführen.
+	\item Einschränkung auf 64Bit basiertes Linux oder Mac OSX (%TODO immer noch=?
 \end{itemize}
 
-\subsection{ELK Stack Setup}
+\subsection{ELK Stack Setup (Elasticseach, Logstash, Kibana)}
+\subsubsection{Vorraussetzungen}
+\paragraph{SELinux} \hfill \\
+Da wir mit einem Fedora arbeiten, müssen vorgän
+\begin{lstlisting}[language=bash]
+chcon -R system_u:object_r:admin_home_t:s0 docker-elk
+\end{lstlisting}
+
+
 
 \subsection{Network Configuration}
 
