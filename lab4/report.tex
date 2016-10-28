@@ -101,6 +101,15 @@ sudo usermod -aG libvirt, kvm $USER
 \subsubsection{Virt-Image}
 Um eine neue virtuelle Maschiene anzulegen, muss eine XML-Datei unter \lstinline|/etc/libvirt/qemu| erstellt werden. Die Datei beschreibt wie die VM auszusehen hat. 
 
+
+\begin{lstlisting}[language=bash]
+virsh create /etc/libvirt/qemu/VM1.xml
+
+virsh start VM1 
+
+virsh console VM1
+\end{lstlisting}
+
 \begin{lstlisting}[language=XML]
  TODO copy xml vm1, vm2, vm3 from /etc/libvirt/qemu
 \end{lstlisting}
