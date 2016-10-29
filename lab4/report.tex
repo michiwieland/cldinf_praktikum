@@ -37,8 +37,29 @@
 \subsection{KVM: Kernel-based Virtual Machine}
 KVM ist eine Virtualisierungslösung für Linux, die Gebrauch von Virtualisierungstechniken aktueller Prozessorarchitekturen macht. Um KVM nutzen zu können muss der Prozessor des Hostsystems Hardwarevirtualisierung unterstützen (was bei den meisten neueren Intel und AMD Prozessoren der Fall ist). KVM an sich stellt die direkte Schnittstelle zum Linux-Kernel zur Verfügung, als Virtualisierungsumgebung kommt QEMU zum Einsatz.
 
-\subsection{QEMU}
+\subsubsection{QEMU}
 QEMU ist ein quelloffener Emulator und Virtualisierer. QEMU kommuniziert direkt via KVM mit dem Kernel und der CPU, um so dass das Gastsystem möglichst nahe and der Hardware laufen zu lassen. Eine komplette Emulation (Vollvirtualisierung) ist mit QEMU ebenfalls möglich, führt jedoch zu grossen Performanceeinbussen.
+
+\subsubsection{Libvirt}
+
+Libvirt ist eine Umgebung, welche den Betrieb einer virtuellen Umgebung über eine einheitliche API zur Verfügung stellt. Dies für KVM/QEMU aber auch alternative Umgebungen wie XEN oder z.T. sogar VMWare\textregistered  vSphere\texttrademark.
+
+Unter dem Überbegriff Libvirt werden normalerweise folgende Komponenten verstanden:
+
+\begin{description}
+	\item[\lstinline|libvirt|] \hfill \\
+		\lstinline|libvirt| ist die eigentliche Programmbibliothek, welche die funktionen der Virtualisierungslösung abstrahiert.
+	\item[\lstinline|libvirtd|] \hfill \\
+		\lstinline|libvirtd| ist ein Daemon, welcher den Betrieb der virtuellen Umgebung (Maschinen, Netzwerken, Speicherpools etc.) organisiert und verwaltet.
+	\item[\lstinline|virsh|] \hfill \\
+		\lstinline|virsh| ist ein Verwaltungswerkzeug, über welches die \lstinline|libvirt(d)|-Umgebung konfiguriert und kontrolliert werden kann. Mit \lstinline|virsh start VM1| kann z.B. eine virtuelle Maschine gestartet werden.
+\end{description}
+
+\subsubsection{Virt-Manager}
+
+Das Programm \lstinline|virt-manager| ist ein grafisches Verwaltungsprogramm, über welches die von Libvirt abstrahierte virtuelle Umgebung gesteuert werden kann. Die Oberfläche wird von RedHat in Python/GTK entwickelt und erinnert z.B. an die klassische Oberfläche von VMWare\textregistered vSphere\texttrademark.
+
+Der Virt-Manager kann sich (wie auch \lstinline|virsh|) über das Internet oder einer Netzwerkverbindung mit einer headless Libvirt-Umgebung in Verbindung setzen (d.h., es sind keine grafischen Komponenten auf Serverseite nötig.)
 
 \subsection{Docker}
 Docker ist im Gegensatz zu KVM keine Lösung für virtuelle Maschinen (und damit unabhängige Betriebssysteme mit eigenem CPU-Scheduling etc.) sondern basiert auf Linux Container (LXC). Ein LXC ist eine vom Kernel bereitgestellte virtuelle Umgebung zur isolierten Ausführung von Prozessen.
@@ -53,7 +74,7 @@ Beim Bauen eines Containers wird üblicherweise auf die Basis eines bestehenden 
 
 \subsubsection{Docker Compose}
 
-Docker Compose ist ein ergänzendes Programm zu Docker, welches die Provisionierung und Verknüpfung von mehreren Docker-Containern erlaubt. Der Aufbau/Start der Container wird mittels dem Kommando \lstinline|docker-compose| gesteuert; dies liest die \lstinline|docker-compose.yml|-Datei ein, in welcher weitergehende Anweisung für die Konfiguration der Container definiert sind.
+Docker Compose ist ein ergänzendes Programm zu Docker, welches die Provisionierung und Verknüpfung von mehreren Docker-Containern erlaubt. Der Aufbau/Start der Container wird mittels dem Kommando \lstinline|docker-compose| gesteuert; dies liest die \lstinline|docker-compose.yml|-Datei ein, in welcher weitergehende die Anweisungen für die Konfiguration der Container definiert sind.
 %TODO Michi: Fehlt hier noch etwas?
 
 \subsubsection{Docker Swarm}
@@ -61,7 +82,7 @@ Docker Swarm ist ein Orchestrierungs-Werkzeug für den Betrieb von Docker-Cluste
 %TODO Michi: Was kann das noch mehr?.
 
 
-\section{KVM / Qemu}
+\section{KVM / QEMU}
 \subsection{Grundlegendes}
 
 \subsection{Beschreibung}
@@ -76,6 +97,8 @@ Docker Swarm ist ein Orchestrierungs-Werkzeug für den Betrieb von Docker-Cluste
 
 \subsection{Setup}
 \subsubsection{Abhängigkeiten}
+Die meisten Linux-Distributionen stellen eine vorbereitete KVM umge
+
 \begin{enumerate}
 	\item \lstinline|sudo dnf install @virtualization docker-io libvirt-docs|
 	\item \lstinline|sudo service libvirtd start|
