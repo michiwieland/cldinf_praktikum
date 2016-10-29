@@ -35,16 +35,33 @@
 \end{description}
 
 \subsection{KVM: Kernel-based Virtual Machine}
-KVM ist eine Virtualisierungslösung für Linux, die Gebrauch von Virtualisierungstechniken aktueller x86 Prozessoren macht. Um KVM nutzen zu können muss der Prozessor des Hostsystems Hardwarevirtualisierung unterstützen. KVM an sich stellt die direkte Schnittstelle zum Linux-Kernel zur Verfügung, als Virtualisierungsumgebung kommt QEMU zum Einsatz.
+KVM ist eine Virtualisierungslösung für Linux, die Gebrauch von Virtualisierungstechniken aktueller Prozessorarchitekturen macht. Um KVM nutzen zu können muss der Prozessor des Hostsystems Hardwarevirtualisierung unterstützen (was bei den meisten neueren Intel und AMD Prozessoren der Fall ist). KVM an sich stellt die direkte Schnittstelle zum Linux-Kernel zur Verfügung, als Virtualisierungsumgebung kommt QEMU zum Einsatz.
 
 \subsection{QEMU}
-QEMU ist ein quelloffener Emulator und Virtualisierer. QEMU kommuniziert direkt mit dem Kernel, so dass das Gastsystem annähernd mit der Geschwindigkeit des Hosts läuft. 
+QEMU ist ein quelloffener Emulator und Virtualisierer. QEMU kommuniziert direkt via KVM mit dem Kernel und der CPU, um so dass das Gastsystem möglichst nahe and der Hardware laufen zu lassen. Eine komplette Emulation (Vollvirtualisierung) ist mit QEMU ebenfalls möglich, führt jedoch zu grossen Performanceeinbussen.
 
 \subsection{Docker}
-Docker ist im Gegensatz zu KVM keine virtuelle Maschiene sondern basiert auf Linux Container (LXC). Ein LXC ist eine vom Betriebssystem bereitgestellte virtuelle Umgebung zur isolierten Ausführung von Prozessen. Docker packt eine Anwendung einschliesslich ihrer Abhängikeiten in einen Container. Das Betriebssystem des Container muss einzig den gleichen Kernel wie das Hostsystem verwenden. In Docker lassen sich Ketten von bis zu 127 Images erstellen, die dann von Docker zur Ausführung in einen Container zusammengafasst werden. Docker wird verwendet um Prozess isoliert voneinander auszuführen. 
+Docker ist im Gegensatz zu KVM keine Lösung für virtuelle Maschinen (und damit unabhängige Betriebssysteme mit eigenem CPU-Scheduling etc.) sondern basiert auf Linux Container (LXC). Ein LXC ist eine vom Kernel bereitgestellte virtuelle Umgebung zur isolierten Ausführung von Prozessen.
+
+Docker ermöglicht neben der Steuerung von isolierten Applikationsausführung in LXC die Konfiguration von Netzwerkeinstellungen bzw. Portfreigabe ein komplett isoliertes Dateisystem pro Applikation (sogenannte Images). Damit ist es möglich, Systemunabhängig immer die gleiche Plattform zur Ausführung zu paketieren und weiter zu verteilen. Von Docker erstellte Images werden üblicherweise mit einem Dateisystem erstellt, welches Snapshots erlaubt (z.B. AUFS, UnionFS oder BTRFS).
+
+Zur Erstellung von eigenen Images, auf deren Basis eine Applikation ausgeführt wird, können mit einem \lstinline[]|Dockerfile| komplette ''Bauanleitungen'' erstellt werden. Im \lstinline[]|Dockerfile| sind die Eigenschaften des neuen Container und Images sowie darauf auszuführende Kommandos zur Bereitstellung der Umgebung hinterlegt.
+
+So gebaute Images (oft in diesem Zusammenhang auch einfach als Container bezeichnet) können über eine Online-Plattform verteilt werden. Die Firma Docker Inc. stellt zu diesem Zweck die öffentliche Plattform \emph{DockerHub} unter https://hub.docker.com/ zur Verfügung.
+
+Beim Bauen eines Containers wird üblicherweise auf die Basis eines bestehenden Containers auf der DockerHub-Plattform zurückgegriffen. So gibt es dort zum Beispiel Images, welche die Dateisystemstruktur und Bibliotheken eines minimalen Ubuntu-Systems oder sogar einer Umgebung für  wie Ruby on Rails zur Verfügung stellen.
+
+\subsubsection{Docker Compose}
+
+Docker Compose ist ein ergänzendes Programm zu Docker, welches die Provisionierung und Verknüpfung von mehreren Docker-Containern erlaubt. Der Aufbau/Start der Container wird mittels dem Kommando \lstinline|docker-compose| gesteuert; dies liest die \lstinline|docker-compose.yml|-Datei ein, in welcher weitergehende Anweisung für die Konfiguration der Container definiert sind.
+%TODO Michi: Fehlt hier noch etwas?
+
+\subsubsection{Docker Swarm}
+Docker Swarm ist ein Orchestrierungs-Werkzeug für den Betrieb von Docker-Clustern (oder auch einzelnen Docker Hosts).
+%TODO Michi: Was kann das noch mehr?.
 
 
-\section{Qemu KVM}
+\section{KVM / Qemu}
 \subsection{Grundlegendes}
 
 \subsection{Beschreibung}
@@ -58,7 +75,7 @@ Docker ist im Gegensatz zu KVM keine virtuelle Maschiene sondern basiert auf Lin
 \end{itemize}
 
 \subsection{Setup}
-\subsubsection{Abhängigkeitn}
+\subsubsection{Abhängigkeiten}
 \begin{enumerate}
 	\item \lstinline|sudo dnf install @virtualization docker-io libvirt-docs|
 	\item \lstinline|sudo service libvirtd start|
