@@ -58,9 +58,8 @@ Das Programm \lstinline|virt-manager| ist ein grafisches Verwaltungsprogramm, ü
 
 Der Virt-Manager kann sich (wie auch \lstinline|virsh|) über eine Netzwerkverbindung mit einer (headless) Libvirt-Umgebung in Verbindung setzen (d.h., es sind keine grafischen Komponenten auf Serverseite nötig.)
 
-\subsection{Setup}
-\subsubsection{Installation}
-\paragraph{Hardwarevirtualisierung vmx/svm} \hfill \\
+\subsection{Installation}
+\subsubsection{Hardwarevirtualisierung vmx/svm}
 Damit KVM genutzt werden kann, muss die CPU Hardwarevirtualisierung unterstützen. Dies kann bei neueren Prozessoren im UEFI/BIOS aktiviert werden. Ob die Unterstützung momentan aktiv ist, kann mit folgendem Befehl ermittelt werden\footnote{Achtung: Unter gewissen neue Intel CPUs ist dieser Test aufgrund eines Bugs scheinbar erfolgreich, obwohl die Option noch abgestellt ist. In diesem Fall muss die Option trotzdem noch eingeschaltet werden.}:
 \begin{lstlisting}[language=bash]
 # Eintrag VMX oder SVM sollten zurueckgegeben werden
@@ -76,10 +75,10 @@ lsmod | grep kvm # Sollte kvm ausgeben, falls geladen.
 sudo modprobe kvm
 \end{lstlisting}
 
-Bei selber kompilierten Linux Kerneln können mit \lstinline|make kvmconfig| die entsprechenden Optionen aktiviert werden.
+Bei selber kompilierten Linux Kerneln kann mit \lstinline|make kvmconfig| die entsprechende Build-Konfiguration aktiviert werden.
 
-\paragraph{Installation KVM} \hfill \\
-Die meisten Linux-Distributionen stellen in den Paket-Repositories KVM, QEMU und Libvirt bereit. Wir verwenden in unseren Beispiel die Linux Distribution \lstinline|Fedora Workstation 24|
+\subsubsection{Installation KVM}
+Die meisten Linux-Distributionen stellen in den Paket-Repositories KVM, QEMU und Libvirt bereit. Wir verwenden in unseren Beispiel die Linux Distribution \lstinline|Fedora Workstation 24|.
 
 \begin{enumerate}
 	\item Installation von KVM, QEMU, Libvirt (von Fedora bereitgestelltes Metapaket)\\ \hfill
@@ -94,95 +93,137 @@ Der Benutzer, welcher die Virtuellen Maschinen verwalten soll, muss den Gruppen 
 sudo usermod -aG libvirt, kvm $USER
 \end{lstlisting}
 
-\subsection{Erstellen der virtuellen Maschinen}
+\subsection{Festplattenimages erstellen}
+Festplatten-Images können entweder mit dem Tool \lstinline|qemu-img| erstellt werden, oder alternativ mit Libvirt direkt mit dem Tool \lstinline|virt-install| (siehe nächste Seiten).
 
-\subsubsection{Festplattenimage vorbereiten}
-Festplatten-Images können entweder mit dem Tool \lstinline|qemu-img| erstellt werden. In unserem Fall bauen wir aber auf eine bestehendes Festplatten-Image der Mini-Distribution ''CirrOS'' auf.
+In unserem Fall bauen wir aber auf eine bestehendes Festplatten-Image der Mini-Distribution ''CirrOS'' auf.
 
-\paragraph{Unterstützte Festplattenformate} \hfill \\
+\subsubsection{Unterstützte Festplattenformate}
 QEMU unterstützt als Festplatten Images diverse Formate (die nachfolgende Liste wurde übernommen von \url{https://en.wikibooks.org/wiki/QEMU/Images#Image_types}, Lizenz CC-SA):
 
 \begin{description}
 	\item[raw] \hfill \\
-		(default) the raw format is a plain binary image of the disc image, and is very portable. On filesystems that support sparse files, images in this format only use the space actually used by the data recorded in them.
+	(default) the raw format is a plain binary image of the disc image, and is very portable. On filesystems that support sparse files, images in this format only use the space actually used by the data recorded in them.
 	\item[cloop] \hfill \\
-		Compressed Loop format, mainly used for reading Knoppix and similar live CD image formats
+	Compressed Loop format, mainly used for reading Knoppix and similar live CD image formats
 	\item[cow] \hfill \\
-		copy-on-write format, supported for historical reasons only and not available to QEMU on Windows
+	copy-on-write format, supported for historical reasons only and not available to QEMU on Windows
 	\item[qcow] \hfill \\
-		the old QEMU copy-on-write format, supported for historical reasons and superseded by qcow2
+	the old QEMU copy-on-write format, supported for historical reasons and superseded by qcow2
 	\item[qcow2] \hfill \\
-		QEMU copy-on-write format with a range of special features, including the ability to take multiple snapshots, smaller images on filesystems that don't support sparse files, optional AES encryption, and optional zlib compression
+	QEMU copy-on-write format with a range of special features, including the ability to take multiple snapshots, smaller images on filesystems that don't support sparse files, optional AES encryption, and optional zlib compression
 	\item[vmdk] \hfill \\
-		VMware 3 \& 4, or 6 image format, for exchanging images with that product
+	VMware 3 \& 4, or 6 image format, for exchanging images with that product
 	\item[vdi] \hfill \\
-		VirtualBox 1.1 compatible image format, for exchanging images with VirtualBox.
+	VirtualBox 1.1 compatible image format, for exchanging images with VirtualBox.
 	\item[vhdx] \hfill \\
-		Hyper-V compatible image format, for exchanging images with Hyper-V 2012 or later.
+	Hyper-V compatible image format, for exchanging images with Hyper-V 2012 or later.
 	\item[vpc] \hfill \\
-		Hyper-V legacy image format, for exchanging images with Virtual PC / Virtual Server / Hyper-V 2008. 
+	Hyper-V legacy image format, for exchanging images with Virtual PC / Virtual Server / Hyper-V 2008. 
 \end{description}
 
-\paragraph{Anlegen eines neuen Images} \hfill \\
-%TODO
+\subsubsection{Anlegen eines neuen Images ohne \lstinline|virt-install|}
+Die Erstellung eines \lstinline|qcow2|-Images Namens \lstinline|test.qcow2| mit einer maximalen Grösse von \lstinline|3GB|. Beim \lstinline|qcow2|-Format wird nicht der ganze Speicherplatz beim erstellen alloziert, sondern erst bei tatsächlicher Belegung\footnote{Damit wird sogenannte ''Überprovisionierung'' möglich, d.h. eine Mehrfachvergabe von tatsächlich verfügbarem Speicherplatz an mehrere VMs. Wichtig: Ist der ''tatsächliche'' Speicherplatz aufgebraucht und das Image hat noch (virtuellen) freien Platz, kann es zu Datenverlust kommen (verursacht durch das Guest-Betriebssystem). Libvirt versetzt zur Vorbeugung in diesem Fall alle VMs in einen standby-Zustand.}.
 
-\paragraph{Ablegen eines bestehenden virtuellen Images} \hfill \\
-%TODO
+
+\begin{lstlisting}[language=bash]
+qemu-img create /var/lib/libvirt/images/test.qcow2 3G -f qcow2
+virsh pool-refresh default
+\end{lstlisting}
+
+
+\subsubsection{Ablegen eines bestehenden virtuellen Images}
 
 In unserem Beispiel greifen wir auf ein bestehendes Festplatten-Image der Mini-Distribution ''CirrOS'' aus dem OpenStack-Projekt zurück.
 
-Zur Inbetriebnahme laden wir das Image im \lstinline|qcow2|-Format aus dem Internet und speichern es im Ordner des Standard-Storage-Volume von Libvirt unter Fedora, \lstinline|/var/lib/libvirt/images/|:
+Zur Inbetriebnahme laden wir das Image im \lstinline|qcow2|-Format aus dem Internet und speichern es im Ordner \lstinline|/var/lib/libvirt/images/|:
 
 \begin{lstlisting}[language=bash]
 sudo wget -O /var/lib/libvirt/images/vm1.qcow2 \
-	http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img
+http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img
+virsh pool-refresh default
 \end{lstlisting}
 
-\paragraph{Libvirt Storage Pools} \hfill \\
-%TODO
+\subsubsection{Libvirt Storage Pools}
 
+Wir haben beim oben stehenden Hinzufügen von Images jeweils zusätzlich das Kommando \lstinline|virsh pool-refresh default| ausgeführt. Dadurch wird der Libvirt Storage-Pool aktualisiert, damit das neue Image erkannt wird.
+
+Libvirt verwaltet die Speicherorte, von denen virtuelle Images Eingebungen werden können, in sogenannten \emph{Pools}. Ein Pool ist dabei oft ein bestimmter Ordner auf dem Computer oder einem Netzwerklaufwerk, kann aber z.B. auch ein iSCSI Speicher darstellen.
+
+Standardmässig ist unter Fedora der Ordner \lstinline|/var/lib/libvirt/images/| mit dem Namen \lstinline|default| als Pool eingerichtet. Diesen haben wir in unseren Beispielen immer verwendet.
+
+Die Pools können mit \lstinline|virsh| wie folgt verwendet werden (Ausschnitt aus \lstinline|virsh help|):
+
+\lstinputlisting{appendix/kvm/libvirt/pool_virsh.man}
+
+Die XML-Konfiguration des \lstinline|default|-Pools sieht wie folgt aus:
+
+\lstinputlisting[language=xml]{appendix/kvm/libvirt/pool_default.xml}
+
+
+
+\subsection{Erstellen der virtuellen Maschinen}
 
 
 \subsubsection{Virt-Install}
-Um eine neue virtuelle Maschine anzulegen, muss eine XML-Datei unter \lstinline|/etc/libvirt/qemu| erstellt werden. Die Datei beschreibt wie die VM auszusehen hat.
+Um eine neue virtuelle Maschine anzulegen, stellt Libvirt das Tool \lstinline|virt-install| zur Verfügung.
 
+In unserem Beispiel setzten wir eine einfache virtuelle Maschine auf namens \lstinline|VM1|, \lstinline|512|MB RAM und dem gleichen emulierten CPU-Typ wie das Hostsystem.
+
+Den Parameter \lstinline|--os-variant ubuntu14.04| brauchen wir hier, um die Standardeinstellungen auf ein ähnliches Linux-System einzustellen.
+
+Mittels der Grafik- und Serial-Konfiguration deaktivieren wir die Erstellung einer virtuellen Grafikkarte und setzen stattdessen eine Serielle Schnittstelle ein; diese genügt für unsere Zwecke.
+
+Mit \lstinline|--import --disk| geben wir das bestehende Festplattenimage an, da wir kein neues Image erstellen möchten. Alternativ wäre mit \lstinline|--disk size=3| die Erstellung eines leeren 3GB-Image im \lstinline|default|-Pool mit dem Namen der virtuellen Maschine möglich.
 
 \begin{lstlisting}[language=bash]
-virsh create /etc/libvirt/qemu/VM1.xml
-
-virsh start VM1 
-
-virsh console VM1
+virt-install --name VM1 --ram 512 --cpu host\
+--os-variant ubuntu14.04\
+--graphics none --noautoconsole --serial pty \
+--import --disk /var/lib/libvirt/images/vm1.qcow2
 \end{lstlisting}
 
-\begin{lstlisting}[language=XML]
- TODO copy xml vm1, vm2, vm3 from /etc/libvirt/qemu
+\lstinline|virt-install| legt mit diesem Kommando eine Libvirt-XML-Konfiguration für die virtuelle Maschine an (siehe Abschnitt \ref{sec:libvirt-xml-konfiguration-eines-gastes}).
+
+Nach dem Anlegen startet \lstinline|virt-install| die VM direkt.
+
+%TODO: Wie kann das verhindert werden bzw. andernfalls die VM wieder heruntergefahren?
+
+\subsubsection{Installation ohne \lstinline|virt-install|}
+
+Alternativ zur Generierung der Konfiguration mit \lstinline|virt-install| gibt es die Möglichkeit, eine XML-Konfiguration  direkt mit \lstinline|virsh| zu importieren:
+
+\begin{lstlisting}
+virsh create /root/VM1.xml
 \end{lstlisting}
 
+\lstinline|virsh| legt damit, gleich wie \lstinline|virt-install|, die Konfigurationsdatei der VM unter \lstinline|/etc/libvirt/qemu/VM1.xml| ab. Vorgängig führt Libvirt eine Validierung der Konfiguration durch.
+
+(Siehe Abschnitt \ref{sec:libvirt-xml-konfiguration-eines-gastes} für die XML-Konfiguration)
+
+\subsubsection{Libvirt XML-Konfiguration eines Gastes}\label{sec:libvirt-xml-konfiguration-eines-gastes}
+
+Die Datei \lstinline|/etc/libvirt/qemu/VM1.xml| (bzw. \lstinline|/root/VM1.xml|) sieht folgendermassen aus:
+\lstinputlisting{appendix/kvm/libvirt/domain_VM1.xml}
 
 \subsubsection{Virt-Clone}
-Die weiteren WM's wurden geklont und gemäss Ihren Anforderungen angepasst.
-\begin{lstlisting}[language=bash]
-
-\end{lstlisting}
+%TODO: Clone VMs with \lstinline|virt-clone| and without.
 
 
-\subsection{Network Configuration}
+\subsection{Netzwerk Konfiguration}
 % TODO Remove sources
 % http://wiki.qemu.org/Documentation/Networking#Network_backend_types
 % http://wiki.libvirt.org/page/Networking#Debian.2FUbuntu_Bridging
 
 
 \subsubsection{Grundlegend}
+%TODO 
 Für jedes virtuelle Netzwerk legt libvirt eine virtuelle Bridge an. Diese können auf dem Host mit \lstinline|brctl show| angezeigt werden. Zudem wird ein virtuelles Interface im zugewiesenen Adressraum (default: 192.168.122.0/24) erstellt, das per NAT mit der physischen Netzwerkkarte verbunden ist. Damit jeder virtuelle Maschine eine gültige IP Adresse kriegt, wird auf dem Host Interface ein DHCP Server (dnsmasq) eingerichtet. Mit dieser Konfiguration kann jede virtuelle Maschine ins Internet, hat jedoch keine Konnektivität zu den anderen VM's. 
 
 \begin{description}
 	\item[/var/lib/libvirt/dnsmasq] Die DHCP Konfigurations-Files 
 	\item[/etc/libvirt/qemu/networks] Netzwerk Konfigurations-Files
 \end{description}
-
-
-
 
 \subsubsection{Host einrichten}
 \begin{lstlisting}[language=bash]
@@ -211,8 +252,20 @@ virsh net-edit <network-name>
 </network>
 \end{lstlisting}
 
-\subsection{KVM / QEMU ohne Libvirt}
-%TODO.
+\subsection{Verwalten einer VM mit \lstinline|virsh|}
+
+%TODO: Start, Console, Shutdown (ACPI/Forced), further management
+
+\begin{lstlisting}[language=bash]
+virsh create /etc/libvirt/qemu/VM1.xml
+
+virsh start VM1 
+
+virsh console VM1
+\end{lstlisting}
+
+\subsection{KVM / QEMU unter der Libvirt-Abstraktion}
+%TODO: Ansatzweise Beschreiben, wie KVM/QEMU auch ohne Libvirt verwendet werden kann
 
 
 
@@ -307,8 +360,7 @@ chcon -R system_u:object_r:admin_home_t:s0 docker-elk
 
 
 \section{Vergleich der Technologien}
-
-
+%TODO
 
 \subsection{KVM} %TODO
 \paragraph{Vorteile}
