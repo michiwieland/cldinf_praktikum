@@ -24,7 +24,7 @@
 % Qemu-KVM and Docker networking configuration files/scripts 
 \section{KVM / QEMU}
 \subsection{Grundlegendes}
-KVM ist eine Virtualisierungslösung für Linux, die Gebrauch von Virtualisierungstechniken aktueller Prozessorarchitekturen macht. Um KVM nutzen zu können muss der Prozessor des Hostsystems Hardwarevirtualisierung unterstützen (was bei den meisten neueren Intel und AMD Prozessoren der Fall ist). KVM an sich stellt die direkte Schnittstelle zum Linux-Kernel zur Verfügung, als Virtualisierungsumgebung kommt QEMU zum Einsatz.
+KVM ist eine Virtualisierungslösung für Linux, die Gebrauch von Virtualisierungstechniken aktueller Prozessorarchitekturen macht. Um KVM nutzen zu können, muss der Prozessor des Hostsystems Hardwarevirtualisierung unterstützen (was bei den meisten neueren Intel und AMD Prozessoren der Fall ist). KVM an sich stellt die direkte Schnittstelle zum Linux-Kernel zur Verfügung, als Virtualisierungsumgebung kommt QEMU zum Einsatz.
 
 \subsubsection{Terminologie}
 \begin{description}
@@ -35,11 +35,11 @@ KVM ist eine Virtualisierungslösung für Linux, die Gebrauch von Virtualisierun
 \end{description}
 
 \subsubsection{QEMU}
-QEMU ist ein quelloffener Emulator und Virtualisierer. QEMU kommuniziert direkt via KVM mit dem Kernel und der CPU, um so das Gastsystem möglichst nahe and der Hardware laufen zu lassen. Eine komplette Emulation (Vollvirtualisierung) ist mit QEMU ebenfalls möglich, führt jedoch zu grossen Performanceeinbussen.
+QEMU ist ein Open Source System-Emulator. QEMU kommuniziert direkt via KVM mit dem Kernel und der CPU, um so das Gastsystem möglichst nahe an der Hardware laufen zu lassen. Eine komplette Emulation (Vollvirtualisierung) ist mit QEMU ebenfalls möglich, führt jedoch zu grossen Performanceeinbussen.
 
 \subsubsection{Libvirt}
 
-Libvirt ist eine Umgebung, welche den Betrieb einer virtuellen Umgebung über eine einheitliche API zur Verfügung stellt. Dies für KVM/QEMU aber auch alternative Umgebungen wie XEN oder z.T. sogar VMWare\textregistered  vSphere\texttrademark.
+Libvirt ist eine Umgebung, welche den Betrieb einer virtuellen Umgebung über eine einheitliche API zur Verfügung stellt. Dies für KVM/QEMU aber auch alternative Umgebungen wie XEN.
 
 Unter dem Überbegriff \emph{Libvirt} werden normalerweise folgende Komponenten verstanden:
 
@@ -56,63 +56,95 @@ Unter dem Überbegriff \emph{Libvirt} werden normalerweise folgende Komponenten 
 
 Das Programm \lstinline|virt-manager| ist ein grafisches Verwaltungsprogramm, über welches die von Libvirt abstrahierte virtuelle Umgebung gesteuert werden kann. Die Oberfläche wird von RedHat in Python/GTK entwickelt und erinnert z.B. an die klassische Oberfläche von VMWare\textregistered vSphere\texttrademark.
 
-Der Virt-Manager kann sich (wie auch \lstinline|virsh|) über das Internet oder einer Netzwerkverbindung mit einer headless Libvirt-Umgebung in Verbindung setzen (d.h., es sind keine grafischen Komponenten auf Serverseite nötig.)
-
-\subsection{Beschreibung}
-\paragraph{Vorteile}
-\begin{itemize}
-	\item Ein Vorteil von KVM ist, dass die Gastsysteme fast mit nativer Geschwindigkeit laufen, d.h. das Gastsystem reagiert nahezu so schnell wie ein natives System. 
-\end{itemize}
-\paragraph{Nachteile}
-\begin{itemize}
-	\item Hoher Bedarf an Festplatten und Arbeitsspeicher und langwieriger Ladevorgang beim Starten der virtuellen Maschienen
-\end{itemize}
+Der Virt-Manager kann sich (wie auch \lstinline|virsh|) über eine Netzwerkverbindung mit einer (headless) Libvirt-Umgebung in Verbindung setzen (d.h., es sind keine grafischen Komponenten auf Serverseite nötig.)
 
 \subsection{Setup}
-\subsubsection{Abhängigkeiten}
-Die meisten Linux-Distributionen stellen eine vorbereitete KVM umge
-
-\begin{enumerate}
-	\item \lstinline|sudo dnf install @virtualization docker-io libvirt-docs|
-	\item \lstinline|sudo service libvirtd start|
-\end{enumerate}
-
-\subsubsection{Vorraussetzung}
-\paragraph{Hardwarevirtualisierung} \hfill \\
-Damit KVM genutzt werden kann, muss die CPU Hardwarevirtualisierung unterstützen. Dies kann mit folgendem Befehl herausgefunden werden.
+\subsubsection{Installation}
+\paragraph{Hardwarevirtualisierung vmx/svm} \hfill \\
+Damit KVM genutzt werden kann, muss die CPU Hardwarevirtualisierung unterstützen. Dies kann bei neueren Prozessoren im UEFI/BIOS aktiviert werden. Ob die Unterstützung momentan aktiv ist, kann mit folgendem Befehl ermittelt werden\footnote{Achtung: Unter gewissen neue Intel CPUs ist dieser Test aufgrund eines Bugs scheinbar erfolgreich, obwohl die Option noch abgestellt ist. In diesem Fall muss die Option trotzdem noch eingeschaltet werden.}:
 \begin{lstlisting}[language=bash]
-# Eintrag VMX oder SVM sollten hervorgehoben werden
+# Eintrag VMX oder SVM sollten zurueckgegeben werden
 egrep '(vmx|svm)' /proc/cpuinfo
 \end{lstlisting}
 
-Die nötigen Kernelmodule werden grundsätzlich automatisch geladen. Sollte dies nicht der Fall sein, können sie mit folgendem Befehl geladen werden.
-\begin{lstlisting}[language=bash]
-lsmod | grep kvm # Sollte kvm und kvm_intel ausgeben 
 
-# manuell laden
+Die nötigen \lstinline|kvm|-Kernelmodule werden unter Fedora bei einem Reboot automatisch geladen. Sollte dies nicht der Fall sein, können sie mit folgendem Befehl geladen werden:
+\begin{lstlisting}[language=bash]
+lsmod | grep kvm # Sollte kvm ausgeben, falls geladen.
+
+# Ansonsten: Kernel Module manuell laden
 sudo modprobe kvm
-sudo modprobe kvm_intel
 \end{lstlisting}
 
-\paragraph{Usergroups} \hfill \\
-Der aktuelle User sollte noch den Gruppen \lstinline|libvirt| und \lstinline|kvm| hinzugefügt werden.
+Bei selber kompilierten Linux Kerneln können mit \lstinline|make kvmconfig| die entsprechenden Optionen aktiviert werden.
+
+\paragraph{Installation KVM} \hfill \\
+Die meisten Linux-Distributionen stellen in den Paket-Repositories KVM, QEMU und Libvirt bereit. Wir verwenden in unseren Beispiel die Linux Distribution \lstinline|Fedora Workstation 24|
+
+\begin{enumerate}
+	\item Installation von KVM, QEMU, Libvirt (von Fedora bereitgestelltes Metapaket)\\ \hfill
+		\lstinline|sudo dnf install @virtualization libvirt-docs|
+	\item Starten des \lstinline|libvirtd|-Dienstes\\ \hfill
+		\lstinline|sudo service libvirtd start|
+\end{enumerate}
+
+\paragraph{Benutzerzugriff} \hfill \\
+Der Benutzer, welcher die Virtuellen Maschinen verwalten soll, muss den Gruppen \lstinline|libvirt| und \lstinline|kvm| hinzugefügt werden (gem. Umgebung von \lstinline|Fedora Workstation 24|)
 \begin{lstlisting}[language=bash]
 sudo usermod -aG libvirt, kvm $USER
 \end{lstlisting}
 
+\subsection{Erstellen der virtuellen Maschinen}
+
+\subsubsection{Festplattenimage vorbereiten}
+Festplatten-Images können entweder mit dem Tool \lstinline|qemu-img| erstellt werden. In unserem Fall bauen wir aber auf eine bestehendes Festplatten-Image der Mini-Distribution ''CirrOS'' auf.
+
+\paragraph{Unterstützte Festplattenformate} \hfill \\
+QEMU unterstützt als Festplatten Images diverse Formate (die nachfolgende Liste wurde übernommen von \url{https://en.wikibooks.org/wiki/QEMU/Images#Image_types}, Lizenz CC-SA):
+
+\begin{description}
+	\item[raw] \hfill \\
+		(default) the raw format is a plain binary image of the disc image, and is very portable. On filesystems that support sparse files, images in this format only use the space actually used by the data recorded in them.
+	\item[cloop] \hfill \\
+		Compressed Loop format, mainly used for reading Knoppix and similar live CD image formats
+	\item[cow] \hfill \\
+		copy-on-write format, supported for historical reasons only and not available to QEMU on Windows
+	\item[qcow] \hfill \\
+		the old QEMU copy-on-write format, supported for historical reasons and superseded by qcow2
+	\item[qcow2] \hfill \\
+		QEMU copy-on-write format with a range of special features, including the ability to take multiple snapshots, smaller images on filesystems that don't support sparse files, optional AES encryption, and optional zlib compression
+	\item[vmdk] \hfill \\
+		VMware 3 \& 4, or 6 image format, for exchanging images with that product
+	\item[vdi] \hfill \\
+		VirtualBox 1.1 compatible image format, for exchanging images with VirtualBox.
+	\item[vhdx] \hfill \\
+		Hyper-V compatible image format, for exchanging images with Hyper-V 2012 or later.
+	\item[vpc] \hfill \\
+		Hyper-V legacy image format, for exchanging images with Virtual PC / Virtual Server / Hyper-V 2008. 
+\end{description}
+
+\paragraph{Anlegen eines neuen Images} \hfill \\
+%TODO
+
+\paragraph{Ablegen eines bestehenden virtuellen Images} \hfill \\
+%TODO
+
+In unserem Beispiel greifen wir auf ein bestehendes Festplatten-Image der Mini-Distribution ''CirrOS'' aus dem OpenStack-Projekt zurück.
+
+Zur Inbetriebnahme laden wir das Image im \lstinline|qcow2|-Format aus dem Internet und speichern es im Ordner des Standard-Storage-Volume von Libvirt unter Fedora, \lstinline|/var/lib/libvirt/images/|:
+
+\begin{lstlisting}[language=bash]
+sudo wget -O /var/lib/libvirt/images/vm1.qcow2 \
+	http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img
+\end{lstlisting}
+
+\paragraph{Libvirt Storage Pools} \hfill \\
+%TODO
 
 
 
-
-\subsubsection{Image herunterladen}
-\begin{enumerate}
-	\item Cirros Festplatten Image herunterladen: \url{http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img}
-	\item Festplatten Image nach \lstinline|/var/lib/libvirt/images/| verschieben
-	\item Für jede virtuelle Maschiene eine Kopie des Festplatten Image anlegen
-\end{enumerate}
-
-\subsubsection{Virt-Image}
-Um eine neue virtuelle Maschiene anzulegen, muss eine XML-Datei unter \lstinline|/etc/libvirt/qemu| erstellt werden. Die Datei beschreibt wie die VM auszusehen hat. 
+\subsubsection{Virt-Install}
+Um eine neue virtuelle Maschine anzulegen, muss eine XML-Datei unter \lstinline|/etc/libvirt/qemu| erstellt werden. Die Datei beschreibt wie die VM auszusehen hat.
 
 
 \begin{lstlisting}[language=bash]
@@ -127,7 +159,6 @@ virsh console VM1
  TODO copy xml vm1, vm2, vm3 from /etc/libvirt/qemu
 \end{lstlisting}
 
-\subsubsection{Virt-Install}
 
 \subsubsection{Virt-Clone}
 Die weiteren WM's wurden geklont und gemäss Ihren Anforderungen angepasst.
@@ -180,9 +211,8 @@ virsh net-edit <network-name>
 </network>
 \end{lstlisting}
 
-
-
-
+\subsection{KVM / QEMU ohne Libvirt}
+%TODO.
 
 
 
@@ -194,7 +224,7 @@ Docker ermöglicht neben der Steuerung von isolierten Applikationsausführung in
 
 Zur Erstellung von eigenen Images, auf deren Basis eine Applikation ausgeführt wird, können mit einem \lstinline[]|Dockerfile| komplette ''Bauanleitungen'' erstellt werden. Im \lstinline[]|Dockerfile| sind die Eigenschaften des neuen Container und Images sowie darauf auszuführende Kommandos zur Bereitstellung der Umgebung hinterlegt.
 
-So gebaute Images (oft in diesem Zusammenhang auch einfach als Container bezeichnet) können über eine Online-Plattform verteilt werden. Die Firma Docker Inc. stellt zu diesem Zweck die öffentliche Plattform \emph{DockerHub} unter https://hub.docker.com/ zur Verfügung.
+So gebaute Images (oft in diesem Zusammenhang auch einfach als Container bezeichnet) können über eine Online-Plattform verteilt werden. Die Firma Docker Inc. stellt zu diesem Zweck die öffentliche Plattform \emph{DockerHub} unter \url{https://hub.docker.com/} zur Verfügung.
 
 Beim Bauen eines Containers wird üblicherweise auf die Basis eines bestehenden Containers auf der DockerHub-Plattform zurückgegriffen. So gibt es dort zum Beispiel Images, welche die Dateisystemstruktur und Bibliotheken eines minimalen Ubuntu-Systems oder sogar einer Umgebung für  wie Ruby on Rails zur Verfügung stellen.
 
@@ -278,5 +308,16 @@ chcon -R system_u:object_r:admin_home_t:s0 docker-elk
 
 \section{Vergleich der Technologien}
 
+
+
+\subsection{KVM} %TODO
+\paragraph{Vorteile}
+\begin{itemize}
+	\item Ein Vorteil von KVM ist, dass die Gastsysteme fast mit nativer Geschwindigkeit laufen, d.h. das Gastsystem reagiert nahezu so schnell wie ein natives System. 
+\end{itemize}
+\paragraph{Nachteile}
+\begin{itemize}
+	\item Hoher Bedarf an Festplatten und Arbeitsspeicher und langwieriger Ladevorgang beim Starten der virtuellen Maschienen
+\end{itemize}
 
 \input{appendix.tex}
