@@ -285,52 +285,58 @@ virsh console VM1
 
 \section{Docker}
 \subsection{Grundlegendes}
-Docker ist im Gegensatz zu KVM keine Lösung für virtuelle Maschinen (und damit unabhängige Betriebssysteme mit eigenem CPU-Scheduling etc.) sondern basiert auf Linux Container (LXC). Ein LXC ist eine vom Kernel bereitgestellte virtuelle Umgebung zur isolierten Ausführung von Prozessen.
+Docker ist im Gegensatz zu KVM keine Lösung für virtuelle Maschinen (und damit unabhängige Betriebssysteme mit eigenem CPU-Scheduling etc.) sondern basiert auf Linux Container (LXC). Ein LXC ist eine vom Kernel bereitgestellte virtuelle Umgebung zur isolierten Ausführung von Prozessen. \\
 
-Docker ermöglicht neben der Steuerung von isolierten Applikationsausführung in LXC die Konfiguration von Netzwerkeinstellungen bzw. Portfreigabe ein komplett isoliertes Dateisystem pro Applikation (sogenannte Images). Damit ist es möglich, Systemunabhängig immer die gleiche Plattform zur Ausführung zu paketieren und weiter zu verteilen. Von Docker erstellte Images werden üblicherweise mit einem Dateisystem erstellt, welches Snapshots erlaubt (z.B. AUFS, UnionFS oder BTRFS).
+Docker ermöglicht neben der Steuerung von isolierten Applikationsausführung in LXC die Konfiguration von Netzwerkeinstellungen bzw. Portfreigabe ein komplett isoliertes Dateisystem pro Applikation (sogenannte Images). Damit ist es möglich, Systemunabhängig immer die gleiche Plattform zur Ausführung zu paketieren und weiter zu verteilen. Von Docker erstellte Images werden üblicherweise mit einem Dateisystem erstellt, welches Snapshots erlaubt (z.B. AUFS, UnionFS oder BTRFS). \\
 
-Zur Erstellung von eigenen Images, auf deren Basis eine Applikation ausgeführt wird, können mit einem \lstinline[]|Dockerfile| komplette ''Bauanleitungen'' erstellt werden. Im \lstinline[]|Dockerfile| sind die Eigenschaften des neuen Container und Images sowie darauf auszuführende Kommandos zur Bereitstellung der Umgebung hinterlegt.
+Zur Erstellung von eigenen Images, auf deren Basis eine Applikation ausgeführt wird, können mit einem \lstinline[]|Dockerfile| komplette ''Bauanleitungen'' erstellt werden. Im \lstinline[]|Dockerfile| sind die Eigenschaften des neuen Container und Images sowie darauf auszuführende Kommandos zur Bereitstellung der Umgebung hinterlegt. \\
 
-So gebaute Images (oft in diesem Zusammenhang auch einfach als Container bezeichnet) können über eine Online-Plattform verteilt werden. Die Firma Docker Inc. stellt zu diesem Zweck die öffentliche Plattform \emph{DockerHub} unter \url{https://hub.docker.com/} zur Verfügung.
+So gebaute Images (oft in diesem Zusammenhang auch einfach als Container bezeichnet) können über eine Online-Plattform verteilt werden. Die Firma Docker Inc. stellt zu diesem Zweck die öffentliche Plattform \emph{DockerHub} unter \url{https://hub.docker.com/} zur Verfügung. \\
 
-Beim Bauen eines Containers wird üblicherweise auf die Basis eines bestehenden Containers auf der DockerHub-Plattform zurückgegriffen. So gibt es dort zum Beispiel Images, welche die Dateisystemstruktur und Bibliotheken eines minimalen Ubuntu-Systems oder sogar einer Umgebung für  wie Ruby on Rails zur Verfügung stellen.
+Ein öffentliches Image kann wie folgt addressiert werden \lstinline[]|<author name>/<image name>:<tag>|. Der Name des Authors und Images wird Repository genannt. Ein Repository kann in mehreren Versionen vorliegen. Diese Versionen werden anhand eines Tags unterschieden, welcher hinter Doppelpunkt steht. Wird kein Tag angegeben, wird automatisch das aktuellste (latest) Image verwendet. \\
+
+Daten die im Docker Image erzeugt werden, verschwinden nach dem Beenden des Containers. Um Daten Persistent zu speichern muss ein lokales Verzeichnis mit einem verzeichnis des Hostsystems gemappt werden. Dies geschieht mit dem Parameter \lstinline[]|-v ./host_folder:/var/container_folder| \\
+
+Beim Bauen eines Containers wird üblicherweise auf die Basis eines bestehenden Containers auf der DockerHub-Plattform zurückgegriffen. So gibt es dort zum Beispiel Images, welche die Dateisystemstruktur und Bibliotheken eines minimalen Ubuntu-Systems oder sogar einer Umgebung für  wie Ruby on Rails zur Verfügung stellen. \\
+
+Docher funktionierte anfänglich nur für 64 Bit Linux Distributionen. Später kam der Support für MacOSX hinzu und seit neustem läuft Docker auch unter Windwos, wobei Hyper-V für die Virtualisierung der Docker Engine und Linux spezifischen Kernel Features verwendet wird.
 
 
 \subsubsection{Terminologie}
 \begin{description}
-	\item[Container, VDI: Virtual Disk Image] \hfill \\
-	Virtuelle Festplatte des Gastsystems. Es gibt statische und dynamische Container.
+	\item[Image] Eine portable Abbildung eines Containers.
+	\item[Container] Lauffähiges virtuelles Betriebssystem.
+	\item[Dockerfile] Ist eine Textdatei, in welcher der Aufbau eines Docker Images beschrieben ist.
+	\item[Docker Hub] ein Online-Dienst, der eine Registry für Docker-Images und Repositorys beinhaltet
+	\item[Libcontainer] Libcontainer ist eine Schnittstelle für die Grundfunktionalitäten von Docker. Es ersetzt die LXC Schnittstelle die anfänglich verwendet wurde. 
+	\item[libswarm]eine Schnittstelle um Docker-Container zu steuern.
+	\item[libchan] eine Schnittstelle zu Dockers Netzwerkfunktionen.
 	%TODO: Unter Container wird z.T. auch die Konfiguration einbezogen.
 \end{description}
 
 
-\subsubsection{Docker Compose}
 
-Docker Compose ist ein ergänzendes Programm zu Docker, welches die Provisionierung und Verknüpfung von mehreren Docker-Containern erlaubt. Der Aufbau/Start der Container wird mittels dem Kommando \lstinline|docker-compose| gesteuert; dies liest die \lstinline|docker-compose.yml|-Datei ein, in welcher weitergehende die Anweisungen für die Konfiguration der Container definiert sind.
-%TODO Michi: Fehlt hier noch etwas?
+\subsubsection{Docker Compose}
+Docker Compose ist ein ergänzendes Programm zu Docker, welches die Orchestrierung von mehreren Docker-Containern erlaubt. Mit Docker Compose vereinfacht also die Verwaltung und das Linking von mehreren Docker Container. Der Aufbau/Start der Container wird mittels dem Kommando \lstinline|docker-compose| gesteuert; dies liest die \lstinline|docker-compose.yml|-Datei ein, in welcher weitergehende die Anweisungen für die Konfiguration der Container definiert sind.
+
 
 \subsubsection{Docker Swarm}
-Docker Swarm ist ein Orchestrierungs-Werkzeug für den Betrieb von Docker-Clustern (oder auch einzelnen Docker Hosts).
-%TODO Michi: Was kann das noch mehr?.
-
+Docker Swarm erlaubt das Verknüpfen verschiener Hosts zu einem Cluster. Docker Swarm stellt über das Scheduling sicher, dass immer ausreichend Kapazitäten für verteilte Container vorhanden sind. Docker Swarm wird selbst als Container Microservice von Docker angeboten.
 
 
 \subsection{Docker IO}
 \begin{lstlisting}[language=bash]
-# docker container suchen
+# docker image suchen
 docker sarch <package-name>
 
-# docker container herunterladen
+# docker image starten
+docker run <package-name> <app to execute>
+
+# docker image herunterladen
 docker pull <package-name>
 
 # Image veroeffentlichen
 docker push <image name>
-
-# docker container starten
-docker run <package-name> <app to execute>
-
-# Aktuell ausgefuerten Container anzeigen
-docker ps
 
 # Liste alle lokal vorliegenden Images
 docker images
@@ -338,43 +344,95 @@ docker images
 # Image entfernen
 docker rmi <image>
 
+# erzeuge image aus Dockerfile
+docker build <repository>
+
+# Aktuell ausgefuerten Container anzeigen
+docker ps
+
+# Docker container stopen / starten
+docker (stop|start) <name>/<id>
+
 # Container entfernen
 docker rm <container>
 \end{lstlisting}
 
 
-\subsection{Beschreibung}
+\subsection{ELK Stack Setup (Elasticseach, Logstash, Kibana)}
+\begin{description}
+	\item[Elasticsearch] Elasticsearch ist eine mandantenfähige Suchengine für Volltextsuchen. Es verfügt über ein RESTful Webinterface.
+	\item[Logstash] Mit Logstash können Events und Log Meldungen gesammelt, verarbeitet und weitergeleitet werden. Die Daten werden über diverse Input Plugins gesammelt und anschliessend innerhalb von Logstash gefiltert werden. Der resultierende Output wird dann an Elasticsearch weitergereicht.
+	\item[Kibana] Kibana ist ein Open Source Plugin für die Visualisierung der Daten innerhalb von Elasticsearch. 
+\end{description}
+
+
+\subsection{Ports}
+\begin{itemize}
+	\item 5601 - Kibana web interface
+	\item 9200 - Elasticsearch HTTP (JSON Interface)
+	\item 9300 - Elasticsearch TCP transport
+	\item 5044 - Logstash Beats interface, receives logs from Beats such as Filebeat
+	\item 5000 - Logstash Lumberjack interface, receives logs from Logstash forwarders
+\end{itemize}
+
+
+\subsubsection{Vorraussetzungen}
+\paragraph{SELinux} \hfill \\
+Da wir mit einem Fedora arbeiten, müssen vorgängig 
+\begin{lstlisting}[language=bash]
+chcon -R system_u:object_r:admin_home_t:s0 docker-elk
+
+sudo service docker start
+\end{lstlisting}
+
+\subsubsection{Images}
+\begin{lstlisting}[language=bash]
+docker pull elasticsearch
+docker pull logstash
+docker pull kibana
+\end{lstlisting}
+
+\subsection{Docker Compose File}
+\begin{lstlisting}[language=xml]
+elk:
+	image: sebp/elk
+	ports:
+		- "5601:5601"
+		- "9200:9200"
+		- "5044:5044"
+		- "5000:5000"
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash]
+sudo docker-compose up elk
+\end{lstlisting}
+
+
+\subsection{Network Configuration}
+Docker erstellt standardmässig ein Netzwerk Interface (\lstinline[]|docker0|) im Adressbreich 172.17.x.x/16. Wurde kein spezifisches Netzwerk angegeben(\lstinline[]|docker run --network <net name>|), sind alle Container standardmässig an dieses Interface gebunden. Ebenfalls werden drei Docker interne Netzwerke angelegt.
+\begin{lstlisting}[language=bash]
+# sudo docker network ls
+
+NETWORK ID          NAME                DRIVER
+d8159c421bee        bridge              bridge              
+e98ecb6fefeb        none                null                
+427ea6518c34        host                host    
+\end{lstlisting}
+
+\section{Vergleich der Technologien}
+\subsection{Docker}
 \paragraph{Vorteile}
 \begin{itemize}
+	\item Man kann auf den Ballast eines kompletten Betriebssystems verzichten, wenn man nur eine Applikation isoliert ausführen möchte.
 	\item Äusserts sparsamer Umgang mit Ressourcen und eine kurze Startzeit	
 	\item Mit Hilfe von Vagrant äusserts einfach einen Docker Container zu installieren
-	\item Austausch von Images fällt durch den Gebrauch von öffentlichen Registries leicht.
+	\item Austausch von Images fällt durch den Gebrauch von öffentlichen Registries leicht. (Docker Hub)
 \end{itemize}
 \paragraph{Nachteile}
 \begin{itemize}
 	\item Da die Container auf den Linux Kernel zugreifen, ist es nicht möglich Windows Anwendungen in einem Docker Container auszuführen.
-	\item Einschränkung auf 64Bit basiertes Linux oder Mac OSX (%TODO immer noch=? -> Meines Wissens schon!
 \end{itemize}
 
-\subsection{ELK Stack Setup (Elasticseach, Logstash, Kibana)}
-\subsubsection{Vorraussetzungen}
-\paragraph{SELinux} \hfill \\
-Da wir mit einem Fedora arbeiten, müssen vorgän
-\begin{lstlisting}[language=bash]
-chcon -R system_u:object_r:admin_home_t:s0 docker-elk
-\end{lstlisting}
-
-
-
-\subsection{Network Configuration}
-
-\subsection{Docker Compose File ELK Stack}
-
-
-
-
-\section{Vergleich der Technologien}
-%TODO
 
 \subsection{KVM} %TODO
 \paragraph{Vorteile}
