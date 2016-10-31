@@ -82,7 +82,7 @@ Die meisten Linux-Distributionen stellen in den Paket-Repositories KVM, QEMU und
 
 \begin{enumerate}
 	\item Installation von KVM, QEMU, Libvirt (von Fedora bereitgestelltes Metapaket)\\ \hfill
-		\lstinline|sudo dnf install @virtualization libvirt-docs|
+		\lstinline|sudo dnf install @virtualization libvirt-docs libguestfs-tools|
 	\item Starten des \lstinline|libvirtd|-Dienstes\\ \hfill
 		\lstinline|sudo service libvirtd start|
 \end{enumerate}
@@ -93,7 +93,7 @@ Der Benutzer, welcher die Virtuellen Maschinen verwalten soll, muss den Gruppen 
 sudo usermod -aG libvirt, kvm $USER
 \end{lstlisting}
 
-\subsection{Festplattenimages erstellen}
+\subsection{Festplattenimages erstellen}\label{sec:festplattenimages-erstellen}
 Festplatten-Images können entweder mit dem Tool \lstinline|qemu-img| erstellt werden, oder alternativ mit Libvirt direkt mit dem Tool \lstinline|virt-install| (siehe nächste Seiten).
 
 In unserem Fall bauen wir aber auf eine bestehendes Festplatten-Image der Mini-Distribution ''CirrOS'' auf.
@@ -165,7 +165,7 @@ Die XML-Konfiguration des \lstinline|default|-Pools sieht wie folgt aus:
 \subsection{Erstellen der virtuellen Maschinen}
 
 
-\subsubsection{Virt-Install}
+\subsubsection{Virt-Install}\label{sec:virt-install}
 Um eine neue virtuelle Maschine anzulegen, stellt Libvirt das Tool \lstinline|virt-install| zur Verfügung.
 
 In unserem Beispiel setzten wir eine einfache virtuelle Maschine auf namens \lstinline|VM1|, \lstinline|512|MB RAM und dem gleichen emulierten CPU-Typ wie das Hostsystem.
@@ -205,7 +205,23 @@ Die Datei \lstinline|/etc/libvirt/qemu/VM1.xml| (bzw. \lstinline|/root/VM1.xml|)
 \lstinputlisting{appendix/kvm/libvirt/domain_VM1.xml}
 
 \subsubsection{Virt-Clone}
-%TODO: Clone VMs with \lstinline|virt-clone| and without.
+Damit wir das Netzwerk gemäss der Aufgabenstellung aufbauen können, müssen wir 3 virtuelle Maschinen erstellen. Dafür gibt es die Möglichkeit, die bestehende VM zu klonen. Libvirt stellt dafür das Tool \lstinline|virt-clone| zur Verfügung.
+
+\paragraph{Klonen der VM mit \lstinline|virt-clone|} \hfill \\
+
+Um eine neue virtuelle Maschine Namens \lstinline|VM2| aus der bestehenden \lstinline|VM1| zu erstellen, führen wir folgendes Kommando aus:
+
+\begin{lstlisting}[language=bash]
+virt-clone --original VM1 --name VM2 \
+  --file /var/lib/libvirt/images/vm2.qcow2
+\end{lstlisting}
+
+Zusätzlich möchten wir gerne eine \lstinline|VM3| aus \lstinline|VM1| generieren: \lstinline|virt-clone --original VM1 --name VM3 --file /var/lib/libvirt/images/vm3.qcow2|
+
+\lstinline|virt-clone| kopiert das Image zum angegebenen \lstinline|--file| Pfad; zudem werden die Libvirt-XML-Dateien kopiert und auf die neue VM angepasst (neue \lstinline|UUID|s, MAC-Adressen, Namen anpassen.
+
+\paragraph{Klonen der VM ohne \lstinline|virt-clone|} \hfill \\
+Es ist ebenfalls möglich, die VM's von Hand zu kopieren; dafür können einfach weitere neue VMs gemäss dem Schema aus Abschnitt \ref{sec:virt-install}ff (sowie allenfalls entsprechende Images gem. \ref{sec:festplattenimages-erstellen}) erstellt werden. Wichtig ist hierbei, dass den Kopien ein neuer Namen und bei manueller XML-Erstellung neue \lstinline|UUID|s und MAC-Adressen konfiguriert werden.
 
 
 \subsection{Netzwerk Konfiguration}
@@ -252,7 +268,7 @@ virsh net-edit <network-name>
 
 \subsection{Verwalten einer VM mit \lstinline|virsh|}
 
-%TODO: Start, Console, Shutdown (ACPI/Forced), further management
+%TODO: Start, Console, Shutdown (ACPI/Forced), delete vm, further management
 
 \begin{lstlisting}[language=bash]
 virsh create /etc/libvirt/qemu/VM1.xml
