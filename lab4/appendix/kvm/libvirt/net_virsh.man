@@ -1,0 +1,16 @@
+Networking (help keyword 'network'):
+net-autostart                  autostart a network
+net-create                     create a network from an XML file
+net-define                     define an inactive persistent virtual network or modify an existing persistent one from an XML file
+net-destroy                    destroy (stop) a network
+net-dhcp-leases                print lease info for a given network
+net-dumpxml                    network information in XML
+net-edit                       edit XML configuration for a network
+net-event                      Network Events
+net-info                       network information
+net-list                       list networks
+net-name                       convert a network UUID to network name
+net-start                      start a (previously defined) inactive network
+net-undefine                   undefine a persistent network
+net-update                     update parts of an existing network's configuration
+net-uuid                       convert a network name to network UUID

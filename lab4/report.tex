@@ -22,6 +22,12 @@
 % Docker Compose file for the ELK stack 
 
 % Qemu-KVM and Docker networking configuration files/scripts 
+
+\section*{Einleitung}
+Diese Dokumentation erklärt die grundlegenden Funktionen von KVM / QEMU / Libvirt sowie Docker, Docker Composer und Docker Swarm. Es wird gemäss der Aufgabenstellung nicht auf allgemeine Virtualisierungsfunktionen eingegangen. Die Möglichkeit der grafischen Verwaltung (z.B. mit \lstinline|virt-manager|) werden gemäss Besprechung im Praktikum ebenfalls nicht weiter berücksichtigt.
+%TODO: Brauchen wir docker swarm?
+
+
 \section{KVM / QEMU}
 \subsection{Grundlegendes}
 KVM ist eine Virtualisierungslösung für Linux, die Gebrauch von Virtualisierungstechniken aktueller Prozessorarchitekturen macht. Um KVM nutzen zu können, muss der Prozessor des Hostsystems Hardwarevirtualisierung unterstützen (was bei den meisten neueren Intel und AMD Prozessoren der Fall ist). KVM an sich stellt die direkte Schnittstelle zum Linux-Kernel zur Verfügung, als Virtualisierungsumgebung kommt QEMU zum Einsatz.
@@ -218,55 +224,117 @@ virt-clone --original VM1 --name VM2 \
 
 Zusätzlich möchten wir gerne eine \lstinline|VM3| aus \lstinline|VM1| generieren: \lstinline|virt-clone --original VM1 --name VM3 --file /var/lib/libvirt/images/vm3.qcow2|
 
-\lstinline|virt-clone| kopiert das Image zum angegebenen \lstinline|--file| Pfad; zudem werden die Libvirt-XML-Dateien kopiert und auf die neue VM angepasst (neue \lstinline|UUID|s, MAC-Adressen, Namen anpassen.
+\lstinline|virt-clone| kopiert das Image zum angegebenen \lstinline|--file| Pfad; zudem werden die Libvirt-XML-Dateien kopiert und auf die neue VM angepasst (neue \lstinline|UUID|s, MAC-Adressen, Namen anpassen).
 
 \paragraph{Klonen der VM ohne \lstinline|virt-clone|} \hfill \\
 Es ist ebenfalls möglich, die VM's von Hand zu kopieren; dafür können einfach weitere neue VMs gemäss dem Schema aus Abschnitt \ref{sec:virt-install}ff (sowie allenfalls entsprechende Images gem. \ref{sec:festplattenimages-erstellen}) erstellt werden. Wichtig ist hierbei, dass den Kopien ein neuer Namen und bei manueller XML-Erstellung neue \lstinline|UUID|s und MAC-Adressen konfiguriert werden.
 
 
 \subsection{Netzwerk Konfiguration}
-% TODO Remove sources
-% http://wiki.qemu.org/Documentation/Networking#Network_backend_types
-% http://wiki.libvirt.org/page/Networking#Debian.2FUbuntu_Bridging
+Für jedes virtuelle Netzwerk wird eine virtuelle Bridge im Linux Kernel benötigt. Mit der virtuellen Bridge wird ein virtuelles Interface auf dem Hostsystem erstellt; der Host kann über dieses Interface mit dem virtuellen Netzwerk wie mit einem normalen kommunizieren.
 
+Es ist auch möglich, physische und virtuelle Ports in einer virtuellen Bridge zusammenzuschliessen. Damit wird ein virtueller Netzwerkport der VM sowie des Host-Rechners mit der Bridge verbunden.
 
-\subsubsection{Grundlegend}
-%TODO 
-Für jedes virtuelle Netzwerk legt libvirt eine virtuelle Bridge an. Diese können auf dem Host mit \lstinline|brctl show| angezeigt werden. Zudem wird ein virtuelles Interface im zugewiesenen Adressraum (default: 192.168.122.0/24) erstellt, das per NAT mit der physischen Netzwerkkarte verbunden ist. Damit jeder virtuelle Maschine eine gültige IP Adresse kriegt, wird auf dem Host Interface ein DHCP Server (dnsmasq) eingerichtet. Mit dieser Konfiguration kann jede virtuelle Maschine ins Internet, hat jedoch keine Konnektivität zu den anderen VM's. 
+Die virtuellen Bridges auf einem Host-System können mit dem Befehl \lstinline|brctl show| angezeigt werden.
+
+\subsubsection{Traffic Forwarding}
+Damit verkehr aus dem virtuellen Netzwerk z.B. in das Internet weitergeleitet werden kann, gibt es verschiedene Möglichkeiten, welche nachfolgend erläutert werden.
 
 \begin{description}
-	\item[/var/lib/libvirt/dnsmasq] Die DHCP Konfigurations-Files 
-	\item[/etc/libvirt/qemu/networks] Netzwerk Konfigurations-Files
+	\item[Transparentes Bridging] \hfill \\
+		Beim transparenten Bridging wird der traffic aus dem virtuellen Netzwerk transparent zu einem physischen Netzwerkport weitergeleitet. Der Host-Computer fungiert in diesem Sinne tatsächlich als Bridge bzw. Switch, d.h., die virtuelle Maschine ist ein direkter Teilnehmer im physischen Netzwerk.
+	\item[Routing] \hfill \\
+		Beim Routing Routet der Host den Traffic zwischen physischen und virtuellen Netzwerken. Die ausgehenden Pakete haben somit die IP-Adresse der virtuellen Maschine.
+	\item[NAT / Firewall] \hfill \\
+		Beim NAT-Ansatz macht das Hostsystem ein NAT zwischen dem virtuellen und physischen Netzwerk. Ausgehende Pakete haben damit die IP-Adresse des Hosts.
 \end{description}
 
-\subsubsection{Host einrichten}
-\begin{lstlisting}[language=bash]
-virsh net-define /usr/share/libvirt/networks/default.xml
-virsh net-autostart default
-virsh net-start default
-virsh net-edit <network-name>
-\end{lstlisting}
 
+\subsubsection{Weitere Netzwerkfunktionen}
+\begin{description}
+	\item[DHCP] \hfill \\
+		Falls Hosts in einem virtuellen Netzwerk eine automatische verteile IPv4-Adresse beziehen sollen, muss ein DHCP-Server angehängt werden. Libvirt benutzt dafür \lstinline|dnsmasq|.
+	\item[DNS] \hfill \\
+		Damit die DNS-Auflösung innerhalb des virtuellen Netzwerkes funktioniert, muss entweder auf ein externer DNS konfiguriert oder ein lokaler caching Domain Name Server bereitgestellt werden. Libvirt kann dafür ebenfalls \lstinline|dnsmasq| benutzen.
+\end{description}
 
-\lstinline|/etc/libvirt/qemu/networks|
+\subsubsection{Virtuelle Netzwerke erstellen mit Libvirt}
+Libvirt vereinfacht das erstellen von virtuellen Bridges, indem es die Konfigurationen der obenstehenden Möglichkeiten übersichtlich in einer XML-Datei bündelt. Diese werden unter \lstinline|/etc/libvirt/qemu/networks| gespeichert.
 
-\subsubsection{Bridge Erstellen}
+Standardmässig ist in der Fedora-Konfiguration ein mit NAT und DHCP/DNS Server versehenes \lstinline|default|-Netzwerk in der Datei \lstinline|default.xml| eingerichtet:
+
 \begin{lstlisting}[language=xml]
 <network>
-	<name>VM1_VM2</name>
-	<uuid>b7aca73a-21b9-43af-8c91-0af4f95bd29b</uuid>
-	<bridge name='virbr1' stp='on' delay='0'/>
-	<mac address='52:54:00:1e:b6:ae'/>
-	<domain name='VM1_VM2'/>
-	<ip address='192.168.100.1' netmask='255.255.255.0'>
-	<dhcp>
-	<range start='192.168.100.128' end='192.168.100.254'/>
-	</dhcp>
-	</ip>
+  <name>default</name>
+  <uuid>783b4119-8827-4cf3-9659-684f0028b924</uuid>
+  <forward mode='nat'/>
+  <bridge name='virbr0' stp='on' delay='0'/>
+  <mac address='52:54:00:b5:e4:50'/>
+  <ip address='192.168.122.1' netmask='255.255.255.0'>
+    <dhcp>
+      <range start='192.168.122.2' end='192.168.122.254'/>
+    </dhcp>
+  </ip>
 </network>
 \end{lstlisting}
 
-\subsection{Verwalten einer VM mit \lstinline|virsh|}
+Mit \lstinline|virsh help network| können die \lstinline|virsh|-Kommandos zur Verwaltung von Netzwerken angezeigt werden:
+
+\lstinputlisting[language=bash]{appendix/kvm/libvirt/net_virsh.man}
+
+
+
+\subsubsection{Virtuelle Netzwerke ohne Libvirt}
+
+%TODO: - Routing + evtl. NAT \& firewalling
+%TODO: - Bridge erstellen
+%TODO: - dnsmasq - dhcp \& dns cacheing
+%TODO: - adapter zu qemu-run hinzufügen
+
+
+%\begin{description}
+%	\item[/var/lib/libvirt/dnsmasq] Die DHCP Konfigurations-Files 
+%	\item[/etc/libvirt/qemu/networks] Netzwerk Konfigurations-Files
+%\end{description}
+%
+%\subsubsection{Host einrichten}
+%\begin{lstlisting}[language=bash]
+%virsh net-define /usr/share/libvirt/networks/default.xml
+%virsh net-autostart default
+%virsh net-start default
+%virsh net-edit <network-name>
+%\end{lstlisting}
+%
+%
+%\lstinline|/etc/libvirt/qemu/networks|
+
+
+\subsubsection{Erstellen der Netzwerkarchitektur gemäss Aufgabenstellung mit Libvirt}
+
+Gemäss der Aufgabenstellung müssen wir eine 3-Tier-Applikation abbilden. \hfill \\
+Das Netzwerkschema ist in Abbildung \ref{fig:network}  festgehalten:
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{appendix/kvm/network}
+	\caption{Netzwerkarchitektur virtuelle Umgebung}
+	\label{fig:network}
+\end{figure}
+
+Zur Realisierung dieser Struktur werden wir zwei virtuelle Netzwerke und die entsprechende Netzwerkkarten auf den virtuellen Maschinen erstellt.
+
+\paragraph{Netzwerk VM1\_VM2} \hfill \\
+
+%TODO: XML-Config
+
+%TODO VM2_3
+\paragraph{Interfaces VM1} \hfill \\
+%TODO: XML_Config
+%TODO: Interface config
+
+\subsection{Starten, stoppen etc. einer virtuellen Maschine}
+
+\subsubsection{Mit Libvirt}
 
 %TODO: Start, Console, Shutdown (ACPI/Forced), delete vm, further management
 
@@ -278,7 +346,7 @@ virsh start VM1
 virsh console VM1
 \end{lstlisting}
 
-\subsection{KVM / QEMU unter der Libvirt-Abstraktion}
+\subsubsection{Ohne Libvirt}
 %TODO: Ansatzweise Beschreiben, wie KVM/QEMU auch ohne Libvirt verwendet werden kann
 
 
