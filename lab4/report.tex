@@ -185,9 +185,7 @@ virt-install --name VM1 --ram 512 --cpu host\
 
 \lstinline|virt-install| legt mit diesem Kommando eine Libvirt-XML-Konfiguration für die virtuelle Maschine an (siehe Abschnitt \ref{sec:libvirt-xml-konfiguration-eines-gastes}).
 
-Nach dem Anlegen startet \lstinline|virt-install| die VM direkt.
-
-%TODO: Wie kann das verhindert werden bzw. andernfalls die VM wieder heruntergefahren?
+Nach dem Anlegen startet \lstinline|virt-install| die VM direkt. Da wir keinen Installationsprozess eines Betriebssystems durchführen müssen, ist dies nicht nötig; die VM kann mit \lstinline|virsh shutdown VM1| wieder beendet werden.
 
 \subsubsection{Installation ohne \lstinline|virt-install|}
 
