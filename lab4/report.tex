@@ -361,36 +361,37 @@ Zur Erstellung von eigenen Images, auf deren Basis eine Applikation ausgeführt 
 
 So gebaute Images (oft in diesem Zusammenhang auch einfach als Container bezeichnet) können über eine Online-Plattform verteilt werden. Die Firma Docker Inc. stellt zu diesem Zweck die öffentliche Plattform \emph{DockerHub} unter \url{https://hub.docker.com/} zur Verfügung. \\
 
-Ein öffentliches Image kann wie folgt addressiert werden \lstinline[]|<author name>/<image name>:<tag>|. Der Name des Authors und Images wird Repository genannt. Ein Repository kann in mehreren Versionen vorliegen. Diese Versionen werden anhand eines Tags unterschieden, welcher hinter Doppelpunkt steht. Wird kein Tag angegeben, wird automatisch das aktuellste (latest) Image verwendet. \\
+Ein öffentliches Image kann wie folgt addressiert werden \lstinline[]|<author name>/<image name>:<tag>|. Der Teil vor dem Doppelpunkt wird Repository genannt. Ein Repository kann in mehreren Versionen vorliegen. Diese Versionen werden anhand eines Tags unterschieden, welcher hinter Doppelpunkt steht. Wird kein Tag angegeben, wird automatisch das aktuellste (latest) Image verwendet. \\
 
-Daten die im Docker Image erzeugt werden, verschwinden nach dem Beenden des Containers. Um Daten Persistent zu speichern muss ein lokales Verzeichnis mit einem verzeichnis des Hostsystems gemappt werden. Dies geschieht mit dem Parameter \lstinline[]|-v ./host_folder:/var/container_folder| \\
+Daten die im Docker Image erzeugt werden, verschwinden nach dem Beenden des Containers. Um Daten Persistent zu speichern muss ein lokales Verzeichnis mit einem Verzeichnis des Hostsystems gemappt werden. Dies geschieht mit dem Parameter \lstinline[]|-v ./host_folder:/var/container_folder| \\
 
 Beim Bauen eines Containers wird üblicherweise auf die Basis eines bestehenden Containers auf der DockerHub-Plattform zurückgegriffen. So gibt es dort zum Beispiel Images, welche die Dateisystemstruktur und Bibliotheken eines minimalen Ubuntu-Systems oder sogar einer Umgebung für  wie Ruby on Rails zur Verfügung stellen. \\
 
-Docher funktionierte anfänglich nur für 64 Bit Linux Distributionen. Später kam der Support für MacOSX hinzu und seit neustem läuft Docker auch unter Windwos, wobei Hyper-V für die Virtualisierung der Docker Engine und Linux spezifischen Kernel Features verwendet wird.
+Docker funktionierte anfänglich nur für 64 Bit Linux Distributionen. Später kam der Support für MacOSX hinzu und seit neustem läuft Docker auch unter Windwos, wobei Hyper-V für die Virtualisierung der Docker Engine und Linux spezifischen Kernel Features verwendet wird.
 
 
 \subsubsection{Terminologie}
 \begin{description}
 	\item[Image] Eine portable Abbildung eines Containers.
-	\item[Container] Lauffähiges virtuelles Betriebssystem.
+	\item[Container] Lauffähiges virtuelles Betriebssystem. Instanz eines Images.
 	\item[Dockerfile] Ist eine Textdatei, in welcher der Aufbau eines Docker Images beschrieben ist.
 	\item[Docker Hub] ein Online-Dienst, der eine Registry für Docker-Images und Repositorys beinhaltet
 	\item[Libcontainer] Libcontainer ist eine Schnittstelle für die Grundfunktionalitäten von Docker. Es ersetzt die LXC Schnittstelle die anfänglich verwendet wurde. 
 	\item[libswarm]eine Schnittstelle um Docker-Container zu steuern.
 	\item[libchan] eine Schnittstelle zu Dockers Netzwerkfunktionen.
-	%TODO: Unter Container wird z.T. auch die Konfiguration einbezogen.
 \end{description}
 
-
-
 \subsubsection{Docker Compose}
-Docker Compose ist ein ergänzendes Programm zu Docker, welches die Orchestrierung von mehreren Docker-Containern erlaubt. Mit Docker Compose vereinfacht also die Verwaltung und das Linking von mehreren Docker Container. Der Aufbau/Start der Container wird mittels dem Kommando \lstinline|docker-compose| gesteuert; dies liest die \lstinline|docker-compose.yml|-Datei ein, in welcher weitergehende die Anweisungen für die Konfiguration der Container definiert sind.
-
+Docker Compose ist ein ergänzendes Programm zu Docker, welches die Orchestrierung von mehreren Docker-Containern erlaubt. Docker Compose vereinfacht also die Verwaltung und das Linking von mehreren Docker Container. Der Aufbau/Start der Container wird mittels dem Kommando \lstinline|docker-compose| gesteuert; dies liest die \lstinline|docker-compose.yml|-Datei ein, in welcher weitergehende die Anweisungen für die Konfiguration der Container definiert sind.
 
 \subsubsection{Docker Swarm}
-Docker Swarm erlaubt das Verknüpfen verschiener Hosts zu einem Cluster. Docker Swarm stellt über das Scheduling sicher, dass immer ausreichend Kapazitäten für verteilte Container vorhanden sind. Docker Swarm wird selbst als Container Microservice von Docker angeboten.
+Docker Swarm erlaubt das Verknüpfen verschiener Hosts zu einem Cluster. Es verwandelt also mehrere Docker Container in einen virtuellen Docker Host.
 
+\subsubsection{Docker Machine}
+Docker Machine ist ein Tool um die Docker Engine auf virtuellen Hosts zu installieren und verwalten. Es ist zurzeit die einzige Möglichkeit, um Docker auf Mac oder Windows laufen zu lassen. Ebenfalls lassen sich Swarm Cluster damit erstellen. Unter Fedora wird Docker Machine wie folgt installiert:
+\begin{lstlisting}[language=bash]
+curl -L https://github.com/docker/machine/releases/download/v0.8.2/docker-machine-`uname -s`-`uname -m` >/usr/local/bin/docker-machine && \ chmod +x /usr/local/bin/docker-machine
+\end{lstlisting}
 
 \subsection{Docker IO}
 \begin{lstlisting}[language=bash]
@@ -433,50 +434,180 @@ docker rm <container>
 	\item[Kibana] Kibana ist ein Open Source Plugin für die Visualisierung der Daten innerhalb von Elasticsearch. 
 \end{description}
 
-
-\subsection{Ports}
+\subsubsection{Ports}
 \begin{itemize}
 	\item 5601 - Kibana web interface
 	\item 9200 - Elasticsearch HTTP (JSON Interface)
 	\item 9300 - Elasticsearch TCP transport
-	\item 5044 - Logstash Beats interface, receives logs from Beats such as Filebeat
 	\item 5000 - Logstash Lumberjack interface, receives logs from Logstash forwarders
 \end{itemize}
 
 
-\subsubsection{Vorraussetzungen}
-\paragraph{SELinux} \hfill \\
-Da wir mit einem Fedora arbeiten, müssen vorgängig 
+\subsection{Vorraussetzungen}
+\subsubsection{VirtualBox}
+Für DockerSwarm muss eine aktuelle Version von VirtualBox vorliegen. Dies wird unter Fedora wie folgt installiert:
 \begin{lstlisting}[language=bash]
-chcon -R system_u:object_r:admin_home_t:s0 docker-elk
+cd /etc/yum.repos.d/ 
+sudo wget http://download.virtualbox.org/virtualbox/rpm/fedora/virtualbox.repo
+sudo dnf update
 
+dnf install binutils gcc make patch libgomp glibc-headers glibc-devel kernel-headers kernel-devel dkms
+
+KERN_DIR=/usr/src/kernels/`uname -r`
+\end{lstlisting}
+
+
+\subsubsection{SELinux} \hfill \\
+Da wir mit einem Fedora arbeiten, muss vorgängig der SELinux Security Context für den Order in dem die Container zu liegen kommen, angepasst werden. Dazu erstellen wir einen Ordner \lstinline[]|docker-elk| und wechseln anschliessend in den übergeordneten Folder.
+\begin{lstlisting}[language=bash]
+mkdir docker-elk
+cd ..
+chcon -R system_u:object_r:admin_home_t:s0 docker-elk
+\end{lstlisting}
+
+\subsubsection{Max Map Count}
+Der Max Map Count beinhaltet die maximale Anzahl an Memory Map Area's die einem Prozess zugeordnet werden können. Memory Map Areas werden bei der Verwendung von \lstinline[]|malloc| genutzt. Damit Docker genügend Areas zur Verfügung stehen, setzen wir den default von 65536 auf 262144.
+\begin{lstlisting}[language=bash]
+sudo sysctl -w vm.max_map_count=262144
+\end{lstlisting}
+
+\subsubsection{Docker Daemon}
+Um fortan mit Docker arbeiten zu können, muss vorgängig der Daemon gestartet werden.
+\begin{lstlisting}[language=bash]
 sudo service docker start
 \end{lstlisting}
 
-\subsubsection{Images}
-\begin{lstlisting}[language=bash]
-docker pull elasticsearch
-docker pull logstash
-docker pull kibana
+\subsection{Images}
+In einem ersten Schritt wird innerhalb des \lstinline[]|docker-elk| Folder, für jede Komponente ein eigener Ordner angelegt.(\lstinline[]|mkdir <elk stack component>|). Anschliessend wird für jede Komponente ein Dockerfile angelegt, welches auf ein bestehendes Docker Hub Image zurückgreift. (\lstinline[]|touch Dockerfile|). Alle Teilkomponenten setzen dabei auf die aktuellste Version 5 des Basis Containers.
+
+\subsubsection{Elasticsearch}
+\begin{lstlisting}[caption=Elasticsearch Dockerfile, language=bash]
+FROM elasticsearch:5
+
+ENV ES_JAVA_OPTS="-Des.path.conf=/etc/elasticsearch"
+
+CMD ["-E", "network.host=0.0.0.0", "-E", "discovery.zen.minimum_master_nodes=1"]
 \end{lstlisting}
+
+\subsubsection{Logstash} 
+\begin{lstlisting}[caption=Logstash Dockerfile, language=bash]
+FROM logstash:5
+\end{lstlisting}
+
+Für die konfiguraiton von Logstash ist noch ein zusätzliches Config File nötig. Dieses definiert auf einfache Art und Weise auf welchem Port die Daten empfangen und auf welchem Port die Daten an Elasticsearch weitergereicht werden.
+\begin{lstlisting}
+input {
+	tcp {
+		port => 5000
+	}
+}
+
+output {
+	elasticsearch {
+		hosts => "elasticsearch:9200"
+	}
+}
+\end{lstlisting}
+
+\subsubsection{Kibana} 
+\begin{lstlisting}[caption=Kibana Dockerfile, language=bash]
+FROM kibana:5
+
+# precondition to open tcp connection on given port
+RUN apt-get update && apt-get install -y netcat
+
+# copy script from host to kibana container
+COPY startup.sh /tmp/startup.sh
+
+# mark as executable
+RUN chmod +x /tmp/startup.sh 
+
+# execute
+CMD ["/tmp/startup.sh"] 
+\end{lstlisting}
+
+Da Kibana die Daten aus Elasticsearch visualisert, muss sichergestellt werden, dass der Elasticsearch Container bereits läuft, bevor Kibana gestartet wird. Dies erledigen wir mit einem einfach Polling Script. Für das Polling wird nc benötigt, welches im Dockerfile via \lstinline[]|apt-get install ncat| installiert wird. 
+\begin{lstlisting}[caption=Kibana Pooling Script, language=bash]
+#!/bin/bash
+
+# Wait for the Elasticsearch container to be ready before starting Kibana.
+echo "Waiting for Elasticsearch"
+while true; do
+	nc -q 1 elasticsearch 9200 2>/dev/null && break
+done
+
+echo "Starting Kibana"
+exec kibana
+\end{lstlisting}
+
+Auch für Kibana gibt es eine Config. In dieser definieren wird die grundlegenden Einstellungen.	
+\begin{lstlisting}[caption=kibana.yml, language=bash]
+# Port by which Kibana is served
+server.port: 5601
+
+# IP address of the back end server. (localhost)
+server.host: "0.0.0.0"
+
+# Elasticsearch URL
+elasticsearch.url: "http://elasticsearch:9200"
+\end{lstlisting}
+
 
 \subsection{Docker Compose File}
-\begin{lstlisting}[language=xml]
-elk:
-	image: sebp/elk
-	ports:
-		- "5601:5601"
-		- "9200:9200"
-		- "5044:5044"
-		- "5000:5000"
+Im Composer File werden die vorgehenden Dockerfiles orchestriert.
+\begin{description}
+	\item[build] Order in welchem das Docker File liegt
+	\item[ports] Ports welche an das Hostsystem weitergeleitet werden sollen
+	\item[networks] In welchem Netzwerk arbeitet ein Container
+	\item[networks] Definition der Netzwerke
+\end{description}
+\begin{lstlisting}[caption=docker-compose.yml Compose File, language=bash]
+version: '2'
+
+services:
+	elasticsearch:
+		build: elasticsearch
+		ports:
+			- "9200:9200"
+			- "9300:9300"
+		environment:
+			ES_JAVA_OPTS: "-Xms1g -Xmx1g"
+		networks:
+			- ServerMgmt
+			- IT
+	logstash:
+		build: logstash/
+		command: -f /etc/logstash/conf.d/
+		volumes:
+			- ./logstash/config:/etc/logstash/conf.d
+		ports:
+			- "5000:5000"
+		networks:
+			- ServerMgmt
+	kibana:
+		build: kibana/
+		volumes:
+			- ./kibana/config/:/opt/kibana/config/
+		ports:
+			- "5601:5601"
+		networks:
+			- IT
+
+networks:
+	IT:
+		driver: bridge
+	ServerMgmt:
+		driver: bridge
 \end{lstlisting}
 
+Wenn alle vorgängigen Files wie beschrieben erstellt wurden, kann der ELK Stack gestartet werden.
 \begin{lstlisting}[language=bash]
-sudo docker-compose up elk
+sudo docker-compose up
 \end{lstlisting}
 
 
-\subsection{Network Configuration}
+\subsection{Docker Swarm}
+\subsubsection{Netzwerkkonfiguration}
 Docker erstellt standardmässig ein Netzwerk Interface (\lstinline[]|docker0|) im Adressbreich 172.17.x.x/16. Wurde kein spezifisches Netzwerk angegeben(\lstinline[]|docker run --network <net name>|), sind alle Container standardmässig an dieses Interface gebunden. Ebenfalls werden drei Docker interne Netzwerke angelegt.
 \begin{lstlisting}[language=bash]
 # sudo docker network ls
@@ -485,6 +616,48 @@ NETWORK ID          NAME                DRIVER
 d8159c421bee        bridge              bridge              
 e98ecb6fefeb        none                null                
 427ea6518c34        host                host    
+\end{lstlisting}
+
+\subsubsection{Umgebungsvariablen}
+Bei der Erstellung der Swarm Nodes werden automatisch TLS Zertifikate installiert, damit diese auch gefunden werden muss unter \lstinline[]|/etc/sysconfig/docker| folgendes IF Statement hinzugefügt werden. 
+\begin{lstlisting}[caption=/etc/sysconfig/docker, language=bash]
+if [ -z "${DOCKER_CERT_PATH}" ]; then
+	DOCKER_CERT_PATH=/etc/docker
+fi
+\end{lstlisting}
+
+\subsection{Docker Swarm Cluster Erstellen}
+Docker Swarm bietet mehrere Discovery Backends. Ein Discovery Service verwaltet eine Liste von IPs innerhalb des Docker Swarm Cluster. Da die Container in diesem Lab nicht in einer produktiven Umgebung zum Einsatz kommen, verwenden wir als Discovery Service einen einfachen Token der von Docker generiert wird. Ebenefalls erstellen wir einen Swarm Manager, der alle Node im Swarm Cluster orchestriert.
+
+\begin{lstlisting}[language=bash]
+docker-machine create -d virtualbox local
+
+eval "$(docker-machine env local)"
+
+
+# Generate a discovery token using the Docker Swarm image.
+docker run swarm create
+
+# Wichtig: hier muss der Token am Ende des Outputs sicheraufbewahrt werden: 
+8c39e2080809189e0169ef1f468463d3
+
+
+# create swarm manager
+docker-machine create -d virtualbox --swarm --swarm-master --swarm-discovery token://8c39e2080809189e0169ef1f468463d3 swarm-master
+
+# create nodes
+docker-machine create -d virtualbox --swarm --swarm-discovery token://8c39e2080809189e0169ef1f468463d3 kibana
+
+docker-machine create -d virtualbox --swarm --swarm-discovery token://8c39e2080809189e0169ef1f468463d3 logstash
+
+docker-machine create -d virtualbox --swarm --swarm-discovery token://8c39e2080809189e0169ef1f468463d3 elasticsearch
+\end{lstlisting}
+
+
+\subsection{Tests}
+Um die Netzwerkkonnektivität zu überprüften schalten wir bei laufendem ELK Stack auf die einzelnen Container drauf:
+\begin{lstlisting}[language=bash]
+sudo docker exec -i -t dockerelk_kibana_1 /bin/bash
 \end{lstlisting}
 
 \section{Vergleich der Technologien}
@@ -500,7 +673,6 @@ e98ecb6fefeb        none                null
 \begin{itemize}
 	\item Da die Container auf den Linux Kernel zugreifen, ist es nicht möglich Windows Anwendungen in einem Docker Container auszuführen.
 \end{itemize}
-
 
 \subsection{KVM} %TODO
 \paragraph{Vorteile}
