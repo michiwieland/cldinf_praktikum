@@ -1,0 +1,13 @@
+[...]
+
+# VM1_VM2 Network
+auto eth0
+iface eth0 inet static
+    address 192.168.100.3
+    netmask 255.255.255.248
+
+# VM2_VM3 Network
+auto eth1
+iface eth1 inet static
+    address 192.168.100.10
+    netmask 255.255.255.248

@@ -1,0 +1,10 @@
+[...]
+# Bridging Network
+auto eth0
+iface eth0 inet dhcp
+
+# VM1_VM2 Network
+auto eth1
+iface eth1 inet static
+    address 192.168.100.2
+    netmask 255.255.255.248

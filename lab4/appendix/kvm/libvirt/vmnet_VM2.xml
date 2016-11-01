@@ -1,0 +1,19 @@
+<domain>
+  [...]
+  <devices>
+    [...]
+    <interface type='network'>
+      <mac address='52:54:00:83:e5:ad'/>
+      <source network='VM1_VM2'/>
+      <model type='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </interface>
+    <interface type='network'>
+      <mac address='52:54:00:cf:22:47'/>
+      <source network='VM2_VM3'/>
+      <model type='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
+    </interface>
+    [...]
+  </devices>
+</domain>

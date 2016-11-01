@@ -1,0 +1,4 @@
+<network>
+  <name>VM2_VM3</name>
+  <bridge name='virbr2' stp='on' delay='0'/>
+</network>

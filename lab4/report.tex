@@ -24,7 +24,7 @@
 % Qemu-KVM and Docker networking configuration files/scripts 
 
 \section*{Einleitung}
-Diese Dokumentation erklärt die grundlegenden Funktionen von KVM / QEMU / Libvirt sowie Docker, Docker Composer und Docker Swarm. Es wird gemäss der Aufgabenstellung nicht auf allgemeine Virtualisierungsfunktionen eingegangen. Die Möglichkeit der grafischen Verwaltung (z.B. mit \lstinline|virt-manager|) werden gemäss Besprechung im Praktikum ebenfalls nicht weiter berücksichtigt.
+Diese Dokumentation erklärt die grundlegenden Funktionen von KVM / QEMU / Libvirt sowie Docker, Docker Composer und Docker Swarm. Es wird gemäss der Aufgabenstellung nicht auf allgemeine Virtualisierungsgundlagen eingegangen. Die Möglichkeit der grafischen Verwaltung (z.B. mit \lstinline|virt-manager|) werden gemäss Besprechung im Praktikum ebenfalls nicht weiter berücksichtigt.
 %TODO: Brauchen wir docker swarm?
 
 
@@ -152,7 +152,7 @@ virsh pool-refresh default
 
 \subsubsection{Libvirt Storage Pools}
 
-Wir haben beim oben stehenden Hinzufügen von Images jeweils zusätzlich das Kommando \lstinline|virsh pool-refresh default| ausgeführt. Dadurch wird der Libvirt Storage-Pool aktualisiert, damit das neue Image erkannt wird.
+Wir haben beim obenstehenden Hinzufügen von Images jeweils zusätzlich das Kommando \lstinline|virsh pool-refresh default| ausgeführt. Dadurch wird der Libvirt Storage-Pool aktualisiert, damit das neue Image erkannt wird.
 
 Libvirt verwaltet die Speicherorte, von denen virtuelle Images Eingebungen werden können, in sogenannten \emph{Pools}. Ein Pool ist dabei oft ein bestimmter Ordner auf dem Computer oder einem Netzwerklaufwerk, kann aber z.B. auch ein iSCSI Speicher darstellen.
 
@@ -164,7 +164,7 @@ Die Pools können mit \lstinline|virsh| wie folgt verwendet werden (Ausschnitt a
 
 Die XML-Konfiguration des \lstinline|default|-Pools sieht wie folgt aus:
 
-\lstinputlisting[language=xml]{appendix/kvm/libvirt/pool_default.xml}
+\lstinputlisting[caption=\lstinline|/etc/libvirt/storage/default.xml|,language=xml]{appendix/kvm/libvirt/pool_default.xml}
 
 
 
@@ -184,7 +184,7 @@ Mit \lstinline|--import --disk| geben wir das bestehende Festplattenimage an, da
 
 \begin{lstlisting}[language=bash]
 virt-install --name VM1 --ram 512 --cpu host\
---os-variant ubuntu14.04\
+--os-variant ubuntu14.04 --network none\
 --graphics none --noautoconsole --serial pty \
 --import --disk /var/lib/libvirt/images/vm1.qcow2
 \end{lstlisting}
@@ -208,7 +208,7 @@ virsh create /root/VM1.xml
 \subsubsection{Libvirt XML-Konfiguration eines Gastes}\label{sec:libvirt-xml-konfiguration-eines-gastes}
 
 Die Datei \lstinline|/etc/libvirt/qemu/VM1.xml| (bzw. \lstinline|/root/VM1.xml|) sieht folgendermassen aus:
-\lstinputlisting{appendix/kvm/libvirt/domain_VM1.xml}
+\lstinputlisting[caption=\lstinline|/etc/libvirt/qemu/VM1.xml|,language=xml]{appendix/kvm/libvirt/domain_VM1.xml}
 
 \subsubsection{Virt-Clone}
 Damit wir das Netzwerk gemäss der Aufgabenstellung aufbauen können, müssen wir 3 virtuelle Maschinen erstellen. Dafür gibt es die Möglichkeit, die bestehende VM zu klonen. Libvirt stellt dafür das Tool \lstinline|virt-clone| zur Verfügung.
@@ -227,7 +227,7 @@ Zusätzlich möchten wir gerne eine \lstinline|VM3| aus \lstinline|VM1| generier
 \lstinline|virt-clone| kopiert das Image zum angegebenen \lstinline|--file| Pfad; zudem werden die Libvirt-XML-Dateien kopiert und auf die neue VM angepasst (neue \lstinline|UUID|s, MAC-Adressen, Namen anpassen).
 
 \paragraph{Klonen der VM ohne \lstinline|virt-clone|} \hfill \\
-Es ist ebenfalls möglich, die VM's von Hand zu kopieren; dafür können einfach weitere neue VMs gemäss dem Schema aus Abschnitt \ref{sec:virt-install}ff (sowie allenfalls entsprechende Images gem. \ref{sec:festplattenimages-erstellen}) erstellt werden. Wichtig ist hierbei, dass den Kopien ein neuer Namen und bei manueller XML-Erstellung neue \lstinline|UUID|s und MAC-Adressen konfiguriert werden.
+Es ist ebenfalls möglich, die VM's von Hand zu kopieren; dafür können einfach weitere neue VMs gemäss dem Schema aus Abschnitt \ref{sec:virt-install}ff (sowie allenfalls entsprechende Images gem. \ref{sec:festplattenimages-erstellen}) erstellt werden. Wichtig ist hierbei, dass den Kopien ein neuer Namen und bei manueller XML-Erstellung neue \lstinline|UUID|s und MAC-Adressen konfiguriert werden bzw. in der XML-Definition weggelassen werden, damit sie von Libvirt automatisch generiert werden können.
 
 
 \subsection{Netzwerk Konfiguration}
@@ -263,7 +263,7 @@ Libvirt vereinfacht das erstellen von virtuellen Bridges, indem es die Konfigura
 
 Standardmässig ist in der Fedora-Konfiguration ein mit NAT und DHCP/DNS Server versehenes \lstinline|default|-Netzwerk in der Datei \lstinline|default.xml| eingerichtet:
 
-\begin{lstlisting}[language=xml]
+\begin{lstlisting}[caption=default.xml,language=xml]
 <network>
   <name>default</name>
   <uuid>783b4119-8827-4cf3-9659-684f0028b924</uuid>
@@ -280,34 +280,28 @@ Standardmässig ist in der Fedora-Konfiguration ein mit NAT und DHCP/DNS Server 
 
 Mit \lstinline|virsh help network| können die \lstinline|virsh|-Kommandos zur Verwaltung von Netzwerken angezeigt werden:
 
-\lstinputlisting[language=bash]{appendix/kvm/libvirt/net_virsh.man}
+\lstinputlisting[caption=\lstinline|virsh help network|,language=bash]{appendix/kvm/libvirt/net_virsh.man}
 
 
 
 \subsubsection{Virtuelle Netzwerke ohne Libvirt}
 
-%TODO: - Routing + evtl. NAT \& firewalling
-%TODO: - Bridge erstellen
-%TODO: - dnsmasq - dhcp \& dns cacheing
-%TODO: - adapter zu qemu-run hinzufügen
+Für die Erstellung virtueller Netzwerke ohne die Abstraktion von Libvirt ist einige Handarbeit gefragt. Gemäss Rücksprache mit den Assistenten im Praktikum werden hier die grundlegenden Programme und Konzepte erläutert, aber nicht auf detaillierte Befehle eingegangen (da dafür in der Praxis üblichweise sowieso \lstinline|libvirtd| eingesetzt wird.)
+
+\paragraph{Bridges verwalten} \hfill \\
+Bridges müssen unter Linux mit dem \lstinline|brctl|-Tool erstellt und verwaltet werden. Dies legt über den Linux Kernel eine virtuelle Bridge an.
+
+\paragraph{Routing und NAT/PAT} \hfill \\
+Für das Routing muss im Linux die Routing-Option aktiviert werden; NAT/PAT kann mit der Linux-eigenen Firewall \lstinline|netfilter| (auch bekannt unter dem Namen des Verwaltungswerkzeug \lstinline|iptables|) gemacht werden.
+
+\paragraph{DHCP und DNS mit \lstinline|dnsmasq|} \hfill \\
+Libvirt stellt über die eigene Konfiguration die Möglichkeit eines DHCP- und DNS-Caching-Servers zur Verfügung. Dies ist mit dem verbreiteten \lstinline|dnsmasq| gelöst, das diese beiden Aufgaben erfüllt.
+
+Libvirt startet bei entsprechender Konfiguration auf dem Host einen \lstinline|dnsmasq|-Prozess pro erstelltem virtuellem Netz. Die generierte Konfiguration (welche ohne \lstinline|libvirtd| manuell erstellt werden muss), wird unter \lstinline|/var/lib/libvirt/dnsmasq/| abgelegt.
 
 
-%\begin{description}
-%	\item[/var/lib/libvirt/dnsmasq] Die DHCP Konfigurations-Files 
-%	\item[/etc/libvirt/qemu/networks] Netzwerk Konfigurations-Files
-%\end{description}
-%
-%\subsubsection{Host einrichten}
-%\begin{lstlisting}[language=bash]
-%virsh net-define /usr/share/libvirt/networks/default.xml
-%virsh net-autostart default
-%virsh net-start default
-%virsh net-edit <network-name>
-%\end{lstlisting}
-%
-%
-%\lstinline|/etc/libvirt/qemu/networks|
-
+\paragraph{Netzwerkinterfaces an virtuelle Maschinen} \hfill \\
+Damit eine VM zu einem späteren Zeitpunkt tatsächlich auf ein virtuelles Netzwerk zugreifen kann, muss ein (ebenfalls virtuelles) Netzwerk Interface hinzugefügt werden. Dies erfolgt entweder über \lstinline|libvirtd| oder mit dem anhängen der entsprechenden Parameter an das \lstinline|qemu|-Kommando (siehe Abschnitt \ref{sec:ohne-libvirt})
 
 \subsubsection{Erstellen der Netzwerkarchitektur gemäss Aufgabenstellung mit Libvirt}
 
@@ -324,30 +318,142 @@ Das Netzwerkschema ist in Abbildung \ref{fig:network}  festgehalten:
 Zur Realisierung dieser Struktur werden wir zwei virtuelle Netzwerke und die entsprechende Netzwerkkarten auf den virtuellen Maschinen erstellt.
 
 \paragraph{Netzwerk VM1\_VM2} \hfill \\
+Unter der Voraussetzung, dass die Datei \lstinline|VM1_VM2.xml| im aktuellen Ordner liegt (siehe Listing\nobreak\ \ref{list:VM1_VM2.xml}), lässt sich das Netzwerk mit dem Kommando \lstinline|virsh create VM1_VM2.xml| anlegen. Libvirt generiert automatisch die entsprechende \lstinline|UUID| und eine Interface MAC-Adresse.
 
-%TODO: XML-Config
+Mit \lstinline|virsh net-autostart VM1_VM2| stellen wir die automatische Aktivierung beim Booten sicher.
 
-%TODO VM2_3
+\lstinputlisting[label=list:VM1_VM2.xml,caption=\lstinline|VM1\_VM2.xml|, language=xml]{appendix/kvm/libvirt/VM1_VM2.xml}
+
+\paragraph{Netzwerk VM2\_VM3} \hfill \\
+Äquivalent dem Netzwerk VM1\_VM2 wird das Netzwerk VM2\_VM3 mit dem Kommando \lstinline[breaklines=false]|virsh create VM2_VM3.xml| erstellt. Wichtig ist hierbei, dass der \lstinline|bridge|-\lstinline|name| auf dem Hostsystem eindeutig sein muss; daher wird er hier auf \lstinline|virbr2| hochgezählt.
+
+Mit \lstinline|virsh net-autostart VM2_VM3| stellen wir die automatische Aktivierung beim Booten sicher.
+
+\lstinputlisting[label=list:VM2_VM3.xml,caption=\lstinline|VM2\_VM3.xml|, language=xml]{appendix/kvm/libvirt/VM2_VM3.xml}
+
+\paragraph{Bridging Network} \hfill \\
+Damit wir die VM1 von extern erreichbar machen könnten, müssten wir eine Bridge erstellen, welche auch das entsprechende physische Interface umfasst. Leider ist dies auf einer Fedora Workstation nicht ohne weiteres möglich, da der \lstinline|NetworkManager|, welcher das Netzwerk verwaltet, diese Möglichkeit nicht bietet\footnote[42]{Wie das Bridging unter Fedora konfiguriert werden kann, ist unter folgender URL ersichtlich. Wie erwähnt ist dafür aber ein deaktivieren des \lstinline|NetworkManagers| nötig.
+
+ \url{https://docs.fedoraproject.org/en-US/Fedora/13/html/Virtualization_Guide/sect-Virtualization-Network_Configuration-Bridged_networking_with_libvirt.html}}.
+
+Aus diesem Grund beschränken wir uns, wie im Praktikum mit den Assistenten besprochen, auf die einrichtung eines über NAT verbundenes Netzwerk. Damit ist aber von ausserhalb des Hosts kein Zugriff möglich.
+
+Das standardmässige \lstinline|default|-Netzwerk von Libvirt ist für diesen Zweck gut geeignet. 
+
+\lstinputlisting[
+		label=list:net_default.xml,
+		caption=\lstinline|/etc/libvirt/qemu/networks/default.xml|, language=xml
+	]{appendix/kvm/libvirt/net_default.xml}
+
+\subsubsection{Anlegen der Netzwerk-Interfaces mit Libvirt}
+
 \paragraph{Interfaces VM1} \hfill \\
-%TODO: XML_Config
-%TODO: Interface config
+Um die VM1 an die beiden Netzwerke \lstinline|default| und \lstinline|VM1_VM2| anzuschliessen, muss je ein Netzwerk-Interface angelegt werden. Dies machen wir, indem wir die VM-Konfiguration mit dem Kommando \lstinline[breaklines=no]|virsh edit VM1| die beiden \lstinline|interface|-Abschnitte einfügen:
 
-\subsection{Starten, stoppen etc. einer virtuellen Maschine}
+\lstinputlisting[
+		label=list:vmnet_VM1.xml,
+		caption=\lstinline|virsh edit VM1|: Hinzufügen Interfaces,
+		language=xml
+	]{appendix/kvm/libvirt/vmnet_VM1.xml}
 
-\subsubsection{Mit Libvirt}
+Die obenstehenden MAC-Adressen sind generiert, und können zur automatischen Erstellung durch Libvirt auch weggelassen werden.
 
-%TODO: Start, Console, Shutdown (ACPI/Forced), delete vm, further management
+Wir haben uns hier für Netzwerkkarten vom Typ \lstinline|virtio| entschieden; es wäre auch möglich, andere Netzwerkkarten zu emulieren, z.B. Realtek \lstinline|rtl8139| oder Intel \lstinline|e1000|. \lstinline|virtio| ist allerdings auf einen schnellen virtuellen Betrieb optimiert, und wird von CirrOS/Linux gut unterstützt.
 
-\begin{lstlisting}[language=bash]
-virsh create /etc/libvirt/qemu/VM1.xml
+\paragraph{Interfaces VM2} \hfill \\
+Bei der VM2 führen wir die gleichen Schritte wie für die VM1 durch, allerdings mit einer entsprechend angepasster Konfiguration:
 
-virsh start VM1 
+\lstinputlisting[
+		label=list:vmnet_VM2.xml,
+		caption=\lstinline|virsh edit VM2|: Hinzufügen Interfaces,
+		language=xml
+	]{appendix/kvm/libvirt/vmnet_VM2.xml}
 
-virsh console VM1
+\paragraph{Interfaces VM3} \hfill \\
+Bei der VM3 führen wir die gleichen Schritte wie für die VM1 und VM2 durch, allerdings mit einer entsprechend angepasster Konfiguration:
+
+\lstinputlisting[
+		label=list:vmnet_VM3.xml,
+		caption=\lstinline|virsh edit VM3|: Hinzufügen Interfaces,
+		language=xml
+	]{appendix/kvm/libvirt/vmnet_VM3.xml}
+
+\subsubsection{Netzwerkkonfiguration innerhalb der VMs}
+
+Damit die CirrOS-VMs auf die Netzwerke zugreifen können, müssen die Interfaces noch konfiguriert werden. Dafür müssen wir die VMs zuerst starten (mehr Details dazu im Abschnitt\nolinebreak\  \ref{sec:starten-stoppen-etc-einer-virtuellen-maschine}):
+\begin{lstlisting}
+virsh start VM1
+virsh start VM2
+virsh start VM3
 \end{lstlisting}
 
-\subsubsection{Ohne Libvirt}
-%TODO: Ansatzweise Beschreiben, wie KVM/QEMU auch ohne Libvirt verwendet werden kann
+\paragraph{Konfiguration VM1} \hfill \\
+Wir können uns mit \lstinline|virsh console VM1| auf die VM1 verbinden. Sobald der Bootvorgang abgeschlossen ist, loggen wir uns mit dem Standardlogin ''cirros'' und Passwort ''cubswin:)'' ein, und editieren die Netzwerk-Konfiguration mit \lstinline[breaklines=no]|sudo vi /etc/network/interfaces|
+
+Nun müssen folgende Zeilen in der Datei existieren bzw. hinzugefügt werden:
+
+\lstinputlisting[
+		label=list:vmnet_VM1.iface,
+		caption=VM1 \lstinline|/etc/network/interfaces|
+	]{appendix/kvm/libvirt/vmnet_VM1.iface}
+
+Nach dem anpassen der Konfiguration fahren wir die VM mit \lstinline|sudo poweroff| wieder herunter.
+
+\paragraph{Konfiguration VM2} \hfill \\
+Bei der VM2 gehen wir gleich vor wie bei VM1, mit dem unterschied der nachfolgenden Konfiguration von \lstinline|/etc/network/interfaces|:
+
+\lstinputlisting[
+label=list:vmnet_VM2.iface,
+caption=VM2 \lstinline|/etc/network/interfaces|
+]{appendix/kvm/libvirt/vmnet_VM2.iface}
+
+Nach dem anpassen der Konfiguration fahren wir die VM mit \lstinline|sudo poweroff| wieder herunter.
+
+\paragraph{Konfiguration VM3} \hfill \\
+Bei der VM2 gehen wir gleich vor wie bei VM1 und VM2, mit dem unterschied der nachfolgenden Konfiguration von \lstinline|/etc/network/interfaces|:
+
+\lstinputlisting[
+label=list:vmnet_VM3.iface,
+caption=VM3 \lstinline|/etc/network/interfaces|
+]{appendix/kvm/libvirt/vmnet_VM3.iface}
+
+Nach dem anpassen der Konfiguration fahren wir die VM mit \lstinline|sudo poweroff| wieder herunter.
+
+
+\subsection{Starten, stoppen etc. einer virtuellen Maschine}\label{sec:starten-stoppen-etc-einer-virtuellen-maschine}\label{sec:starten-stoppen-etc-einer-virtuellen-maschine}
+
+Nachdem wir nun erfolgreich die virtuelle Umgebung eingerichtet haben, wird in den folgenden Abschnitten erläutert, wie virtuelle Maschinen gestartet, heruntergefahren und auf die virtuelle Konsole zugegriffen werden kann.
+
+\subsubsection{Mit Libvirt}
+Libvirt stellt für das verwalten von virtuellen Maschinen bequeme Kommandos mit dem \lstinline|virsh|-Tool bereit, wie in den nachfolgenden Beispielen mit \lstinline|VM1| aufgezeigt.
+
+\begin{lstlisting}[language=bash]
+# VM1 starten
+virsh start VM1
+
+# Konsole der VM1 oeffnen
+virsh console VM1
+
+# ACPI-Signal zum herunterfahren an VM1 senden
+virsh shutdown VM1
+\end{lstlisting}
+
+
+\subsubsection{Ohne Libvirt}\label{sec:ohne-libvirt}
+
+Ohne die steuernde Funktion von Libvirt (bzw. genauer gesagt, der Steuerung von \lstinline|libvirtd| mittels \lstinline|virsh|), wird das starten und laufen lassen von virtuellen Maschinen deutlich komplizierter.
+
+Da ohne Libvirt die Konfiguration auch nicht mit XML-Dateien erfolgt, muss die gesamte Konfiguration als Parameter zum QEMU-Aufruf mitgegeben werden. Für die VM1, wie sie bei dieser Aufgabe erstellt wird, führt \lstinline|libvirtd| folgendes Kommando durch:
+
+\begin{lstlisting}[language=bash]
+/usr/bin/qemu-system-x86_64 -machine accel=kvm -name VM1 -S -machine pc-i440fx-2.4,accel=kvm,usb=off -cpu SandyBridge,+osxsave,+pcid,+pdcm,+xtpr,+tm2,+est,+smx,+vmx,+ds_cpl,+monitor,+dtes64,+pbe,+tm,+ht,+ss,+acpi,+ds,+vme -m 512 -realtime mlock=off -smp 1,sockets=1,cores=1,threads=1 -uuid 1637255f-352a-474d-9964-071af0e8e15e -nographic -no-user-config -nodefaults -chardev socket,id=charmonitor,path=/var/lib/libvirt/qemu/VM1.monitor,server,nowait -mon chardev=charmonitor,id=monitor,mode=control -rtc base=utc,driftfix=slew -global kvm-pit.lost_tick_policy=discard -no-hpet -no-shutdown -global PIIX4_PM.disable_s3=1 -global PIIX4_PM.disable_s4=1 -boot strict=on -device ich9-usb-ehci1,id=usb,bus=pci.0,addr=0x4.0x7 -device ich9-usb-uhci1,masterbus=usb.0,firstport=0,bus=pci.0,multifunction=on,addr=0x4 -device ich9-usb-uhci2,masterbus=usb.0,firstport=2,bus=pci.0,addr=0x4.0x1 -device ich9-usb-uhci3,masterbus=usb.0,firstport=4,bus=pci.0,addr=0x4.0x2 -drive file=/var/lib/libvirt/images/vm1.qcow2,if=none,id=drive-virtio-disk0,format=qcow2 -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 -netdev tap,fd=23,id=hostnet0,vhost=on,vhostfd=24 -device virtio-net-pci,netdev=hostnet0,id=net0,mac=52:54:00:9d:f7:54,bus=pci.0,addr=0x2 -netdev tap,fd=25,id=hostnet1,vhost=on,vhostfd=26 -device virtio-net-pci,netdev=hostnet1,id=net1,mac=52:54:00:09:17:8a,bus=pci.0,addr=0x6 -chardev pty,id=charserial0 -device isa-serial,chardev=charserial0,id=serial0 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x5 -msg timestamp=on
+\end{lstlisting}
+
+Essenziell im obenstehendem Aufruf ist insbesondere \lstinline|-machine accel=kvm|; damit erfolgt die Aktivieren der KVM-Schnittstelle (falls dies weggelassen wird, führt QEMU eine Vollvirtualisierung durch).
+
+Selbstverständlich läuft die VM nur solange, wie auch \lstinline|qemu| ausgeführt wird. Für einen produktiven Einsatz müsste dieser Aufruf also von einem Daemon ausgeführt werden.
+
+Deshalb wird in der Praxis üblicherweise  \lstinline|libvirtd| eingesetzt.
 
 \section{Docker}
 \subsection{Grundlegendes}
