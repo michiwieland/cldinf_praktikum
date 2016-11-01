@@ -560,7 +560,7 @@ docker rm <container>
 
 \subsection{Vorraussetzungen}
 \subsubsection{Docker Installation}
-Um Docker unter Fedora verwenden zu können, muss in einem ersten Schritt das korrekte Repository hinzugefügt werden. Anschliessend kann Docker installiert und der Service gestartet werden.
+Folgende Schritte sind notwendig um Docker unter Fedora verwenden zu können.
 \begin{lstlisting}[language=bash]
 # add repository
 sudo tee /etc/yum.repos.d/docker.repo <<-'EOF'
@@ -618,7 +618,7 @@ In einem ersten Schritt wird innerhalb des \lstinline[]|docker-elk| Folder, für
 \subsubsection{Docker File}
 Ein Dockerfile beschreibt wie ein Docker Image erstellt werden soll. 
 \begin{description}
-	\item[FROM] Der wichtigste Befehl im Dockerfile ist FROM. Dieser muss ganz oben stehen und beschreibt ganz einfach, welches Image die Grundlage für unser neu erzeugtes Image ist.	
+	\item[FROM] Der wichtigste Befehl im Dockerfile ist FROM. Dieser muss ganz oben stehen und beschreibt ganz einfach, welches Image die Grundlage für das neu erzeugtes Image ist.	
 	\item[RUN] Führt einen Befehl innerhalb des Containers aus
 	\item[COPY] Kopiert ein File in das Filesystem des Containers
 	\item[CMD] Bietet einen Defaultcommand für einen ausgeführten Container. Es gibt nur einen CMD Befehl pro Docker Image.
@@ -672,7 +672,7 @@ RUN chmod +x /tmp/startup.sh
 CMD ["/tmp/startup.sh"] 
 \end{lstlisting}
 
-Da Kibana die Daten aus Elasticsearch visualisert, muss sichergestellt werden, dass der Elasticsearch Container bereits läuft, bevor Kibana gestartet wird. Dies erledigen wir mit einem einfach Polling Script. Für das Polling wird nc benötigt, welches im Dockerfile via \lstinline[]|apt-get install ncat| installiert wird. 
+Da Kibana die Daten aus Elasticsearch visualisert, muss sichergestellt werden, dass der Elasticsearch Container bereits läuft, bevor Kibana gestartet wird. Dies erledigen wir mit einem einfach Polling Script. Für das Polling wird \lstinline[]|nc| (Netcat) benötigt, welches im Dockerfile via \lstinline[]|apt-get install ncat| installiert wird. 
 \begin{lstlisting}[caption=Kibana Pooling Script, language=bash]
 #!/bin/bash
 
@@ -707,8 +707,8 @@ Im Composer File werden die vorgehenden Dockerfiles orchestriert.
 \begin{description}
 	\item[build] Order in welchem das Docker File liegt
 	\item[ports] Ports welche an das Hostsystem weitergeleitet werden sollen
-	\item[networks (local)] In welchem Netzwerk arbeitet ein Container
-	\item[networks (global)] Definition der Netzwerke
+	\item[networks (local)] \hfill \\ In welchem Netzwerk arbeitet ein Container. Weitere Informationen im Absatz \ref{sec:docker_networkconf}
+	\item[networks (global)] Definition der benötigten Bridge Netzwerke
 \end{description}
 \begin{lstlisting}[caption=docker-compose.yml Compose File, language=bash]
 version: '2'
@@ -759,7 +759,7 @@ networks:
 \subsubsection{Test}
 Wenn alle vorgängigen Files wie beschrieben erstellt wurden, kann der ELK Stack gestartet werden. Das Webinterface ist fortan unter \url{http://localhost:5601/} verfügbar. Das Default Login für Kibana lautet \lstinline[]|'kibana'| mit dem Passwort \lstinline[]|'changeme'|
 \begin{lstlisting}[language=bash]
-IFADDR_MGMT=127.0.0.1 IFADDR_IT=127.0.0.1 docker-compose up
+IFADDR_IT=<eth0 ipv4 addr> IFADDR_MGMT=<eth1 ipv4 addr> docker-compose up
 \end{lstlisting}
 
 Um Kibana mit Dummy Daten zu füttern, kann folgender Befehl ausgeführt werden: \lstinline[]|sudo nc localhost 5000 < /var/log/<any_logfile>.log|
@@ -776,10 +776,19 @@ e98ecb6fefeb        none                null
 \end{lstlisting}
 
 \subsubsection{Übersicht}
-Um die Vorgaben an die Netzwerkkonfiguration zu erfüllen, haben wir uns für eine statische Konfiguration entschieden. Dafür richten wir zwei Bridge Interfaces ein, die je zwei Container miteinander verbinden. Der Port 5000 wird in das Netzwerk IT Management des Host Systems gemappt. Die externe Adresse kann über die Umgebungsvariable \lstinline[]|IFADDR_IT| gesetzt werden. Der Port 5601 für das Kibana Webinterface soll nur aus dem Managment Netz erreichbar sein. Die externe Management Adresse kann über die Umgebungsvariable \lstinline[]|IFADDR_MGMT| gesetzt werden.
+\label{sec:docker_networkconf}
+Um die Vorgaben an die Netzwerkkonfiguration zu erfüllen, haben wir uns für eine statische Konfiguration entschieden. Dafür werden im Docker Compose zwei Bridge Interfaces eingerichtet. Das Erste verbindet Kibana mit Elasticsearch in dem Subnetz 192.168.120.0/29 und das Zweite verbindet Elasticsearch mit Logstash in dem Subnetz 192.168.120.8/29. Der Port 5000 wird in das Netzwerk Management des Host Systems gemappt. Die externe Adresse kann über die Umgebungsvariable \lstinline[]|IFADDR_IT| gesetzt werden. Der Port 5601 für das Kibana Webinterface soll nur aus dem IT Netz erreichbar sein. Die externe Management Adresse kann über die Umgebungsvariable \lstinline[]|IFADDR_MGMT| gesetzt werden.
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\linewidth]{images/docker_network_conf}
+\caption{Übersicht Netzwerkkonfiguration}
+\label{fig:dockernetworkconf}
+\end{figure}
+\newpage
+
 
 \subsubsection{Tests}
-Um die Netzwerkkonnektivität zu überprüften schalten wir bei laufendem ELK Stack auf die einzelnen Container drauf:
+Um die Netzwerkkonnektivität zu überprüften schalten wir uns bei laufendem ELK Stack auf die einzelnen Container drauf:
 \begin{lstlisting}[language=bash]
 sudo docker exec -ti <container> /bin/bash
 
@@ -791,6 +800,8 @@ ping 192.168.120.2
 \end{lstlisting}
 
 \subsection{Docker Swarm}
+Docker Swarm dient der Orchestrierung mehrere Docker Machines zu einem übergreifenden Cluster.
+
 \subsubsection{Umgebungsvariablen}
 Bei der Erstellung der Swarm Nodes werden automatisch TLS Zertifikate installiert, damit diese auch gefunden werden muss unter \lstinline[]|/etc/sysconfig/docker| folgendes IF Statement hinzugefügt werden. 
 \begin{lstlisting}[caption=/etc/sysconfig/docker, language=bash]
