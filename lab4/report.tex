@@ -612,10 +612,10 @@ Der Max Map Count beinhaltet die maximale Anzahl an Memory Map Area's die einem 
 sudo sysctl -w vm.max_map_count=262144
 \end{lstlisting}
 
-\subsection{Images}
+\subsection{Docker Images}
 In einem ersten Schritt wird innerhalb des \lstinline[]|docker-elk| Folder, für jede Komponente ein eigener Ordner angelegt.(\lstinline[]|mkdir logstash elasticsearch kibana|). Anschliessend wird für jede Komponente ein Dockerfile angelegt, welches auf ein bestehendes Docker Hub Image zurückgreift. (\lstinline[]|touch Dockerfile|). Alle Teilkomponenten setzen dabei auf die aktuellste Version 5 des Basis Containers.
 
-\paragraph{Docker File}
+\subsubsection{Docker File}
 Ein Dockerfile beschreibt wie ein Docker Image erstellt werden soll. 
 \begin{description}
 	\item[FROM] Der wichtigste Befehl im Dockerfile ist FROM. Dieser muss ganz oben stehen und beschreibt ganz einfach, welches Image die Grundlage für unser neu erzeugtes Image ist.	
@@ -716,44 +716,53 @@ version: '2'
 services:
 	elasticsearch:
 		build: elasticsearch
-		ports:
-			- "9200:9200"
-			- "9300:9300"
 		environment:
 			ES_JAVA_OPTS: "-Xms1g -Xmx1g"
 		networks:
-			- ServerMgmt
-			- IT
+			KIBANA_ELASTIC:
+				ipv4_address: 192.168.120.2
+			LOGSTASH_ELASTIC:
+				ipv4_address: 192.168.120.10
 	logstash:
 		build: logstash/
 		command: -f /etc/logstash/conf.d/
 		volumes:
 			- ./logstash/config:/etc/logstash/conf.d
 		ports:
-			- "5000:5000"
+			- "${IFADDR_MGMT}:5000:5000"
 		networks:
-			- ServerMgmt
+			LOGSTASH_ELASTIC:
+				ipv4_address: 192.168.120.11
 	kibana:
 		build: kibana/
 		volumes:
 			- ./kibana/config/:/opt/kibana/config/
 		ports:
-			- "5601:5601"
+			- "${IFADDR_IT}:5601:5601"
 		networks:
-			- IT
+			KIBANA_ELASTIC:
+				ipv4_address: 192.168.120.3
 
 networks:
-	IT:
+	KIBANA_ELASTIC:
 		driver: bridge
-	ServerMgmt:
+		ipam:
+			config:
+				- subnet: 192.168.120.0/29
+	LOGSTASH_ELASTIC:
 		driver: bridge
+		ipam: 
+			config:
+				- subnet: 192.168.120.8/29
 \end{lstlisting}
 
-Wenn alle vorgängigen Files wie beschrieben erstellt wurden, kann der ELK Stack gestartet werden.
+\subsubsection{Test}
+Wenn alle vorgängigen Files wie beschrieben erstellt wurden, kann der ELK Stack gestartet werden. Das Webinterface ist fortan unter \url{http://localhost:5601/} verfügbar. Das Default Login für Kibana lautet \lstinline[]|'kibana'| mit dem Passwort \lstinline[]|'changeme'|
 \begin{lstlisting}[language=bash]
-sudo docker-compose up
+IFADDR_MGMT=127.0.0.1 IFADDR_IT=127.0.0.1 docker-compose up
 \end{lstlisting}
 
+Um Kibana mit Dummy Daten zu füttern, kann folgender Befehl ausgeführt werden: \lstinline[]|sudo nc localhost 5000 < /var/log/<any_logfile>.log|
 
 \subsection{Netzwerkkonfiguration}
 Docker erstellt standardmässig ein Netzwerk Interface (\lstinline[]|docker0|) im Adressbreich 172.17.x.x/16. Wurde kein spezifisches Netzwerk angegeben(\lstinline[]|docker run --network <net name>|), sind alle Container standardmässig an dieses Interface gebunden. Ebenfalls werden drei Docker interne Netzwerke angelegt.
@@ -764,6 +773,21 @@ NETWORK ID          NAME                DRIVER
 d8159c421bee        bridge              bridge              
 e98ecb6fefeb        none                null                
 427ea6518c34        host                host    
+\end{lstlisting}
+
+\subsubsection{Übersicht}
+Um die Vorgaben an die Netzwerkkonfiguration zu erfüllen, haben wir uns für eine statische Konfiguration entschieden. Dafür richten wir zwei Bridge Interfaces ein, die je zwei Container miteinander verbinden. Der Port 5000 wird in das Netzwerk IT Management des Host Systems gemappt. Die externe Adresse kann über die Umgebungsvariable \lstinline[]|IFADDR_IT| gesetzt werden. Der Port 5601 für das Kibana Webinterface soll nur aus dem Managment Netz erreichbar sein. Die externe Management Adresse kann über die Umgebungsvariable \lstinline[]|IFADDR_MGMT| gesetzt werden.
+
+\subsubsection{Tests}
+Um die Netzwerkkonnektivität zu überprüften schalten wir bei laufendem ELK Stack auf die einzelnen Container drauf:
+\begin{lstlisting}[language=bash]
+sudo docker exec -ti <container> /bin/bash
+
+#  list ip addr
+ip addr 
+
+# check connectivity
+ping 192.168.120.2
 \end{lstlisting}
 
 \subsection{Docker Swarm}
@@ -793,29 +817,29 @@ docker run swarm create
 docker-machine create -d virtualbox --swarm --swarm-master --swarm-discovery token://8c39e2080809189e0169ef1f468463d3 swarm-master
 
 # create nodes
-docker-machine create -d virtualbox --swarm --swarm-discovery token://8c39e2080809189e0169ef1f468463d3 kibana
+docker-machine create -d virtualbox --swarm --swarm-discovery token://8c39e2080809189e0169ef1f468463d3 node01
 
-docker-machine create -d virtualbox --swarm --swarm-discovery token://8c39e2080809189e0169ef1f468463d3 logstash
-
-docker-machine create -d virtualbox --swarm --swarm-discovery token://8c39e2080809189e0169ef1f468463d3 elasticsearch
-\end{lstlisting}
-
-
-\subsubsection{Tests}
-Um die Netzwerkkonnektivität zu überprüften schalten wir bei laufendem ELK Stack auf die einzelnen Container drauf:
-\begin{lstlisting}[language=bash]
-sudo docker exec -ti <container> /bin/bash
+docker-machine create -d virtualbox --swarm --swarm-discovery token://8c39e2080809189e0169ef1f468463d3 node01
 \end{lstlisting}
 
 \section{Vergleich der Technologien}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\linewidth]{images/docker_virtualization}
+\caption{Docker vs KVM Virtualization}
+\label{fig:dockervirtualization}
+\end{figure}
+
+
 \subsection{Docker}
 \paragraph{Vorteile}
 \begin{itemize}
 	\item Man kann auf den Ballast eines kompletten Betriebssystems verzichten, wenn man nur eine Applikation isoliert ausführen möchte.
-	\item Äusserts sparsamer Umgang mit Ressourcen und eine kurze Startzeit	
+	\item Äusserts sparsamer Umgang mit Ressourcen und eine kurze Startzeit	sobald die Images einmal gepullt wurden.
 	\item Sehr einfach einen Docker Container zu installieren
 	\item Austausch von Images fällt durch den Gebrauch von öffentlichen Registries leicht. (Docker Hub)
-	\item Container sind sehr portalbel
+	\item Container sind portalbel und bietet auf jedem Host eine einheitliche Umgebung
+	\item Mittels Docker Swarm und Docker Machine skalierbar
 \end{itemize}
 \paragraph{Nachteile}
 \begin{itemize}
