@@ -834,12 +834,45 @@ docker-machine create -d virtualbox --swarm --swarm-discovery token://8c39e20808
 \end{lstlisting}
 
 \section{Vergleich der Technologien}
+
+Auf der Abbildung \ref{fig:dockervirtualization} ist übersichtlich dargestellt, wie die unterschiedlichen Stacks mit virtual Machines (KVM) und Containers (Docker) aufgebaut sind. In Tabelle \ref{tabu:kvm-docker} auf der nächsten Seite werden die unterschiedlichen Ansätze der beiden Technologien gegenübergestellt.
+
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.7\linewidth]{images/docker_virtualization}
 \caption{Docker vs KVM Virtualization}
 \label{fig:dockervirtualization}
 \end{figure}
+
+\pagebreak
+\begin{table}[H]
+	\centering
+	\begin{tabu} to \linewidth {r | X X}
+		\toprule
+		\textbf{Vergleich} & \textbf{KVM/QEMU} & \textbf{Docker} \\
+		\midrule
+		Isolationsebene & Komplettes Betriebssystem & Applikation mit Libraries \\ \hline
+		Persistenz & Dateisystem ist persistent (und somit eher teuer). & Dateisystem flüchtig; Daten müssen in Datencontainer  oder extern ausgelagert werden \\ \hline
+		Lebenszyklus & Hoher Installationsaufwand, lange Betriebszeit (meist 3-15 Jahre) & Kleiner Installationsaufwand, kurze Lebenszeit (oft wenige Monate) \\ \hline
+		Applikationsdichte & je nach dem 1 - 1000 pro VM & Üblicherweise 1 pro Container \\ \hline
+		Systemupdate & Updates können üblicherweise einmal pro VM installiert werden. & Updates müssen auf allen Containern ausgerollt werden \\ \hline
+		Speicherbedarf & Vollständiges Betriebssystem mit allen Abhängigkeiten; kann dafür für mehrere Applikationen verwendet werden & Üblicherweise Image mit den meisten Betriebssystembibliotheken; kann von mehren Docker Containern via Overlay genutzt werden \\ \hline
+		Memorybedarf & Systemaufgaben; Libraries sind oft geshared, also einmal im Memory & Keine gesharte libraries; alles mehrfach im Memory \\ \hline
+		CPU & Eigenes Scheduling; dadurch viel System-Overhead & Scheduling etc. wird vom Host durchgeführt, relativ effizient. \\ \hline
+		Skalierbarkeit & Aufwändig; nur bis zu einem gewissen Grad ausbaubar & Einfach: neue Instanzen der Docker-Container hinzufügen. \\ \hline
+		Reproduzierbarkeit\textsuperscript{43} & Eher aufwändig/teuer (VM-Klon), nicht nur eine Applikation, braucht VM-Umgebung & Sehr einfach: Container sind weitgehend atomar und laufen (beinahe) überall\\ \hline
+		Orchestrierung & Eher schwierig; z.B. mit Puppet, Chef, Salt, Ansible möglich & Einfach: direkt von Docker mit Compose \& Swarm unterstützt \\ \hline
+		Migrationsaufwand & Bestehende Applikationen laufen ohne Probleme & Die meisten Applikationen müssen angepasst werden (z.B. betreffend Datenablage) \\ \hline
+		Systemsupport & Grundsätzlich alle Systeme & z:Z. nur UNIXartige Applikationen \\ \hline
+		Eignung & Klassische, eng verzahnte Applikationsumgebungen mit vielen abhängigen Prozessen & Isolierte/Atomare Applikationen mit wenigen und unabhängigen Prozessen \\ \hline
+		Typisches Beispiel & Klassischer LAMP-Stack & ELK-Stack, Node.js Webapp \\
+		\bottomrule
+	\end{tabu}
+	\caption{Gegenüberstellung KVM/QEMU und Docker}
+	\label{tabu:kvm-docker}
+\end{table}
+\footnotetext[43]{Damit ist gemeint, wie kompliziert das Aufsetzen einer genau gleichartigen Umgebung z.B. für Entwicklungs- oder Stagingsysteme ist.}
+\pagebreak
 
 
 \subsection{Docker}
