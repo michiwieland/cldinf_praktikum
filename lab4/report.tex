@@ -349,19 +349,17 @@ virsh console VM1
 \subsubsection{Ohne Libvirt}
 %TODO: Ansatzweise Beschreiben, wie KVM/QEMU auch ohne Libvirt verwendet werden kann
 
-
-
 \section{Docker}
 \subsection{Grundlegendes}
 Docker ist im Gegensatz zu KVM keine Lösung für virtuelle Maschinen (und damit unabhängige Betriebssysteme mit eigenem CPU-Scheduling etc.) sondern basiert auf Linux Container (LXC). Ein LXC ist eine vom Kernel bereitgestellte virtuelle Umgebung zur isolierten Ausführung von Prozessen. \\
 
-Docker ermöglicht neben der Steuerung von isolierten Applikationsausführung in LXC die Konfiguration von Netzwerkeinstellungen bzw. Portfreigabe ein komplett isoliertes Dateisystem pro Applikation (sogenannte Images). Damit ist es möglich, Systemunabhängig immer die gleiche Plattform zur Ausführung zu paketieren und weiter zu verteilen. Von Docker erstellte Images werden üblicherweise mit einem Dateisystem erstellt, welches Snapshots erlaubt (z.B. AUFS, UnionFS oder BTRFS). \\
+Docker ermöglicht neben der Steuerung von isolierten Applikationsausführung in LXC die Konfiguration von Netzwerkeinstellungen bzw. Portfreigabe ein komplett isoliertes Dateisystem pro Applikation (sogenannte Images). Damit ist es möglich, Systemunabhängig immer die gleiche Plattform zur Ausführung zu paketieren und weiter zu verteilen. Von Docker erstellte Images werden üblicherweise mit einem Dateisystem erstellt, welches Snapshots erlaubt (z.B. AUFS oder BTRFS). Die Filesysteme sind ebenfalls ''stappelbar'', so dass nur die Änderungen gespeichert werden müssen. \\
 
 Zur Erstellung von eigenen Images, auf deren Basis eine Applikation ausgeführt wird, können mit einem \lstinline[]|Dockerfile| komplette ''Bauanleitungen'' erstellt werden. Im \lstinline[]|Dockerfile| sind die Eigenschaften des neuen Container und Images sowie darauf auszuführende Kommandos zur Bereitstellung der Umgebung hinterlegt. \\
 
 So gebaute Images (oft in diesem Zusammenhang auch einfach als Container bezeichnet) können über eine Online-Plattform verteilt werden. Die Firma Docker Inc. stellt zu diesem Zweck die öffentliche Plattform \emph{DockerHub} unter \url{https://hub.docker.com/} zur Verfügung. \\
 
-Ein öffentliches Image kann wie folgt addressiert werden \lstinline[]|<author name>/<image name>:<tag>|. Der Teil vor dem Doppelpunkt wird Repository genannt. Ein Repository kann in mehreren Versionen vorliegen. Diese Versionen werden anhand eines Tags unterschieden, welcher hinter Doppelpunkt steht. Wird kein Tag angegeben, wird automatisch das aktuellste (latest) Image verwendet. \\
+Ein öffentliches Image kann wie folgt adressiert werden \lstinline[]|<author name>/<image name>:<tag>|. Der Teil vor dem Doppelpunkt wird Repository genannt. Ein Repository kann in mehreren Versionen vorliegen. Diese Versionen werden anhand eines Tags unterschieden, welcher hinter Doppelpunkt steht. Wird kein Tag angegeben, wird automatisch das aktuellste (latest) Image verwendet. \\
 
 Daten die im Docker Image erzeugt werden, verschwinden nach dem Beenden des Containers. Um Daten Persistent zu speichern muss ein lokales Verzeichnis mit einem Verzeichnis des Hostsystems gemappt werden. Dies geschieht mit dem Parameter \lstinline[]|-v ./host_folder:/var/container_folder| \\
 
@@ -369,11 +367,10 @@ Beim Bauen eines Containers wird üblicherweise auf die Basis eines bestehenden 
 
 Docker funktionierte anfänglich nur für 64 Bit Linux Distributionen. Später kam der Support für MacOSX hinzu und seit neustem läuft Docker auch unter Windwos, wobei Hyper-V für die Virtualisierung der Docker Engine und Linux spezifischen Kernel Features verwendet wird.
 
-
 \subsubsection{Terminologie}
 \begin{description}
 	\item[Image] Eine portable Abbildung eines Containers.
-	\item[Container] Lauffähiges virtuelles Betriebssystem. Instanz eines Images.
+	\item[Container] Lauffähiges virtuelles System. Instanz eines Images.
 	\item[Dockerfile] Ist eine Textdatei, in welcher der Aufbau eines Docker Images beschrieben ist.
 	\item[Docker Hub] ein Online-Dienst, der eine Registry für Docker-Images und Repositorys beinhaltet
 	\item[Libcontainer] Libcontainer ist eine Schnittstelle für die Grundfunktionalitäten von Docker. Es ersetzt die LXC Schnittstelle die anfänglich verwendet wurde. 
@@ -381,11 +378,24 @@ Docker funktionierte anfänglich nur für 64 Bit Linux Distributionen. Später k
 	\item[libchan] eine Schnittstelle zu Dockers Netzwerkfunktionen.
 \end{description}
 
+\subsubsection{Ordner}
+\begin{description}
+	\item[/var/lib/docker/containers/] Hier liegen alle Container
+	\item[/var/lib/docker/devicemapper/devicemapper/data] Hier liegen alle Images
+\end{description}
+
 \subsubsection{Docker Compose}
-Docker Compose ist ein ergänzendes Programm zu Docker, welches die Orchestrierung von mehreren Docker-Containern erlaubt. Docker Compose vereinfacht also die Verwaltung und das Linking von mehreren Docker Container. Der Aufbau/Start der Container wird mittels dem Kommando \lstinline|docker-compose| gesteuert; dies liest die \lstinline|docker-compose.yml|-Datei ein, in welcher weitergehende die Anweisungen für die Konfiguration der Container definiert sind.
+Docker Compose ist ein ergänzendes Programm zu Docker, welches die Orchestrierung von mehreren Docker-Containern erlaubt. Docker Compose vereinfacht also die Verwaltung und das Linking von mehreren Docker Container. Der Aufbau/Start der Container wird mittels dem Kommando \lstinline|docker-compose| gesteuert; dies liest die \lstinline|docker-compose.yml|-Datei ein, in welcher weitergehende Anweisungen für die Konfiguration der Container definiert sind.
 
 \subsubsection{Docker Swarm}
-Docker Swarm erlaubt das Verknüpfen verschiener Hosts zu einem Cluster. Es verwandelt also mehrere Docker Container in einen virtuellen Docker Host.
+Docker Swarm erlaubt das Verknüpfen mehrerer Docker Hosts zu einem Cluster. Ein Swarm besteht immer aus einem Master, einem Discovery Service und mehreren Nodes. Mit Hilfe von Docker Machine können beliebig viele Nodes erstellt werden. Ein Container der in einem Swarm deployed wird, wird gemäss einem bestimmten Strategie (spread, binpack, random) auf den verfügbaren Nodes verteilt. Mit dem Befehl \lstinline[]|docker service scale <service_id>=<number_of_tasks>| kann ein Service leicht skaliert werden.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\linewidth]{appendix/docker/docker-swarm-cluster}
+	\caption{Docker Swarm Key Components}
+	\label{fig:docker-swarm-cluster}
+\end{figure}
 
 \subsubsection{Docker Machine}
 Docker Machine ist ein Tool um die Docker Engine auf virtuellen Hosts zu installieren und verwalten. Es ist zurzeit die einzige Möglichkeit, um Docker auf Mac oder Windows laufen zu lassen. Ebenfalls lassen sich Swarm Cluster damit erstellen. Unter Fedora wird Docker Machine wie folgt installiert:
@@ -426,7 +436,6 @@ docker (stop|start) <name>/<id>
 docker rm <container>
 \end{lstlisting}
 
-
 \subsection{ELK Stack Setup (Elasticseach, Logstash, Kibana)}
 \begin{description}
 	\item[Elasticsearch] Elasticsearch ist eine mandantenfähige Suchengine für Volltextsuchen. Es verfügt über ein RESTful Webinterface.
@@ -442,10 +451,35 @@ docker rm <container>
 	\item 5000 - Logstash Lumberjack interface, receives logs from Logstash forwarders
 \end{itemize}
 
-
 \subsection{Vorraussetzungen}
+\subsubsection{Docker Installation}
+Um Docker unter Fedora verwenden zu können, muss in einem ersten Schritt das korrekte Repository hinzugefügt werden. Anschliessend kann Docker installiert und der Service gestartet werden.
+\begin{lstlisting}[language=bash]
+# add repository
+sudo tee /etc/yum.repos.d/docker.repo <<-'EOF'
+	[dockerrepo]
+	name=Docker Repository
+	baseurl=https://yum.dockerproject.org/repo/main/fedora/$releasever/
+	enabled=1
+	gpgcheck=1
+	gpgkey=https://yum.dockerproject.org/gpg
+	EOF
+
+# install docker
+sudo dnf install docker-engine
+
+# enable service
+sudo systemctl enable docker.service
+
+# start service
+sudo systemctl start docker
+
+# check installation
+sudo docker run --rm hello-world
+\end{lstlisting}
+
 \subsubsection{VirtualBox}
-Für DockerSwarm muss eine aktuelle Version von VirtualBox vorliegen. Dies wird unter Fedora wie folgt installiert:
+Damit wir eine Testumgebung für Docker Swarm aufbauen können, muss eine aktuelle Version von VirtualBox vorliegen.  Dies wird unter Fedora wie folgt installiert:
 \begin{lstlisting}[language=bash]
 cd /etc/yum.repos.d/ 
 sudo wget http://download.virtualbox.org/virtualbox/rpm/fedora/virtualbox.repo
@@ -471,14 +505,19 @@ Der Max Map Count beinhaltet die maximale Anzahl an Memory Map Area's die einem 
 sudo sysctl -w vm.max_map_count=262144
 \end{lstlisting}
 
-\subsubsection{Docker Daemon}
-Um fortan mit Docker arbeiten zu können, muss vorgängig der Daemon gestartet werden.
-\begin{lstlisting}[language=bash]
-sudo service docker start
-\end{lstlisting}
-
 \subsection{Images}
-In einem ersten Schritt wird innerhalb des \lstinline[]|docker-elk| Folder, für jede Komponente ein eigener Ordner angelegt.(\lstinline[]|mkdir <elk stack component>|). Anschliessend wird für jede Komponente ein Dockerfile angelegt, welches auf ein bestehendes Docker Hub Image zurückgreift. (\lstinline[]|touch Dockerfile|). Alle Teilkomponenten setzen dabei auf die aktuellste Version 5 des Basis Containers.
+In einem ersten Schritt wird innerhalb des \lstinline[]|docker-elk| Folder, für jede Komponente ein eigener Ordner angelegt.(\lstinline[]|mkdir logstash elasticsearch kibana|). Anschliessend wird für jede Komponente ein Dockerfile angelegt, welches auf ein bestehendes Docker Hub Image zurückgreift. (\lstinline[]|touch Dockerfile|). Alle Teilkomponenten setzen dabei auf die aktuellste Version 5 des Basis Containers.
+
+\paragraph{Docker File}
+Ein Dockerfile beschreibt wie ein Docker Image erstellt werden soll. 
+\begin{description}
+	\item[FROM] Der wichtigste Befehl im Dockerfile ist FROM. Dieser muss ganz oben stehen und beschreibt ganz einfach, welches Image die Grundlage für unser neu erzeugtes Image ist.	
+	\item[RUN] Führt einen Befehl innerhalb des Containers aus
+	\item[COPY] Kopiert ein File in das Filesystem des Containers
+	\item[CMD] Bietet einen Defaultcommand für einen ausgeführten Container. Es gibt nur einen CMD Befehl pro Docker Image.
+	\item[EXPOSE] Veröffentlicht eine Port nach aussen
+	\item[ENV] Setzt eine Umgebungsvariable
+\end{description}
 
 \subsubsection{Elasticsearch}
 \begin{lstlisting}[caption=Elasticsearch Dockerfile, language=bash]
@@ -534,6 +573,9 @@ Da Kibana die Daten aus Elasticsearch visualisert, muss sichergestellt werden, d
 echo "Waiting for Elasticsearch"
 while true; do
 	nc -q 1 elasticsearch 9200 2>/dev/null && break
+	
+	# sleep for a second to save cpu
+	sleep 1
 done
 
 echo "Starting Kibana"
@@ -558,8 +600,8 @@ Im Composer File werden die vorgehenden Dockerfiles orchestriert.
 \begin{description}
 	\item[build] Order in welchem das Docker File liegt
 	\item[ports] Ports welche an das Hostsystem weitergeleitet werden sollen
-	\item[networks] In welchem Netzwerk arbeitet ein Container
-	\item[networks] Definition der Netzwerke
+	\item[networks (local)] In welchem Netzwerk arbeitet ein Container
+	\item[networks (global)] Definition der Netzwerke
 \end{description}
 \begin{lstlisting}[caption=docker-compose.yml Compose File, language=bash]
 version: '2'
@@ -606,8 +648,7 @@ sudo docker-compose up
 \end{lstlisting}
 
 
-\subsection{Docker Swarm}
-\subsubsection{Netzwerkkonfiguration}
+\subsection{Netzwerkkonfiguration}
 Docker erstellt standardmässig ein Netzwerk Interface (\lstinline[]|docker0|) im Adressbreich 172.17.x.x/16. Wurde kein spezifisches Netzwerk angegeben(\lstinline[]|docker run --network <net name>|), sind alle Container standardmässig an dieses Interface gebunden. Ebenfalls werden drei Docker interne Netzwerke angelegt.
 \begin{lstlisting}[language=bash]
 # sudo docker network ls
@@ -618,6 +659,7 @@ e98ecb6fefeb        none                null
 427ea6518c34        host                host    
 \end{lstlisting}
 
+\subsection{Docker Swarm}
 \subsubsection{Umgebungsvariablen}
 Bei der Erstellung der Swarm Nodes werden automatisch TLS Zertifikate installiert, damit diese auch gefunden werden muss unter \lstinline[]|/etc/sysconfig/docker| folgendes IF Statement hinzugefügt werden. 
 \begin{lstlisting}[caption=/etc/sysconfig/docker, language=bash]
@@ -627,20 +669,18 @@ fi
 \end{lstlisting}
 
 \subsection{Docker Swarm Cluster Erstellen}
-Docker Swarm bietet mehrere Discovery Backends. Ein Discovery Service verwaltet eine Liste von IPs innerhalb des Docker Swarm Cluster. Da die Container in diesem Lab nicht in einer produktiven Umgebung zum Einsatz kommen, verwenden wir als Discovery Service einen einfachen Token der von Docker generiert wird. Ebenefalls erstellen wir einen Swarm Manager, der alle Node im Swarm Cluster orchestriert.
+Docker Swarm bietet mehrere Discovery Backends. Ein Discovery Service verwaltet eine Liste von IPs innerhalb des Docker Swarm Cluster. Da die Container in diesem Lab nicht in einer produktiven Umgebung zum Einsatz kommen, verwenden wir als Discovery Service einen einfachen Token der von Docker Hub generiert wird. Ebenefalls erstellen wir einen Swarm Manager, der alle Node im Swarm Cluster orchestriert.
 
 \begin{lstlisting}[language=bash]
 docker-machine create -d virtualbox local
 
 eval "$(docker-machine env local)"
 
-
 # Generate a discovery token using the Docker Swarm image.
 docker run swarm create
 
 # Wichtig: hier muss der Token am Ende des Outputs sicheraufbewahrt werden: 
 8c39e2080809189e0169ef1f468463d3
-
 
 # create swarm manager
 docker-machine create -d virtualbox --swarm --swarm-master --swarm-discovery token://8c39e2080809189e0169ef1f468463d3 swarm-master
@@ -654,10 +694,10 @@ docker-machine create -d virtualbox --swarm --swarm-discovery token://8c39e20808
 \end{lstlisting}
 
 
-\subsection{Tests}
+\subsubsection{Tests}
 Um die Netzwerkkonnektivität zu überprüften schalten wir bei laufendem ELK Stack auf die einzelnen Container drauf:
 \begin{lstlisting}[language=bash]
-sudo docker exec -i -t dockerelk_kibana_1 /bin/bash
+sudo docker exec -ti <container> /bin/bash
 \end{lstlisting}
 
 \section{Vergleich der Technologien}
@@ -666,12 +706,14 @@ sudo docker exec -i -t dockerelk_kibana_1 /bin/bash
 \begin{itemize}
 	\item Man kann auf den Ballast eines kompletten Betriebssystems verzichten, wenn man nur eine Applikation isoliert ausführen möchte.
 	\item Äusserts sparsamer Umgang mit Ressourcen und eine kurze Startzeit	
-	\item Mit Hilfe von Vagrant äusserts einfach einen Docker Container zu installieren
+	\item Sehr einfach einen Docker Container zu installieren
 	\item Austausch von Images fällt durch den Gebrauch von öffentlichen Registries leicht. (Docker Hub)
+	\item Container sind sehr portalbel
 \end{itemize}
 \paragraph{Nachteile}
 \begin{itemize}
 	\item Da die Container auf den Linux Kernel zugreifen, ist es nicht möglich Windows Anwendungen in einem Docker Container auszuführen.
+	\item Der Docker Daemon läuft mit Root Rechten. Eine Sicherheitslücke in einem einzelnen Container kann das gesamte Host System kompromittieren
 \end{itemize}
 
 \subsection{KVM} %TODO
