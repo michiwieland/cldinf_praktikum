@@ -1,0 +1,8 @@
+# Port by which Kibana is served
+server.port: 5601
+
+# IP address of the back end server.
+server.host: "0.0.0.0"
+
+# Elasticsearch URL
+elasticsearch.url: "http://elasticsearch:9200"
