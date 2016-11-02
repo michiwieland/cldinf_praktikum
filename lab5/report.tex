@@ -1,0 +1,127 @@
+\input{../template.tex}
+
+% Dokumentinformationen
+\newcommand{\SUBJECT}{Report}
+\newcommand{\TITLE}{Cloud Infrastructre Lab 5}
+
+\input{../front.tex}
+
+\section{Cloud SWOT Analyse}
+
+\subsection{OSSM}
+Cloud Computing wird of ale OSSM (awesome) beschrieben. Folgend eine Erklärung was unter den Begriffen zu verstehen ist.
+\begin{description}
+	\item[O - On demand ] \hfill \\
+	Der Server ist bereits aufgesetzt und bereit wenn er gebrauch (oder auch nicht gebraucht) wird.
+	\item[S - Self Service] \hfill \\
+	Der Kunde bestimmt was er will und wann er es will. Er kann sich den Service einfach über ein Webinterface einrichten.
+	\item[S - Scaleable] \hfill \\
+	Der Kunde bestimmt wie schnell wie stark er wachsen möchten. Ein Startup kann wachsen ohne sich Gedanken um die Server zu machen. Im technischen Sinne kann eine Cloud horizontal und vertikal wachsen. Horizontal bedeutet, man verwendet mehr Server und vertikal bedeutet, dass man die Server mit mehr Hardware (RAM, Disk, CPU) ausstattet.
+	\item[M - Measureable] \hfill \\
+	Der Kunde bezahlt was er bezieht. 
+\end{description}
+
+\subsection{Cloud Definitionen}
+Die offizielle Definition der Cloud der NIST (National Institute of Standards and Technology) für die folgenden Begriffe sind wie folgt:
+\begin{description}
+	\item[Cloud Computing (US NIST)]  \hfill \\
+	NIST beschreibt Cloud Computing als Modell für einen allgegenwärtig verfügbaren Service auf welchen bequem zugegriffen werden kann. Unter Service verstehen sie gemeinsam genutzte Rechenressourcen (z.B Server, Storage und Anwendungen). Diese können schnell bereitgestellt und wieder freigegeben werden. 
+	\item[IasS (US NIST)]  \hfill \\
+	Unter Infrastructure as a Service versteht NIST eine dem Endkunden zur Verfügung gestellte Infrastruktur, die für die Bereitstellung, Verarbeitung, Speicherung und anderer grundlegenden Rechenressourcen (Server, Speicher, Netze) zuständig ist. Der Kunde kontrolliert nicht die zugrunde liegende Cloud Infrastruktur. Er hat jedoch Kontrolle über Betriebssysteme (virtuell), Speicher und System nahe Applikationen.
+	\item[PaaS (US NIST)]  \hfill \\
+	Unter Platform as a Service versteht NIST eine dem Endkunden zur Verfügung gestellt Plattform, auf welche er seine eigenen Applikationen deployen kann. Die Plattform stellt ihm die für die Ausführung nötigen Programmiersprachen (Laufzeitumgebungen), Libraries, Services und Datenbanken zur Verfügung. Auch hier verwaltet der Kunde nicht die zugrunde liegende Cloud Infrastruktur. 
+	\item[SaaS (Autoren)]  \hfill \\
+	Software as a Service bietet dem Kunden eine vielzahl an Anwendungsprogrammen die er für seine tägliche Arbeit nutzen kann. Auf die Anwendungen kann er von verschiedenen Client Geräten zugreifen. Meist erfolgt dies über den Browser. Auch hier verfügt der Kunde nicht über die Kontrollmöglichkeiten der zugrunde liegenden Cloud Infrastruktur. 
+	\item[Public Cloud (NIST)]  \hfill \\
+	Die Cloud kann von Öffentlichkeit genutzt werden. Sie wird von einem Unternehmen, Hochschule oder Regierungsorganisation verwaltet und betrieben.
+	\item[Community Cloud (NIST)]  \hfill \\
+	Die Community Cloud ist für die Nutzung durch eine exklusive Gemeinshaft vorgesehen. Die teilnehmenden Parteien haben gemeinsame Anforderungen an die Cloud und können diese so einfach befriedigen. Die Cloud wird oft von einer oder mehreren Parteien in der Gemeinschaft betrieben.
+	\item[Hybrid Cloud (NIST)]  \hfill \\
+	Die Hybrid Cloud ist eine Zusammensetzung aus zwei oder mehreren verschiedenen Clodu Infrastrukturen. (Privat, Public, Comunity). 
+	\item[Private Cloud (NIST)]  \hfill \\
+	Die Private Cloud dient der ausschliesslichen Nutzung durch eine Organisation. Diese betreibt die Cloud meist auch selber. Es ist aber auch möglich das eine Third Party Organisation die Cloud betreibt.
+\end{description}
+
+
+\subsection{Nutzen Analyse Generell}
+Folgend sind die Argumente für und gegen die Cloud im Allgemeinen aufgelistet
+\paragraph{Pro}
+\begin{itemize}
+	\item Einsparung von teilweise erheblichen Investitionen. Bei der Cloud bezahlt man was man bezieht. Keine Leerläufe.
+	\item Die anfallen Kosten können gut einkaluliert werden.
+	\item Ein Service ist extrem skalierbar, da bei erhöhtem Nutzungsgrad einfach Ressourcen angemietet werden können.
+	\item Da z.B bei Public oder Community Clouds die Services für mehrere Kunden angeboten werden, können diese günster bereitgestellt werden. 
+	\item Man kann Einsaprungen beim eigenen Personal und Ressourcen machen
+	\item Mittels SLA kann das Risiko eines Netzausfalls zum Cloud Anbieter verlagert werden.
+	\item Die Technologie der Cloud Anbieter ist meist auf dem aktuellesten Stand der Technik
+	\item Die Ausfallsicherheit ist einerseits über den SLA geregelt und meist auch besser, da der Cloud Betreiber sich auf seine Expertise spezialisert hat.
+	\item Verschiedene regionale Standorte können kostengünstig an das Unternehmen angebunden werden.
+\end{itemize}
+
+\paragraph{Contra}
+\begin{itemize}
+	\item Ein Unternehmen wird abhängig vom Cloud betreiber
+	\item Unternehmenkritische Daten müssen ausserhalb des eigenen Systems gelagert werden. Man kann hier aber auch argumentieren, dass die Daten im eigenen Netzwerk kaum besser geschützt sind.
+	\item Mit der Internetanbindung hat man einen Single Point of Failure. Fällt sie aus, kann man nicht mehr auf seine Daten zugreifen.
+	\item Verzichtet ein Unternehmen auf interen Fachkräfte, wird auch das Wissen an Cloud Betreiber ausgelagert
+	\item Die rechtlichen Anforderungen müssen genaustens beachtet werden.
+\end{itemize}
+
+
+\subsection{Public Cloud}
+Die Cloud wird der Öffentlichkeit zur Verfügung gestellt. Damit kann sie von beliebigen Personen oder Unternehmen genutzt werden. Aufgrund der Nutzung durch eine anonyme Öffentlichkeit stellt sich natürlich verstärkt die Frage nach einer entsprechenden Beachtung von Datenschutz und Datensicherheit.
+\paragraph{Pro}
+\begin{itemize}
+	\item Die Public Cloud spricht weitaus mehr Endkunden an. Der Service kann somit günstiger zur Verfügung gestellt werden.
+	\item Entlastung der eigenen IT, da schwierige Aufgaben wie Betrieb und Wartung der Ressourcen ausgelagert werden.
+	\item Keine Investitionen bei Lastspitzen oder schwer kalkulierbarem Nutzerverhalten
+	\item Zahlung des tatsächlichen Verbrauchs
+	\item Systemupdate liegen in der Verantwortung des Cloud Betreibers
+	\item Die Kosten werden nach Aufwand abgerechnet
+\end{itemize}
+
+\paragraph{Contra}
+\begin{itemize}
+	\item Die Kontrolle über Daten oder Applikationen müssen aus der eigenen Hand gegeben werden. 
+	\item Möchte ein Unternehmen seine Kundendaten in eine Public Cloud schieben, dürfen die rechtlichen Aspekte nicht vernachlässigt werden, da die Daten das eigene Haus verlassen. Die Konformität mit den bestehenden Datenschutzvorschriften muss eingehalten werden.
+\end{itemize}
+
+\subsubsection{Technische Anforderungen}
+%TODO Welche grundlegenden Prinzipien/Anforderungen/Rahmenbedingungen ändern sich mit der Verlegung 
+Mit dem Wechsel in die Private Cloud würde sich insbesondere eine Verschiebung der Verantwortung in richtung Cloud Betreiber anzeichnen. Ein grosser Teils der Wissens wird von einer externen Organisation getragen und somit wächst die Abhängigkeit zu einem Unternehmen.
+
+\subsubsection{Use Cases}
+% TODO Nennen Sie Beispiele/Use-cases, die sich besonders für die Public oder Private Cloud eignen: (auf Applikations- Plattform und Infrastruktureben)
+\paragraph{DMZ} Webseiten und andere öffentlich zugängliche Seiten können komplett isoliert in die Public Cloud ausgelagert werden. Die Daten müssen so oder so öffentlich zugänglich sein und man spart damit noch Kosten, da die Seiten nicht mehr selber betrieben werden müssen.
+
+\paragraph{Client Applikationen}
+Client Applikationen wie Microsoft Office 365, Evernote, Spotify, Google Drive oder Dropbox sind nicht mehr nur im für den lokalen Geltungsbereich gültig, sondern können überall auf der Erde verwendet werden. Die Daten sind überall verfügbar wo ein Internetanschluss zur Verfügung steht.
+
+\subsection{Private Cloud}
+Hier wird die Cloud durch einen Anbieter für eine einzige Organisation bereitgestellt und entsprechend genutzt. Die Infrastruktur kann dabei durch die Organisation selbst, durch einen Dritten oder eine Kombination aus beiden, betreut werden. Die Technik kann sich innerhalb oder ausserhalb des Organisationgebäude befinden.
+\paragraph{Pro}
+\begin{itemize}
+	\item Private Clouds haben tendentiell eine bessere Latenz, da sie geografischer näher beim Kunden errichtet werden. 
+	\item In Sachen Security behält die alleinige Kontrolle. Die Kundendaten verbleiben im Unternehmen, weshalb die private Cloud der Public zu bevorzugen ist.
+	\item Rechtlich einfacher umzusetzen. Gewisse Kunden fordern, dass die Daten im Land bleiben. Dies kann mit einer Private Cloud einfacher garantiert werden.
+\end{itemize}
+
+\paragraph{Contra}
+\begin{itemize}
+	\item Das Personal und Resourcen müssen im Unternehmen gehalten werden und verursachen Kosten. Zusätzlich ist werden die Services nur von einem selber benutzt. Einsparungen durch mehrere zahlende Kunden fallen weg.
+\end{itemize}
+
+
+\subsubsection{Technische Anforderungen}
+%TODO Welche grundlegenden Prinzipien/Anforderungen/Rahmenbedingungen ändern sich mit der Verlegung 
+der IT in die Cloud? 
+\begin{itemize}
+	\item Rechte und Pflichten in der Cloud sind noch unklar.
+\end{itemize}
+
+
+\subsection{Usecases}
+% TODO Nennen Sie Beispiele/Use-cases, die sich besonders für die Public oder Private Cloud eignen: (auf Applikations- Plattform und Infrastruktureben)
+\paragraph{Hardware Anforderungen} Public Clouds bietet oft Harware Konfigurationen die einen grossen Teil ihrer Kunden befriedigt. Hat man jedoch spezielle Anforderungen an die Hardware müsste man bei der Public Cloud je nach dem mehr zahlen als man effektiv benötigt. Mit der Private Cloud kann der Service viel starken an den Kunden angepasst werden.
+
+\input{appendix.tex}
