@@ -244,7 +244,7 @@ Damit verkehr aus dem virtuellen Netzwerk z.B. in das Internet weitergeleitet we
 	\item[Transparentes Bridging] \hfill \\
 		Beim transparenten Bridging wird der traffic aus dem virtuellen Netzwerk transparent zu einem physischen Netzwerkport weitergeleitet. Der Host-Computer fungiert in diesem Sinne tatsächlich als Bridge bzw. Switch, d.h., die virtuelle Maschine ist ein direkter Teilnehmer im physischen Netzwerk.
 	\item[Routing] \hfill \\
-		Beim Routing Routet der Host den Traffic zwischen physischen und virtuellen Netzwerken. Die ausgehenden Pakete haben somit die IP-Adresse der virtuellen Maschine.
+		Beim Routing routet der Host den Traffic zwischen physischen und virtuellen Netzwerken. Die ausgehenden Pakete haben somit die IP-Adresse der virtuellen Maschine.
 	\item[NAT / Firewall] \hfill \\
 		Beim NAT-Ansatz macht das Hostsystem ein NAT zwischen dem virtuellen und physischen Netzwerk. Ausgehende Pakete haben damit die IP-Adresse des Hosts.
 \end{description}
@@ -259,7 +259,7 @@ Damit verkehr aus dem virtuellen Netzwerk z.B. in das Internet weitergeleitet we
 \end{description}
 
 \subsubsection{Virtuelle Netzwerke erstellen mit Libvirt}
-Libvirt vereinfacht das erstellen von virtuellen Bridges, indem es die Konfigurationen der obenstehenden Möglichkeiten übersichtlich in einer XML-Datei bündelt. Diese werden unter \lstinline|/etc/libvirt/qemu/networks| gespeichert.
+Libvirt vereinfacht das Erstellen von virtuellen Bridges, indem es die Konfigurationen der obenstehenden Möglichkeiten übersichtlich in einer XML-Datei bündelt. Diese werden unter \lstinline|/etc/libvirt/qemu/networks| gespeichert.
 
 Standardmässig ist in der Fedora-Konfiguration ein mit NAT und DHCP/DNS Server versehenes \lstinline|default|-Netzwerk in der Datei \lstinline|default.xml| eingerichtet:
 
@@ -461,17 +461,19 @@ Docker ist im Gegensatz zu KVM keine Lösung für virtuelle Maschinen (und damit
 
 Docker ermöglicht neben der Steuerung von isolierten Applikationsausführung in LXC die Konfiguration von Netzwerkeinstellungen bzw. Portfreigabe ein komplett isoliertes Dateisystem pro Applikation (sogenannte Images). Damit ist es möglich, Systemunabhängig immer die gleiche Plattform zur Ausführung zu paketieren und weiter zu verteilen. Von Docker erstellte Images werden üblicherweise mit einem Dateisystem erstellt, welches Snapshots erlaubt (z.B. AUFS oder BTRFS). Die Filesysteme sind ebenfalls ''stappelbar'', so dass nur die Änderungen gespeichert werden müssen. \\
 
-Zur Erstellung von eigenen Images, auf deren Basis eine Applikation ausgeführt wird, können mit einem \lstinline[]|Dockerfile| komplette ''Bauanleitungen'' erstellt werden. Im \lstinline[]|Dockerfile| sind die Eigenschaften des neuen Container und Images sowie darauf auszuführende Kommandos zur Bereitstellung der Umgebung hinterlegt. \\
+Zur Erstellung eines eigenen Images, auf deren Basis eine Applikation ausgeführt wird, können mit einem \lstinline[]|Dockerfile| komplette ''Bauanleitungen'' erstellt werden. Im \lstinline[]|Dockerfile| sind die Eigenschaften des neuen Container und Images sowie darauf auszuführende Kommandos zur Bereitstellung der Umgebung hinterlegt. \\
 
 So gebaute Images (oft in diesem Zusammenhang auch einfach als Container bezeichnet) können über eine Online-Plattform verteilt werden. Die Firma Docker Inc. stellt zu diesem Zweck die öffentliche Plattform \emph{DockerHub} unter \url{https://hub.docker.com/} zur Verfügung. \\
 
 Ein öffentliches Image kann wie folgt adressiert werden \lstinline[]|<author name>/<image name>:<tag>|. Der Teil vor dem Doppelpunkt wird Repository genannt. Ein Repository kann in mehreren Versionen vorliegen. Diese Versionen werden anhand eines Tags unterschieden, welcher hinter Doppelpunkt steht. Wird kein Tag angegeben, wird automatisch das aktuellste (latest) Image verwendet. \\
 
-Daten die im Docker Image erzeugt werden, verschwinden nach dem Beenden des Containers. Um Daten Persistent zu speichern muss ein lokales Verzeichnis mit einem Verzeichnis des Hostsystems gemappt werden. Dies geschieht mit dem Parameter \lstinline[]|-v ./host_folder:/var/container_folder| \\
+Daten die im Docker Image erzeugt werden, verschwinden nach dem Beenden des Containers. Um Daten persistent zu speichern muss ein lokales Verzeichnis mit einem Verzeichnis des Hostsystems gemappt werden. Dies geschieht mit dem Parameter \lstinline[]|-v ./host_folder:/var/container_folder| \\
 
 Beim Bauen eines Containers wird üblicherweise auf die Basis eines bestehenden Containers auf der DockerHub-Plattform zurückgegriffen. So gibt es dort zum Beispiel Images, welche die Dateisystemstruktur und Bibliotheken eines minimalen Ubuntu-Systems oder sogar einer Umgebung für  wie Ruby on Rails zur Verfügung stellen. \\
 
-Docker funktionierte anfänglich nur für 64 Bit Linux Distributionen. Später kam der Support für MacOSX hinzu und seit neustem läuft Docker auch unter Windwos, wobei Hyper-V für die Virtualisierung der Docker Engine und Linux spezifischen Kernel Features verwendet wird.
+Docker funktionierte anfänglich nur für 64 Bit Linux Distributionen. Später kam der Support für MacOSX hinzu und seit neustem läuft Docker auch unter Windows, wobei Hyper-V für die Virtualisierung der Docker Engine und Linux spezifischen Kernel Features verwendet wird.
+
+\newpage
 
 \subsubsection{Terminologie}
 \begin{description}
@@ -479,7 +481,7 @@ Docker funktionierte anfänglich nur für 64 Bit Linux Distributionen. Später k
 	\item[Container] Lauffähiges virtuelles System. Instanz eines Images.
 	\item[Dockerfile] Ist eine Textdatei, in welcher der Aufbau eines Docker Images beschrieben ist.
 	\item[Docker Hub] ein Online-Dienst, der eine Registry für Docker-Images und Repositorys beinhaltet
-	\item[Libcontainer] Libcontainer ist eine Schnittstelle für die Grundfunktionalitäten von Docker. Es ersetzt die LXC Schnittstelle die anfänglich verwendet wurde. 
+	\item[Libcontainer] Libcontainer ist eine Schnittstelle für die Grundfunktionalitäten von Docker. Es ersetzt die reine LXC Schnittstelle die anfänglich verwendet wurde. 
 	\item[libswarm]eine Schnittstelle um Docker-Container zu steuern.
 	\item[libchan] eine Schnittstelle zu Dockers Netzwerkfunktionen.
 \end{description}
@@ -627,6 +629,7 @@ Ein Dockerfile beschreibt wie ein Docker Image erstellt werden soll.
 \end{description}
 
 \subsubsection{Elasticsearch}
+Das Dockerfile für Elasticsearch beinhaltet das Basisimage, sowie einige Einstellungen für das Java Such API.
 \begin{lstlisting}[caption=Elasticsearch Dockerfile, language=bash]
 FROM elasticsearch:5
 
@@ -636,12 +639,13 @@ CMD ["-E", "network.host=0.0.0.0", "-E", "discovery.zen.minimum_master_nodes=1"]
 \end{lstlisting}
 
 \subsubsection{Logstash} 
+In dem Logstash Dockerfile steht einzig das Basisimage, auf welchem wir aufbauen.
 \begin{lstlisting}[caption=Logstash Dockerfile, language=bash]
 FROM logstash:5
 \end{lstlisting}
 
-Für die konfiguraiton von Logstash ist noch ein zusätzliches Config File nötig. Dieses definiert auf einfache Art und Weise auf welchem Port die Daten empfangen und auf welchem Port die Daten an Elasticsearch weitergereicht werden.
-\begin{lstlisting}
+Für die Konfiguraiton von Logstash ist noch ein zusätzliches Config File nötig. Dieses definiert auf einfache Art und Weise auf welchem Port die Daten empfangen und auf welchem Port die Daten an Elasticsearch weitergereicht werden. Das File sollte in einem Subfolder \lstinline|/config| liegen, damit es von Docker Compose in den Container gemappt wird.
+\begin{lstlisting}[caption=./config/logstash.conf]
 input {
 	tcp {
 		port => 5000
@@ -656,6 +660,7 @@ output {
 \end{lstlisting}
 
 \subsubsection{Kibana} 
+Im Kibana Docker File installieren wir Netcat für das Polling Script und kopieren das Script in den Container.
 \begin{lstlisting}[caption=Kibana Dockerfile, language=bash]
 FROM kibana:5
 
@@ -689,8 +694,8 @@ echo "Starting Kibana"
 exec kibana
 \end{lstlisting}
 
-Auch für Kibana gibt es eine Config. In dieser definieren wird die grundlegenden Einstellungen.	
-\begin{lstlisting}[caption=kibana.yml, language=bash]
+Auch für Kibana gibt es eine Config. In dieser definieren wird die grundlegenden Einstellungen. Das Config File wird von Docker Compose in den Container gemappt.
+\begin{lstlisting}[caption=config/kibana.yml, language=bash]
 # Port by which Kibana is served
 server.port: 5601
 
@@ -703,7 +708,7 @@ elasticsearch.url: "http://elasticsearch:9200"
 
 
 \subsection{Docker Compose File}
-Im Composer File werden die vorgehenden Dockerfiles orchestriert.
+Im Composer File werden die vorgehenden Dockerfiles orchestriert. Ebenfalls ist hier das ganze Networking definiert.
 \begin{description}
 	\item[build] Order in welchem das Docker File liegt
 	\item[ports] Ports welche an das Hostsystem weitergeleitet werden sollen
@@ -757,7 +762,7 @@ networks:
 \end{lstlisting}
 
 \subsubsection{Test}
-Wenn alle vorgängigen Files wie beschrieben erstellt wurden, kann der ELK Stack gestartet werden. Das Webinterface ist fortan unter \url{http://localhost:5601/} verfügbar. Das Default Login für Kibana lautet \lstinline[]|'kibana'| mit dem Passwort \lstinline[]|'changeme'|
+Wenn alle vorgängigen Files wie beschrieben erstellt wurden, kann der ELK Stack gestartet werden. Das Webinterface ist fortan unter \url{http://<IFADDR_IT>:5601/} verfügbar. Das Default Login für Kibana lautet \lstinline[]|'kibana'| mit dem Passwort \lstinline[]|'changeme'|. Der Container kann nur gestartet werden, wenn die beiden Umgebungsvariablen \lstinline|IFADDR_IT| und \lstinline|IFADDR_MGMT| gesetzt wurden. Mehr dazu im Absatz \ref{sec:docker_networkconf}.
 \begin{lstlisting}[language=bash]
 IFADDR_IT=<eth0 ipv4 addr> IFADDR_MGMT=<eth1 ipv4 addr> docker-compose up
 \end{lstlisting}
@@ -873,32 +878,5 @@ Auf der Abbildung \ref{fig:dockervirtualization} ist übersichtlich dargestellt,
 \end{table}
 \footnotetext[43]{Damit ist gemeint, wie kompliziert das Aufsetzen einer genau gleichartigen Umgebung z.B. für Entwicklungs- oder Stagingsysteme ist.}
 \pagebreak
-
-
-\subsection{Docker}
-\paragraph{Vorteile}
-\begin{itemize}
-	\item Man kann auf den Ballast eines kompletten Betriebssystems verzichten, wenn man nur eine Applikation isoliert ausführen möchte.
-	\item Äusserts sparsamer Umgang mit Ressourcen und eine kurze Startzeit	sobald die Images einmal gepullt wurden.
-	\item Sehr einfach einen Docker Container zu installieren
-	\item Austausch von Images fällt durch den Gebrauch von öffentlichen Registries leicht. (Docker Hub)
-	\item Container sind portalbel und bietet auf jedem Host eine einheitliche Umgebung
-	\item Mittels Docker Swarm und Docker Machine skalierbar
-\end{itemize}
-\paragraph{Nachteile}
-\begin{itemize}
-	\item Da die Container auf den Linux Kernel zugreifen, ist es nicht möglich Windows Anwendungen in einem Docker Container auszuführen.
-	\item Der Docker Daemon läuft mit Root Rechten. Eine Sicherheitslücke in einem einzelnen Container kann das gesamte Host System kompromittieren
-\end{itemize}
-
-\subsection{KVM} %TODO
-\paragraph{Vorteile}
-\begin{itemize}
-	\item Ein Vorteil von KVM ist, dass die Gastsysteme fast mit nativer Geschwindigkeit laufen, d.h. das Gastsystem reagiert nahezu so schnell wie ein natives System. 
-\end{itemize}
-\paragraph{Nachteile}
-\begin{itemize}
-	\item Hoher Bedarf an Festplatten und Arbeitsspeicher und langwieriger Ladevorgang beim Starten der virtuellen Maschienen
-\end{itemize}
 
 \input{appendix.tex}
