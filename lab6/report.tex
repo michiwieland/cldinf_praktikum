@@ -6,18 +6,86 @@
 
 \input{../front.tex}
 
-\section{Modern Data Center Requirements} %TODO: 1A4 Seite
+\section{Modern Data Center Requirements}
+%TODO: Siehe auch Studentenportal
+
+Die Ansprüche an eine Data Center hat sich in den letzten zehn Jahren stark gewandelt. In den folgenden Abschnitten werfen wir einen Blick auf die Änderungen der letzten Jahre sowie der neu entstandenen Ansprüche an Data Centers.
 
 % - was ändert sich
 % - was ist heutigen DC anders als 20 jahre
-eine Seite
+
+\subsection{Network architecture}\label{sec:network-architecture}
+\subsubsection{Vor ca. 2008}
+Vor ca. 2008 waren Data Center üblicherweise in ''Silos'' aufgeteilt: Jede Abteilung und Applikation hatte meist ein eigenes ''Rack'' mit physischen Servern. Damit war die Struktur eher starr und teuer; Skalierung von Ressourcen war nur mit physischem erweitern der Infrastruktur möglich.
+
+\paragraph{Das Netzwerk} war entsprechend aufgebaut; Subnetze wurden statisch Abteilungen und Applikationen zugewiesen. Dies war möglich, da die Infrastruktur keinen kurzfristigen, grossen Anpassungen erlaubte.
+
+\subsubsection{Seit ca. 2008}
+Seit ca. 2008 hält die Virtualisierung in das Data Center Einzug. Damit wird die Umgebung nicht mehr in ''Silos'' aufgeteilt, sondern in ressourcen-Pools für Computation, Storage und Netzwerkvirtualisierung. Das verknüpfen dieser Pools wird durch den Betrieb von virtuellen Servern möglich. Die wesentlichen Vorteile dieser Umgebung lassen sich kurz zusammenfassen auf die...
+\begin{itemize}
+	\item Reduktion der Komplexität
+	\item Vereinfachung des Betriebs
+	\item Erhöhung der Auslastungseffizienz (Bündelungsgewinn)
+	\item Erhöhte Ausfallssicherheit
+	\item Einfachere Skalierung der Infrastruktur
+	\item Ermöglichung von Automatisierung
+\end{itemize}
+
+Seit 2010 bis heute wird neben der Virtualisierung die Automatisierung von möglichst vielen Komponenten vorangetrieben. Damit wird es möglich, mit weniger personellem Aufwand mehr Server zu betreiben und repetitive Aufgaben autonom (oder teilautonom) erledigen zu lassen.
+
+\paragraph{Das Netzwerk} muss dadurch ebenfalls flexibler und einfacher änderbar sein. Dies wird entweder durch eine ''flachere'' Netzwerkstruktur, oder dem Einsatz von Fabrics erreicht. Allerdings ist der klassische Netzwerkstack nicht für solche Strukturen Designed; hier kommen Protokolle wie TRILL und VXLAN sowie die Virtualisierung von Netzwerkkomponenten ins Spiel.
+
+Weitere Änderungen im Bezug auf den Netzwerkverkehr sind: 
+\begin{itemize}
+	\item Eine deutlich höhere Auslastung des East-West-Verkehrs: Der Verkehr bleibt eher im Data Center, verursacht wird er z.B. durch das Verschieben von VMs\footnote{Virtuelle Maschinen; siehe Lab 5 für alle Details.}. \hfill \\
+		 Pre-2008 gab es in erster Linie Netzverkehr zwischen Clients und Servern.
+	\item Sogenannte ''Elephant Flows'' dominieren den Verkehr im Netzwerk (Speicher, Verteilte Datenbanken etc.)
+	\item Mehr (kleine) Auslastungsspitzen im Netzwerk; dies kann zu Paketverlust führen.
+	\item Betrieb von ''map-reduce'' applikationen, welche viel eingehenden TCP-Netzverkehr haben (many-to-one traffic)
+\end{itemize}
+
 
 \subsection{Challanges}
-%TODO
-\subsection{Requirements}
-%TODO
-\subsection{Network architecture}
-%TODO
+
+Durch die in Kapitel \ref{sec:network-architecture} genannten Änderungen in der Netzwerkarchitektur ergeben sich einige neue Challanges:
+\begin{itemize}
+	\item Es muss viel mehr Netzverkehr East-West fliessen können
+	\item IP-Netze müssen sich über mehrere Nodes (physische und virtuelle Server) erstrecken können
+	\item Die Netzwerk-Struktur muss schnell und einfach geändert werden können
+	\item Es müssen höhere Lastspitzen abgefangen werden können
+\end{itemize}
+%TODO: Noch was?
+
+\subsection{Requirements an das Netzwerk}
+Es gibt somit einige neue grundlegende Anforderungen an das Netzwerk\footnote{Weitgehend übernommen aus der Modulvorlesung \lstinline|09_Changes in the Datacenter Network Design.pdf| von Prof. B. Stettler.}.
+\subsubsection{Eigenschaften Forwarding}
+\begin{itemize}
+	\item Höhere Geschwindigkeiten (z.B. 10Gbps im Access Layer, 40/100Gbps im Core Layer)
+	\item Verstärktes Multipath für L3 und evtl. L2 Traffic, um den East-West Durchsatz zu erhöhen. (Kein Porl/Link Blocking wie bei STP)
+	\item Weniger Netzwerkhops (zur Senkung der Latenzzeiten)
+	\item Optimales L3 Forwarding
+	\item Trennung von L3 verkehr (L3 Path Isolation)
+	\item IPv6
+	\item Speicher- und Netzwerk sind mit mindestens 10GE verbunden (iSCSI oder FCoE)
+	\item Verlustfreier Netzwerkverkehr (für DCB)
+\end{itemize}
+
+\subsubsection{Control \& Management Funktionen}
+\begin{itemize}
+	\item Enge Verzahnung des Netzwerks mit den virtuellen Servern
+	\item L2 ohne STP (und ähnliche Protokolle, aufgrund Port-Blocking)
+	\item Effizientes Management
+	\item Einfache Provisionierung / Erweiterung des Netzwerks
+\end{itemize}
+
+
+\subsubsection{Skalierbarkeit}
+\begin{itemize}
+	\item Hohe Anzahl von VLANs
+	\item Grosse Tabellengrössen (MAC, ARP, L3, IPMC etc.)
+\end{itemize}
+
+
 \section{TRILL}
 
 \subsection{Theorie}
@@ -102,16 +170,34 @@ Der grösste Konkurenz von TRILL ist SPB (Shortest Path Bridging oder IEEE 802.1
 	\caption{Lab TRILL Layer 1/2 Struktur (Quelle: Auftrag Lab 7)}
 	\label{fig:trillnetworklayer2}
 \end{figure}
+%TODO: Welcher switch welche funktion.
+
+\subsubsection{Aufzeichnung Traffic etc}
+
+Wir haben eine Wireshark
 
 \subsubsection{Trees}
+
+%-> Tree Struktur Vor Einstecken 
+%-> Nach Einstecken eines Clients auf einem Swtich
+%-> Nach "Zügeln" von Client auf den anderen Access Switch
+%(-> Wieder zurückstecken auf den alten Switch)
 %TODO
 
+
+%:: Der Tiefste Nickname ist der Multicast-root
+
 \subsubsection{PacketFlow}
+%-> Normaler Unicast Weg
+%-> Broadcast wege
+%-> Multicast
 %TODO
 
 \subsubsection{Mac Learning}
 
 %TODO
+%-> Was passiert nach Client einstecken (IS-IS)
+%-> Was passiert nach wechseln Client auf anderen Access Switch
 
 
 \section{VXLAN}
