@@ -173,13 +173,30 @@ Der grösste Konkurenz von TRILL ist SPB (Shortest Path Bridging oder IEEE 802.1
 
 
 \subsection{Lab Konfiguration}
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=1\linewidth]{trill_network_layer2}
 	\caption{Lab TRILL Layer 1/2 Struktur (Quelle: Auftrag Lab 7)}
 	\label{fig:trillnetworklayer2}
 \end{figure}
 %TODO: Welcher switch welche funktion.
+
+\begin{table}[H]
+	\centering
+	\begin{tabu} to \linewidth {l l l l l}
+		\toprule
+		Switch & Network Entity & TRILL Nick & Nick Prio & Tree Root Prio \\
+		\midrule
+		HP1 & \lstinline|00.4431.9260.6247.00| & \lstinline|0x2b67| & 192 & 65535 \\
+		HP2 & \lstinline|00.4431.925f.edb7.00| & \lstinline|0x56ce| & 192 & 65534 \\
+		HP3 & \lstinline|00.4431.9260.6db8.00| & \lstinline|0x8235| & 192 & 65533 \\
+		HP4 & \lstinline|00.4431.9260.5478.00| & \lstinline|0xad9c| & 192 & 65532 \\
+		\bottomrule
+	\end{tabu}
+	\label{tbl:Lab devices}
+	\caption{Proof Rules of basicPC}
+\end{table}
+
 
 \subsubsection{Aufzeichnung Traffic etc}
 
@@ -203,6 +220,8 @@ Wir haben eine Wireshark
 %-> Broadcast wege
 %-> Multicast
 %TODO: Erklären, wie der Fluss bei Broadcast, Multicast und Unicast aussieht
+
+%TODO: display trill fib
 
 \subsubsection{Mac Learning}
 Die MAC Adressen werden nur von den Edge Knoten gelernt. 
