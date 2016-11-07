@@ -7,7 +7,6 @@
 \input{../front.tex}
 
 \section{Modern Data Center Requirements}
-%TODO: Siehe auch Studentenportal
 
 Die Ansprüche an eine Data Center hat sich in den letzten zehn Jahren stark gewandelt. In den folgenden Abschnitten werfen wir einen Blick auf die Änderungen der letzten Jahre sowie der neu entstandenen Ansprüche an Data Centers.
 
@@ -50,13 +49,15 @@ Weitere Änderungen im Bezug auf den Netzwerkverkehr sind:
 Durch die in Kapitel \ref{sec:network-architecture} genannten Änderungen in der Netzwerkarchitektur ergeben sich einige neue Challanges:
 \begin{itemize}
 	\item Es muss viel mehr Netzverkehr East-West fliessen können
+	\item Aufgrund der neuen Applikationsarchitekturen und Datengrössen gibt es überhaupt mehr Netzwerkverkehr.
 	\item IP-Netze müssen sich über mehrere Nodes (physische und virtuelle Server) erstrecken können
 	\item Die Netzwerk-Struktur muss schnell und einfach geändert werden können
 	\item Es müssen höhere Lastspitzen abgefangen werden können
 \end{itemize}
-%TODO: Noch was?
 
-\subsection{Requirements an das Netzwerk}
+Einige weitere neuartige Requirements sind auch im nächsten Kapitel~\ref{sec:requirements-an-das-netzwerk} aufgelistet.
+
+\subsection{Requirements an das Netzwerk}\label{sec:requirements-an-das-netzwerk}
 Es gibt somit einige neue grundlegende Anforderungen an das Netzwerk\footnote{Weitgehend übernommen aus der Modulvorlesung \lstinline|09_Changes in the Datacenter Network Design.pdf| von Prof. B. Stettler.}.
 \subsubsection{Eigenschaften Forwarding}
 \begin{itemize}
@@ -83,6 +84,12 @@ Es gibt somit einige neue grundlegende Anforderungen an das Netzwerk\footnote{We
 \begin{itemize}
 	\item Hohe Anzahl von VLANs
 	\item Grosse Tabellengrössen (MAC, ARP, L3, IPMC etc.)
+	\item Schnelles Netz (per Design, auch bei grossen Netzvergrösserungen)
+\end{itemize}
+
+\subsubsection{Weitere Anforderungen }
+\begin{itemize}
+	\item Rechtliche Compliance (Datenschutz/Datensicherheit)
 \end{itemize}
 
 
