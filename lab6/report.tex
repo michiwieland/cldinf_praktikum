@@ -122,7 +122,7 @@ Ein TRILL Frame ist in drei Schichten aufgeteilt:
 	\item[TRILL Header] \hfill \\
 	Das interessanteste im TRILL Header ist die Ingress-RBridge (Source) und Egress-RBrige (Destination). Jede RBridge wird mit einem Nickname (2Byte Hexadezimal) eindeutig identifiziert. (z.B \lstinline[]|0x56ce|) 
 	\begin{itemize}
-		\item Hop Count: Wird beim passieren jeder RBridge verkleinert und verhindert dass ein Paket zu loopen beginnt. Jede RBridge setze die erwartete Anzahl Hops bis ihrem Ziel.
+		\item Hop Count: Wird beim passieren jeder RBridge verkleinert und verhindert dass ein Paket zu loopen beginnt. 
 		\item Nickname: Der RBridge Nickname ist eine Abkürzung (2Byte) der 6Byte langen IS-IS System ID der Bridge. Sie ist eindeutig innerhalb eines Netzes. 
 		\item M Bit (Multidestination): 0 = Unicast, 1 = Distribution Tree
 	\end{itemize}
@@ -175,8 +175,14 @@ Der grösste Konkurenz von TRILL ist SPB (Shortest Path Bridging oder IEEE 802.1
 \subsection{Lab Konfiguration}
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=1\linewidth]{trill_network_layer2}
-	\caption{Lab TRILL Layer 1/2 Struktur (Quelle: Auftrag Lab 7)}
+	\includegraphics[width=0.7\linewidth]{trill_network_layer2}
+	\caption{Lab TRILL Testaufbau}
+	\label{fig:trillnetworklayer2}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\linewidth]{testaufbau}
+	\caption{Lab TRILL Testaufbau}
 	\label{fig:trillnetworklayer2}
 \end{figure}
 %TODO: Welcher switch welche funktion.
@@ -193,9 +199,60 @@ Der grösste Konkurenz von TRILL ist SPB (Shortest Path Bridging oder IEEE 802.1
 		HP4 & \lstinline|00.4431.9260.5478.00| & \lstinline|0xad9c| & 192 & 65532 \\
 		\bottomrule
 	\end{tabu}
-	\label{tbl:Lab devices}
-	\caption{Proof Rules of basicPC}
+	\label{tbl:Labdevices}
+	\caption{TRILL Lab Switches}
 \end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{tabu} to \linewidth {l l}
+		\toprule
+		Mac Adresse & Beschreibung \\
+		\midrule
+		\lstinline|01-80-C2-00-00-40| & Alle RBridges \\
+		\lstinline|01-80-C2-00-00-41| & Alle IS-IS RBridges \\
+		\lstinline|54-EE-75-55-F3-C0| & Client an HP3 (VLAN 1006) \\
+		\lstinline|F0-76-1C-D5-0F-35| & Client an HP4 (VLAN 1006) \\
+		\lstinline|44-31-92-60-62-47| & HP1 \\
+		\lstinline|44-31-92-5f-ed-b7| & HP2 \\
+		\lstinline|44-31-92-60-6d-b8| & HP3 \\
+		\lstinline|44-31-92-60-54-78| & HP4 \\
+		\bottomrule
+	\end{tabu}
+	\label{tbl:Lab devices}
+	\caption{Involvierte MAC Adressen}
+\end{table}
+
+\clearpage
+\subsubsection{IS-IS Pakete}
+\begin{description}
+	\item[Hello] Mit den IS-IS Hello Paketen werden die Capabilities Announced und Nachbaren erkennt.
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=\linewidth]{images/is_is_hello}
+		\caption{IS-IS LSP (Link State PDU)}
+		\label{fig:isislinkstatepdu}
+	\end{figure}
+	\item[LSP (Link State PDU)] Transportiert netzwerktopologische Informationen sowie CLNP (Connectionless Network Protocol) Pakete. Diese werden periodisch an die All IS-IS RBridges Mac Adresse versandt.
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=\linewidth]{images/is_is_link_state_pdu}
+		\caption{IS-IS LSP (Link State PDU)}
+		\label{fig:isislinkstatepdu}
+	\end{figure}
+\end{description}
+
+\clearpage
+
+
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{images/trill_package}
+\caption{ARP Request von Client A an Broadcast}
+\label{fig:trillpackage}
+\end{figure}
+
 
 
 \subsubsection{Aufzeichnung Traffic etc}
@@ -222,6 +279,24 @@ Wir haben eine Wireshark
 %TODO: Erklären, wie der Fluss bei Broadcast, Multicast und Unicast aussieht
 
 %TODO: display trill fib
+
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{images/ping_request}
+	\caption{Ping Request: Known Unicast TRILL Frame}
+	\label{fig:trillpackage}
+\end{figure}
+
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{images/ping_reply}
+	\caption{Ping Reply: Known Unicast TRILL Frame}
+	\label{fig:trillpackage}
+\end{figure}
+
+Obschon HP3 zwei gleichwertige Pfade nach HP4 hat, schickt es alle ping Pakete immer via HP2. Dies ist erstaunlich, da ECMP eigentlich für die Lastverteilung über alle verfügbaren Pfade zuständig sein sollte.
 
 \subsubsection{Mac Learning}
 Die MAC Adressen werden nur von den Edge Knoten gelernt. 
