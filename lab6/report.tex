@@ -106,7 +106,7 @@ Das TRILL Protokoll  (Transparent Interconnection of Lots of Links) implementier
 Versendet ein Client A ein Paket an Client B, wird das MAC Frame bei der Ingress RBrige in ein TRILL Paket verpackt. Anschliessend routet IS-IS das Paket zur Egress Bridge welche den TRILL Header wieder entfernt und das ursprüngliche MAC Frame auspackt.  \\
 
 %TODO Check ECMP
-Edge RBridges (Ingress, Egress) lernen die angeschlossen Clients auf die klassische Art und Weise über ARP. Die gelernenten MAC-Adressen werden dann über IS-IS an die weiteren RBridges verteilt. Da Link State Protokolle über die gesammte Netzwerktopologie bescheid wissen, kann IS-IS optimale Pfade für Unicast, sowie Distribution Trees für unbekannte Hosts und Broadcast und Multicast Gruppen berechnen. Die berechneten Bäume bilden einen Pfad zu allen Egress Bridges ab. Durch das Equal Cost Multipath Routing (ECMP) werden alle Pfade mit gleichen Kosten zu einem Ziel parallel genutzt. Dadurch erreicht man eine höhere Bandbreit, als dies unter STP möglich war. Um Schleifen zu vermeiden, gibt es im TRILL Header den Hop Count, sowie wird ein Reverse-Patch-Check von den RBridges durchgeführt.
+Edge RBridges (Ingress, Egress) lernen die angeschlossen Clients auf die klassische Art und Weise über ARP. Die gelernenten MAC-Adressen werden dann über IS-IS an die weiteren RBridges verteilt. Da Link State Protokolle über die gesammte Netzwerktopologie bescheid wissen, kann IS-IS optimale Pfade für Unicast, sowie Distribution Trees für unbekannte Hosts und Broadcast und Multicast Gruppen berechnen. Die berechneten Bäume bilden einen Pfad zu allen Egress Bridges ab. Durch das Equal Cost Multipath Routing (ECMP) werden alle Pfade mit gleichen Kosten zu einem Ziel parallel genutzt. Dadurch erreicht man eine höhere Bandbreit, als dies unter STP möglich war. IS-IS setzt zur Berechnung des kürzesten Weges den Dijkstra-Algorithmus ein und verwendet zusätzlich noch einen Hop Count im TRILL Header zum Ausschliessen von Loops.
 
 \subsection{Protokoll Header}
 Ein TRILL Frame ist in drei Schichten aufgeteilt:
@@ -126,7 +126,7 @@ Ein TRILL Frame ist in drei Schichten aufgeteilt:
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.5\linewidth]{images/trill_header}
+\includegraphics[width=0.6\linewidth]{images/trill_header}
 \caption{TRILL Frame}
 \label{fig:trillheader}
 \end{figure}
@@ -135,7 +135,7 @@ Ein TRILL Frame ist in drei Schichten aufgeteilt:
 Das Ziel von TRILL ist es auf Layer 2 ein Routing zu betreiben und dabei die Nachteile von STP zu lösen.
 
 \subsubsection{Warum wurde TRILL entwickelt?} %why was trill developed?
-TRILL wurde entwickelt um das Spanning Tree Protocol (STP) zu ersetzen. STP wurde entwickelt um Bridging Loops zu unterbinden. Das Problem bei SDP ist, dass es eine relativ grosse Konvergenzzeit hat, was in Rechenzentren inakzeptabel ist. TRILL wurde entwickelt um genau dieses Problem zu lösen. TRILL verwendet IS-IS (Intermediate System to Intermediate System Protocol) auf Layer 2. IS-IS ist wie OSPF eine Link State Protokoll welches aber im Gegensatz zu OSPF auf L2 operieren kann. Wie alle Link State Protokollen weiss jede RBridge über die gesamte Topologie bescheid. 
+TRILL wurde entwickelt um das Spanning Tree Protocol (STP) zu ersetzen. STP wurde entwickelt um Bridging Loops zu unterbinden. Das Problem bei STP ist, dass es eine relativ grosse Konvergenzzeit hat und Links blockiert, was in Rechenzentren inakzeptabel ist. TRILL wurde entwickelt um genau dieses Problem zu lösen. TRILL verwendet IS-IS (Intermediate System to Intermediate System Protocol) auf Layer 2. IS-IS ist wie OSPF eine Link State Protokoll welches aber im Gegensatz zu OSPF auf L2 operieren kann. Wie alle Link State Protokollen weiss jede RBridge über die gesamte Topologie bescheid. 
 
 \subsubsection{Wo und wie kann TRILL eingesetzt werden (Use Cases)?} %where and how can trill be used? (use cases)
 
@@ -176,14 +176,16 @@ Der grösste Konkurenz von TRILL ist SPB (Shortest Path Bridging oder IEEE 802.1
 
 Wir haben eine Wireshark
 
+%TODO: Screenshots Wireshark mit erkenntnissen / erklährungen
+
 \subsubsection{Trees}
 
 %-> Tree Struktur Vor Einstecken 
 %-> Nach Einstecken eines Clients auf einem Swtich
 %-> Nach "Zügeln" von Client auf den anderen Access Switch
 %(-> Wieder zurückstecken auf den alten Switch)
-%TODO
-
+%TODO: Grafik erstellen
+%TODO: Erklären wie zusande gekommen
 
 %:: Der Tiefste Nickname ist der Multicast-root
 
@@ -191,7 +193,7 @@ Wir haben eine Wireshark
 %-> Normaler Unicast Weg
 %-> Broadcast wege
 %-> Multicast
-%TODO
+%TODO: Erklären, wie der Fluss bei Broadcast, Multicast und Unicast aussieht
 
 \subsubsection{Mac Learning}
 
