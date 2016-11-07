@@ -172,7 +172,7 @@ Ein Kritikpunkt an TRILL ist, dass es zu schlechtem Design in den Rechenzentren 
 Der grösste Konkurenz von TRILL ist SPB (Shortest Path Bridging oder IEEE 802.1aq). SPB wurde als Erweiterung von VLAN entwickelt, mit dem gleichen Ziel, um die Konvergenzzeit von STP zu verbessern. SPB verwendet das herkömmliche Header Format, wodurch ohne Hardware Update in ein bestehendes Netzwerk eingefügt werden kann. 
 
 
-\subsection{Lab Konfiguration}
+\subsection{Lab Konfiguration}\label{sec:lab-konfiguration}
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.7\linewidth]{trill_network_layer2}
@@ -262,6 +262,95 @@ Wir haben eine Wireshark
 
 \subsubsection{Trees}
 
+Trees werden von TRILL mittels des Dijkstra Algorithmus von IS-IS mit den erhaltenen Geräte-Tree und damit bekannten Neighbors und Prioritäten aufgebaut.  Die Nachbarn und Geräteprioritäten sind in der Tabelle und Grafik am Anfang des Kapitels \ref{sec:lab-konfiguration} ersichtlich.
+
+
+
+\paragraph{Unicast Tree} \hfill \\
+
+%\subparagraph{Unicast-Tree aus der Sicht von HP1} \hfill \\
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[width=0.5\linewidth]{images/unicast_hp1}
+%	\caption{Unicast Tree von HP1}
+%	\label{fig:unicastTreeHP1}
+%\end{figure}
+%
+%\subparagraph{Unicast-Tree aus der Sicht von HP2} \hfill \\
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[width=0.5\linewidth]{images/unicast_hp2}
+%	\caption{Unicast Tree von HP2}
+%	\label{fig:unicastTreeHP2}
+%\end{figure}
+%
+%\subparagraph{Unicast-Tree aus der Sicht von HP3} \hfill \\
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[width=0.5\linewidth]{images/unicast_hp3}
+%	\caption{Unicast Tree von HP3}
+%	\label{fig:unicastTreeHP3}
+%\end{figure}
+%
+%\subparagraph{Unicast-Tree aus der Sicht von HP4} \hfill \\
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[width=0.5\linewidth]{images/unicast_hp4}
+%	\caption{Unicast Tree von HP4}
+%	\label{fig:unicastTreeHP4}
+%\end{figure}
+
+\paragraph{Multicast / Broadcast} \hfill \\
+Der Multicast-Tree steuert das verteilen von Multicast und Broadcast-Paketen im Netzwerk. Die Pakete werden jeweils in einem vom Root aus gesehenen Tree verteilt; als Root wird der Switch mit der höchsten Priority genommen, \lstinline|HP1|.
+
+Die Struktur kann mit \lstinline|display trill multicast-route tree-root <NICK>| ausgelesen werden. %TODO: Reference zu Config file
+Daraus ergibt sich der Tree aus Abbildung \ref{fig:multicasttree}:
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\linewidth]{images/multicast_trees}
+\caption{Multicast Tree}
+\label{fig:multicasttree}
+\end{figure}
+
+\paragraph{Reverse Path Forwarding}
+Mithilfe des Reverse Path Forwarding, merkt sich ein Switch, auf welchem Port er eingehende multi- und unicast Pakete erwartet. Die RPF-Table wird aus dem Switch-Tree mit dem lokalen Switch als Root via Dijkstra-Algorithmus errechnet. Entspricht das eingehende Paket nicht den Erwartungen (z.B. ist der kürzeste Weg zum Zielhost zurück über diesen Link), wird das Paket verworfen.
+
+Die jeweilige Reverse Path Konfiguration kann mit \lstinline[breaklines=false]|display trill rpf-table tree-root <NICK>| ausgelesen werden, für die Angabe der Ports siehe Grafik am Anfang des Kapitels.
+
+\begin{lstlisting}
+$ display trill rpf-table tree-root 8235
+Ingress-nickname              Expected-rcv-ports
+-------------------------------------------------
+0xad9c                        XGE1/0/50
+0x56ce                        XGE1/0/50
+0x2b67                        XGE1/0/49
+
+
+$ display trill rpf-table tree-root 2b67
+Ingress-nickname              Expected-rcv-ports
+-------------------------------------------------
+0x56ce                        XGE1/0/49
+0x2b67                        XGE1/0/49
+0xad9c                        XGE1/0/49
+
+
+$ display trill rpf-table tree-root ad9c
+Ingress-nickname              Expected-rcv-ports
+-------------------------------------------------
+0xad9c                        XGE1/0/50
+0x2b67                        XGE1/0/50
+0x56ce                        XGE1/0/50
+
+
+$ display trill rpf-table tree-root 56ce
+Ingress-nickname              Expected-rcv-ports
+-------------------------------------------------
+0xad9c                        XGE1/0/50
+0x56ce                        XGE1/0/50
+0x2b67                        XGE1/0/50
+
+\end{lstlisting}
+
 %-> Tree Struktur Vor Einstecken 
 %-> Nach Einstecken eines Clients auf einem Swtich
 %-> Nach "Zügeln" von Client auf den anderen Access Switch
@@ -278,7 +367,7 @@ Wir haben eine Wireshark
 %TODO: Erklären, wie der Fluss bei Broadcast, Multicast und Unicast aussieht
 
 %TODO: display trill fib
-
+%TODO: display trill multicast-route
 
 \begin{figure}
 	\centering
