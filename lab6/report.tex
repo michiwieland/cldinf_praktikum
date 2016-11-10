@@ -58,7 +58,7 @@ Durch die in Kapitel \ref{sec:network-architecture} genannten Änderungen in der
 Einige weitere neuartige Requirements sind auch im nächsten Kapitel~\ref{sec:requirements-an-das-netzwerk} aufgelistet.
 
 \subsection{Requirements an das Netzwerk}\label{sec:requirements-an-das-netzwerk}
-Es gibt somit einige neue grundlegende Anforderungen an das Netzwerk\footnote{Weitgehend übernommen aus der Modulvorlesung \lstinline|09_Changes in the Datacenter Network Design.pdf| von Prof. B. Stettler.}.
+Es gibt somit einige neue grundlegende Anforderungen an das Netzwerk\footnote{Quelle u.A. Foliensatz \lstinline|09_Changes in the Datacenter Network Design.pdf| von Prof. B. Stettler.}.
 \subsubsection{Eigenschaften Forwarding}
 \begin{itemize}
 	\item Höhere Geschwindigkeiten (z.B. 10Gbps im Access Layer, 40/100Gbps im Core Layer)
@@ -260,105 +260,48 @@ Wir haben eine Wireshark
 
 %TODO: Screenshots Wireshark mit erkenntnissen / erklährungen
 
-\subsubsection{Trees}
+\subsubsection{Trees: Multicast / Broadcast / Unknown Unicast}
 
-Trees werden von TRILL mittels des Dijkstra Algorithmus von IS-IS mit den erhaltenen Geräte-Tree und damit bekannten Neighbors und Prioritäten aufgebaut.  Die Nachbarn und Geräteprioritäten sind in der Tabelle und Grafik am Anfang des Kapitels \ref{sec:lab-konfiguration} ersichtlich.
+Trees werden von TRILL mittels des Dijkstra Algorithmus von IS-IS mit den erhaltenen Geräte-Tree und damit bekannten Neighbors und Prioritäten aufgebaut. Die Nachbarn und Geräteprioritäten sind in der Tabelle und Grafik am Anfang des Kapitels \ref{sec:lab-konfiguration} ersichtlich.
 
+Der Multicast-Tree steuert das verteilen von Multicast, ''Broadcast''\footnote{Ausserhalb des TRILL-Netzwerkes sind es MAC-Broadcast Pakete, innerhalb von TRILL werden sie als Multicast verteilt.} und Unknown-Unicast\footnote{Wenn die Ziel-MAC-Adresse dem Ingress-Switch noch nicht bekannt ist, verteilt er das Paket per Multicast an alle Egress-Switches}-Paketen im Netzwerk. Die Pakete werden jeweils entlang eines von einem Root aus gesehenen Tree verteilt; die Anzahl gewünschter Trees lässt sich im Trill Konfigurieren.
 
+Die im Lab vorhandene TRILL-Konfiguration ist so konfiguriert, dass 4 Multicast Trees aufgebaut werden.
 
-\paragraph{Unicast Tree} \hfill \\
+Die Struktur kann mit \lstinline|display trill multicast-route tree-root <NICK>| für einen Tree mit der Root beim Switch \lstinline|<NICK>| ausgelesen werden. Der jeweilige Switch leitet Pakete dann jeweils nach gemäss der Tree Struktur weiter.
 
-%\subparagraph{Unicast-Tree aus der Sicht von HP1} \hfill \\
-%\begin{figure}[H]
-%	\centering
-%	\includegraphics[width=0.5\linewidth]{images/unicast_hp1}
-%	\caption{Unicast Tree von HP1}
-%	\label{fig:unicastTreeHP1}
-%\end{figure}
-%
-%\subparagraph{Unicast-Tree aus der Sicht von HP2} \hfill \\
-%\begin{figure}[H]
-%	\centering
-%	\includegraphics[width=0.5\linewidth]{images/unicast_hp2}
-%	\caption{Unicast Tree von HP2}
-%	\label{fig:unicastTreeHP2}
-%\end{figure}
-%
-%\subparagraph{Unicast-Tree aus der Sicht von HP3} \hfill \\
-%\begin{figure}[H]
-%	\centering
-%	\includegraphics[width=0.5\linewidth]{images/unicast_hp3}
-%	\caption{Unicast Tree von HP3}
-%	\label{fig:unicastTreeHP3}
-%\end{figure}
-%
-%\subparagraph{Unicast-Tree aus der Sicht von HP4} \hfill \\
-%\begin{figure}[H]
-%	\centering
-%	\includegraphics[width=0.5\linewidth]{images/unicast_hp4}
-%	\caption{Unicast Tree von HP4}
-%	\label{fig:unicastTreeHP4}
-%\end{figure}
-
-\paragraph{Multicast / Broadcast} \hfill \\
-Der Multicast-Tree steuert das verteilen von Multicast und Broadcast-Paketen im Netzwerk. Die Pakete werden jeweils in einem vom Root aus gesehenen Tree verteilt; als Root wird der Switch mit der höchsten Priority genommen, \lstinline|HP1|.
-
-Die Struktur kann mit \lstinline|display trill multicast-route tree-root <NICK>| ausgelesen werden. %TODO: Reference zu Config file
-Daraus ergibt sich der Tree aus Abbildung \ref{fig:multicasttree}:
+Damit lassen sich folgende Tree-Strukturen auslesen:
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.5\linewidth]{images/multicast_trees}
-\caption{Multicast Tree}
-\label{fig:multicasttree}
+\includegraphics[width=0.5\linewidth]{images/multicast_trees/0x2b67}
+\caption{Multicast Tree Switch \lstinline|0x2b67| bzw. HP1}
+\label{fig:multicasttree0x2b67}
 \end{figure}
 
-\paragraph{Reverse Path Forwarding}
-Mithilfe des Reverse Path Forwarding, merkt sich ein Switch, auf welchem Port er eingehende multi- und unicast Pakete erwartet. Die RPF-Table wird aus dem Switch-Tree mit dem lokalen Switch als Root via Dijkstra-Algorithmus errechnet. Entspricht das eingehende Paket nicht den Erwartungen (z.B. ist der kürzeste Weg zum Zielhost zurück über diesen Link), wird das Paket verworfen.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.5\linewidth]{images/multicast_trees/0x56ce}
+	\caption{Multicast Tree Switch \lstinline|0x56ce| bzw. HP2}
+	\label{fig:multicasttree0x56ce}
+\end{figure}
 
-Die jeweilige Reverse Path Konfiguration kann mit \lstinline[breaklines=false]|display trill rpf-table tree-root <NICK>| ausgelesen werden, für die Angabe der Ports siehe Grafik am Anfang des Kapitels.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.5\linewidth]{images/multicast_trees/0x8235}
+	\caption{Multicast Tree Switch \lstinline|0x8235| bzw. HP3}
+	\label{fig:multicasttree0x8235s}
+\end{figure}
 
-\begin{lstlisting}
-$ display trill rpf-table tree-root 8235
-Ingress-nickname              Expected-rcv-ports
--------------------------------------------------
-0xad9c                        XGE1/0/50
-0x56ce                        XGE1/0/50
-0x2b67                        XGE1/0/49
-
-
-$ display trill rpf-table tree-root 2b67
-Ingress-nickname              Expected-rcv-ports
--------------------------------------------------
-0x56ce                        XGE1/0/49
-0x2b67                        XGE1/0/49
-0xad9c                        XGE1/0/49
-
-
-$ display trill rpf-table tree-root ad9c
-Ingress-nickname              Expected-rcv-ports
--------------------------------------------------
-0xad9c                        XGE1/0/50
-0x2b67                        XGE1/0/50
-0x56ce                        XGE1/0/50
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.5\linewidth]{images/multicast_trees/0xad9c}
+	\caption{Multicast Tree Switch \lstinline|0xad9c| bzw. HP4}
+	\label{fig:multicasttree0xad9c}
+\end{figure}
 
 
-$ display trill rpf-table tree-root 56ce
-Ingress-nickname              Expected-rcv-ports
--------------------------------------------------
-0xad9c                        XGE1/0/50
-0x56ce                        XGE1/0/50
-0x2b67                        XGE1/0/50
-
-\end{lstlisting}
-
-%-> Tree Struktur Vor Einstecken 
-%-> Nach Einstecken eines Clients auf einem Swtich
-%-> Nach "Zügeln" von Client auf den anderen Access Switch
-%(-> Wieder zurückstecken auf den alten Switch)
 %TODO: Grafik erstellen
 %TODO: Erklären wie zusande gekommen
-
-%:: Der Tiefste Nickname ist der Multicast-root
 
 \subsubsection{PacketFlow}
 %-> Normaler Unicast Weg
