@@ -271,28 +271,28 @@ Die Struktur kann mit \lstinline|display trill multicast-route tree-root <NICK>|
 Damit lassen sich folgende Tree-Strukturen auslesen:
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.5\linewidth]{images/multicast_trees/0x2b67}
+% \includegraphics[width=0.5\linewidth]{images/multicast_trees/0x2b67}
 \caption{Multicast Tree Switch \lstinline|0x2b67| bzw. HP1}
 \label{fig:multicasttree0x2b67}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.5\linewidth]{images/multicast_trees/0x56ce}
+%	\includegraphics[width=0.5\linewidth]{images/multicast_trees/0x56ce}
 	\caption{Multicast Tree Switch \lstinline|0x56ce| bzw. HP2}
 	\label{fig:multicasttree0x56ce}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.5\linewidth]{images/multicast_trees/0x8235}
+%	\includegraphics[width=0.5\linewidth]{images/multicast_trees/0x8235}
 	\caption{Multicast Tree Switch \lstinline|0x8235| bzw. HP3}
 	\label{fig:multicasttree0x8235s}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.5\linewidth]{images/multicast_trees/0xad9c}
+	%\includegraphics[width=0.5\linewidth]{images/multicast_trees/0xad9c}
 	\caption{Multicast Tree Switch \lstinline|0xad9c| bzw. HP4}
 	\label{fig:multicasttree0xad9c}
 \end{figure}
@@ -312,7 +312,7 @@ Damit lassen sich folgende Tree-Strukturen auslesen:
 
 \begin{figure}
 	\centering
-	\includegraphics[width=\linewidth]{images/ping_request}
+%	\includegraphics[width=\linewidth]{images/ping_request}
 	\caption{Ping Request: Known Unicast TRILL Frame}
 	\label{fig:trillpackage}
 \end{figure}
@@ -320,7 +320,7 @@ Damit lassen sich folgende Tree-Strukturen auslesen:
 
 \begin{figure}
 	\centering
-	\includegraphics[width=\linewidth]{images/ping_reply}
+%	\includegraphics[width=\linewidth]{images/ping_reply}
 	\caption{Ping Reply: Known Unicast TRILL Frame}
 	\label{fig:trillpackage}
 \end{figure}
@@ -337,19 +337,113 @@ Die MAC Adressen werden nur von den Edge Knoten gelernt.
 \section{VXLAN}
 \subsection{Terminologie}
 \begin{description}
-	\item[VXLAN: Virtual eXtensible Local Area Network] description
-	\item[VNI: VXLAN Network Identifier]  
-	\item[VTEP: VXLAN Tunnel End Point]  
-	\item[VEM: Virtual Ethernet Module] 
+	\item[VXLAN: Virtual eXtensible Local Area Network] \hfill \\
+	Ist ein Encapsulation Protokoll, um Overlay Netzwerke auf einer existierenden Layer 3 Infrastruktur umzusetzen.
+	\item[VNI: VXLAN Network Identifier]
+	24bit langer Identifiert pro VXLAN (vergleichbar mit VLAN Tag)
+	\item[VTEP: VXLAN Tunnel End Point] \hfill \\
+	Die ''externe'' IP Adresse des Virtuellen Switches. Der VTEP ist wie der Switch, teil der VM. Der VTEP enkapselt den VM Traffic in einem IP Header, damit dieser über ein Layer 3 Netzwerk gesendet werden kann. Die VM an sich verfügt über kein Wissen der VXLANs.
 \end{description}
 
 \subsection{Funktion}
+VXLAN ist ein Overlay Protokoll, welches einem Host erlaubt, seine IP Adresse beizubehalten, obschon die VM ihren Standort gewechselt hat. Dies funktioniert, da der VTEP teil der VM ist und somit mitverschoben wird. Mittel VXLAN lassen sich logische Layer 2 Overlay Netzwerk auf das bestehende Layer 3 Netzwerk umsetzen. Die Layer 2 Pakete werden dann einfach in Layer 3 Header verpackt. Da in klassischen Netzes die MAC Broadcasts auf Layer 3 geblockt werden, muss das MAC Learning und Floading unter VXLAN mit Multicast emuliert werden. So wird Broadcast und Unknow-Unicast Verkehr einfach über Multicast übertragen. Bekannter Unicast Verkehr kann nach wie vor direkt übertragen werden. (gemäss Remote VTEP). Grundlend läuft die Kommunikation wie folgt ab.
+
+\begin{enumerate}
+	\item VM1 möchte Daten Daten versenden und erstellt dafür ein L2 Ethernet Frame
+	\item Das VXLAN Kernel Modul verpackt das Ethernet Frame in einem VXLAN Header, sowie einem UDP Header
+	\item Ist die Ziel MAC Adresse in der Upstream Tabelle bereits bekannt, kann das Paket direkt an den Remote VTEP gesendet werden. Die entsprechenden Header werden hinzugefügt. Falls kein Mapping existiert, muss der ARP Broadcast, per Multicast an den Remote VTEP gesendet werden. Dieser entpackt das Paket und merkt sich das eingehende MAC-zu-VTEP Mapping. Die ARP Antwort kann dann per Unicast direkt zurück an den Sender gesendet werden.
+\end{enumerate}
+
+Damit der VXLAN Verkehr auf dem Weg nicht gedropt wird, muss eine minimale MTU von 1550Byte (empfohlen 1600Bytes) gesetzt werden. \\
+
+Jeder VTEP speichert, welche MAC Adresse in welchem VXLAN über welchen Remote VTEP erreichbar ist, in einer eigenen Tabelle. Ebenfalls werden eingehende Pakete gemäss ihrer VNI wieder auf das korrekte VLAN gemappt.
+
+\begin{table}[H]
+	\centering
+	\begin{tabu} to \linewidth {l l l}
+		\toprule
+		Mac Adresse & VNI & Remote VTEP \\
+		\midrule
+		\lstinline|01-01-01-01-01-01| & 1001 & 10.1.1.1 \\
+		\lstinline|02-02-02-02-02-02| & 1002 & 10.1.1.2 \\
+		\lstinline|03-03-03-03-03-03| & 1003 & 10.1.1.3 \\
+		\bottomrule
+	\end{tabu}
+	\label{tbl:Lab devices}
+	\caption{Upstream Table}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{tabu} to \linewidth {l l}
+		\toprule
+		VLAN & VNI \\
+		\midrule
+		100 & 1001 \\
+		200 & 1002 \\
+		300 & 1003 \\
+		\bottomrule
+	\end{tabu}
+	\label{tbl:Lab devices}
+	\caption{Downstream Table}
+\end{table}
 
 \subsection{Protokoll Header}
+Ein VXLAN Frame ist in fünf Schichten aufgeteilt:
+\begin{description}
+	\item[Outer Ethernet Header] \hfill \\
+	Source und Destination MAC Adressen zwischen den VXLAN Lab Switches
+	\item[Outer Ip Header] \hfill \\
+	Der äussere IP Header beinhaltet die Source IP des eigenen VTEP, sowie die Destination IP des Remote VTEP. Im Lab waren dies \lstinline|vxlan-lab-sw01| und \lstinline|vxlan-lab-sw03|.
+	\item[UDP Header] \hfill
+	\begin{itemize}
+		\item Source Port: Hash über den inneren Ethernet Header
+		\item Destination Port: Default VXLAN Port 4789
+	\end{itemize}
+	\item[VXLAN Header] \hfill
+	\begin{itemize}
+		\item 8 Flag Bits: Das I Flag definiert ob der Header eine valid VXLAN ID hat. Die Restlichen Bits sind ''reserved'' und standardmässig auf 0 gesetzt.
+		\item VNI: 24 Bit langer Identifier für ein VXLAN (vergleichbar mit VLAN)
+	\end{itemize}
+	\item[Inner Ethernet Header] \hfill \\
+	Source und Destination MAC Adressen der beiden Clients/VM's
+\end{description}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.8\linewidth]{images/vxlan_header}
+	\caption{Logische Toplogie}
+	\label{fig:vxlanheader}
+\end{figure}
+\clearpage
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.8\linewidth]{images/ping_replay}
+	\caption{Ping Reply Wireshark Trace}
+	\label{fig:pingreply}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.6\linewidth]{images/vxlan_logical}
+	\caption{Logische Umgebung im Lab}
+	\label{fig:vxlanlogical}
+\end{figure}
+\newpage
 
 \subsection{Ziel von VXLAN}
+Traditionelle Datacenter Technologien haben einige Einschränkungen und können den Ansprüchen moderener Datencenter nicht mehr gerecht werden. 
+\begin{itemize}
+	\item Für die Aufteilung des Traffics in einem mandantenfähigen System, sind mehr als 4096 VLANs nötig
+	\item Durch Virtualisierung braucht jede VM eine eindeutige MAC Adresse. Dies bedeutet, dass die Kapazität der MAC Adresstabelle um ein vielfaches wachsen müsste. 
+	\item STP blockiert die redundanten Links, damit keine Loops entstehen. Dies erschwert den Einsatz von ECMP, obschon der Einsatz von ECMP auf Layer 3 einfach umzusetzen ist. Gefragt ist die Funktionalität jedoch auf Layer 2
+\end{itemize}
+VXLAN geht genau diese Probleme an. Mit VXLAN können Layer 2 Overlay Netze auf dem bestehenden Layer 3 Netz betrieben werden. Durch den Einsatz der 24 Bit VNI, stehen genügend logische Netze zur Verfügung, damit auch grosse Cloud Anbieter ihre Mandanten sauber trennen können. 
+
 
 \subsection{Warum wurde VXLAN entwickelt}
+VXLAN wurde primär entwickelt, um VLAN zu erweitern. Da VLAN auf 4096 logische Netze (12Bit) eingeschränkt ist, hat man die VNI unter VXLAN auf 24 Bit erweitert. Dies erlaubt 16'777'216 logische Netzwerke. Daher, mit VXLAN lassen sich $\approx$ 16 Millionen isolierte Layer 2 Netzwerke auf einer bestehenden Layer 3 Infrasturktur betreiben, welche intern wieder 4096 VLAN's enthalten können. VXLAN wurde usprünglich von Cisco, VMware und Arista Networks entwickelt. 
 
 \subsection{Wo und wie kann VXLAN eingesetzt werden (Use Cases)}
 
@@ -367,6 +461,37 @@ ethernet in udp encapsulation
 
 24Bit Identifier, vergleichbar mit VLAN (VLAN zwischen Hosts = VYLAN)
 
+\subsection{Lab Konfiguration}
+Es wurde folgende logische Topologie in zwei virtuellen Ubuntu Maschinen abgebildet. Die dazu nötigen Schritte konnten ohne Probleme ausgeführt werden. Innerhalb der beiden virtuellen Maschinen wurde je ein Mininet mit je 4 virtuellen Hosts und einem Switch erstellt. Die Hosts können nur innerhalb des eigenen VLAN's kommunizieren. Die beiden virtuellen Switches verfügen über einen VTEP und erlauben die VM-übergreifende Kommunikation. Nachdem der VNI auf das korrekte VLAN und Remote VTEP gemappt wurde, war die Kommunikation zwischen den Mininets ohne Probleme möglich.
 
-%TODO
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\linewidth]{images/vxlan_overview}
+\caption{Logische Toplogie}
+\label{fig:vxlanoverview}
+\end{figure}
+
+In einem ersten Schritt wurde die Konfiguration der VLAN's getestet (\lstinline|pingall|). Die virtuellen Host dürfen wie in der Abbildung ersichtlich, nur auf die Hosts im selben VLAN zugreifen.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\linewidth]{images/vxlan_vlan_pingall}
+\caption{VLAN Test durch Pingall}
+\label{fig:vxlanvlanpingall}
+\end{figure}
+\newpage
+
+In einem zweiten Schritt wurde dann die abgeschlossenen VXLAN Konfiguration getestet.
+\begin{itemize}
+	\item Mininet links: \lstinline|h1 ping 10.12.11.3| $\rightarrow$ Wie erwartet erfolgreich
+	\item Mininet links: \lstinline|h2 ping 10.12.11.3| $\rightarrow$ Wie erwartet, keine Verbindung
+	\item Mininet links: \lstinline|h2 ping 10.12.12.3| $\rightarrow$ Wie erwartet erfolgreich
+\end{itemize} 
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\linewidth]{images/vxlan_final_test.png}
+	\caption{VLAN Test durch Pingall}
+	\label{fig:vxlanvlanpingall}
+\end{figure}
+
 \input{appendix.tex}
