@@ -94,7 +94,7 @@ Es gibt somit einige neue grundlegende Anforderungen an das Netzwerk\footnote{Qu
 \end{itemize}
 
 
-\section{TRILL}
+\section{TRILL}\label{sec:trill}
 \subsection{Terminologie}
 \begin{description}
 	\item[RBrige] Bridge die TRILL unterstützt und verwendent
@@ -447,19 +447,93 @@ VXLAN wurde primär entwickelt, um VLAN zu erweitern. Da VLAN auf 4096 logische 
 
 \subsection{Wo und wie kann VXLAN eingesetzt werden (Use Cases)}
 
-\subsection{Ist VXLAN kompatibel mit traditionellen Protokollen} % If yes, what are the differences and which limitations does VXLAN solve?
+Der Einsatz von VXLAN macht Sinn, wenn ein über mehrere physiche Hosts verteiltes, virtuelles Netzwerk mit vielen Segmenten und viel Traffic existieren soll, wie dies in einem grösseren Datacenter üblicherweise der Fall ist. Das zugrundeliegende ''phyische'' Netzwerk sollte ein geroutetes Netzwerk sein, damit VXLAN einen entsprechenden Vorteil bring.
+
+Auf der virtuellen Umgebung ist es nötig, virtuelle Switches zu erstellen, welche das verpacken und routen der Pakete vornehmen. Dies kann entweder durch den Einsatz entsprechender virtueller oder physischer Maschinen erfolgen, oder über eine Native Unterstützung der Umgebung. Zusätzlich braucht es entsprechende Gateways zwischen physichen und virtuellen Netzwerken.
+
+\subsection{Ist VXLAN kompatibel mit traditionellen Protokollen}
+% If yes, what are the differences and which limitations does VXLAN solve?
+
+VXLAN ist kompatibel mit ''traditionellen'' Protokollen wie VLAN, da die Pakete eins zu eins wiederum in UDP eingepackt werden, ohne gross Veränderungen vorzunehmen. 
+
+VXLAN wurde zudem so entwickelt, dass die bestehende L2 und L3 Infrastruktur weiter genutzt werden kann (abgesehen vom (meist virtuellen) ''Egress'' und ''Egress'' ''Switch'', welcher eben das VXLAN entpacken muss). Das heisst, VXLAN arbeitet komplett im (tatsächlichen) Layer 3 und höher.
+
+Die Zentrale Einschränkung von traditionellen Protokollen ist ebenfalls, dass diese nicht zwischen dem ''Wo'' und ''Wer'' unterscheiden. Mit VXLAN gibt es neben einem ''Wer'' (die MAC-Adresse) und ein ''Wo'' (die IP-Adresse) ein Overlay Netzwerk, welches das ''Wo'' weiter von der (VM- oder Container-)IP-Adresse abstrahiert.
+
+\subsubsection{Vergleich mit VLAN}
+
+Im Vergleich zu VLANs erfüllt VXLAN eine etwas etwas andere Funktion; es ermöglicht noch deutlich grössere Netzwerke und, der wohl wichtigste Unterschied: Es Routet die Pakete und verteilt L2-Broadcasts über Multicast. Damit erübrigt sich der Einsatz von z.B. STP, was zu einer verbesserten Performance und Durchsatz führt.
+
+\subsubsection{Vergleich mit TRILL}
+
+Im vergleich zu TRILL (welches im Kapitel \ref{sec:trill} bereits ausführlich behandelt wurde), setzt VXLAN stärker auf ein ''Tunneling''/ Layer 3-Konzept, welches mehr auf virtuelle Umgebungen ausgelegt ist. Layer 2 / TRILL trennt in diesem Sinne die Identität und den Ort.
+
+Layer 3 bringt dafür einige Vorteile mit sich, unter anderem:
+
+\begin{itemize}
+	\item besser Skalierbar
+	\item bessere Mobilität
+	\item einfacheres Handling von Adressen/Identitäten
+	\item Integrierte Möglichkeit von Routing und damit Ausnutzung der ganzen Bandbreite
+	\item Effizientere Verknüpfung von Netzwerken
+	\item Keine Broadcasts
+\end{itemize}
 
 \subsection{Was sind die Vor- und Nachteile von VXLAN}
 
-\subsection{Gibt es andere moderne Technologien, welche TRILL ähnlich sind?}%  if yes, what are the differences between them
+\paragraph{Vorteile}
+\begin{itemize}
+	\item Benötigt keine spezielle Hardware, da die Übertragung via klassischem IP erfolgt
+	\item Kann bis zu 16 Millionen logische Netzwerke verwalten (24 Bit Identifier)
+	\item Die VMs bemerken von VXLAN nichts (handling auf dem (v)Switch).
+	\item Braucht keinen zentralen Controller
+	\item Tunnelt die virtuellen Hosts
+	\item Die VMs / Container sind damit ''mobil'' und können ohne Probleme verschoben werden.
+\end{itemize}
 
+\paragraph{Nachteile}
+\begin{itemize}
+	\item Der Overhead ist aufgrund der grossen Verschachtelung relativ gross (ca. 50Bytes pro Paket)
+	\item Die Latenz wird aufgrund des Ein- und Auspacken grösser und braucht mehr Rechenleistung.
+	\item Der ganze L3-Traffic (wie ARP etc.) muss über ''langsame'' L3-Devices an viele Orte verteilt werden.
+	\item Möglicherweise suboptimaler Traffic-Flow
+	\item ECMP ist nicht zwingend garantiert
+	\item Mehr Komplexität im Netzwerk
+	\item Kein einheitlicher Herstellerstandard
+	\item Keine einfache Integrationen anderer, phyischer Netzwerke bzw. Eingehenden Verkehrs.
+	\item Keine Absicherung: Ein Gerät, welche sich im VXLAN-Netzwerk befindet, hat vollen Zugriff auf das ganze Netzwerk.
+	\item Möglicherweise Paketverlust im Netzwerk (UDP)
+	\item Aufgrund der grösseren Paketgrösse kann es bei suboptimaler Konfiguration von kleineren Netzwerk-MTUs zu IP-Fragmentierung kommen (<1550 Bytes bzw. VM MTU + mindestens 50 Bytes, besser + 100 Bytes für IPv6 und VLANs)
+\end{itemize}
 
-VXLAN benötigt keine spezielle Hardware mehr. description
-Die Verbindung zum restlichen Netzwerk fehlt bei Host Overlays -> Hybrid
+\subsection{Gibt es andere moderne Technologien, welche VXLAN ähnlich sind?}
 
-ethernet in udp encapsulation
+Ja, es gibt noch mehrere ähnliche Protokolle verschiedener Hersteller. Hier eine kurze Übersicht über die verschiedenen Funktionen / Eigenschaften:
 
-24Bit Identifier, vergleichbar mit VLAN (VLAN zwischen Hosts = VYLAN)
+\begin{table}[h]
+	\centering
+	\begin{tabu} to \linewidth {r X X X X}
+		\toprule
+		& VXLAN & NVGRE & STT & GENEVE \\
+		\midrule
+		Summary
+			& Host-Overlay Protokoll u.a. von VMWare
+			& Host-Overlay Protokoll von Microsoft
+			& Host-Overlay Protokoll u.a. von VMWare
+			& Tunneling-Only Protokoll \\
+		Adresslänge & 24b & 24b & 64b & 24b \\
+		Overhead & 56B & 46B & 80B & 54+B \\
+		Verpackung & UDP & GRE & TCP & UDP \\
+		Support & VMWare, Cisco, Arista & Microsoft, Arista & VMWare, Broadcom & VMWare, Microsoft RedHat, Intel \\
+		Signaling & Flood \& Learn & Control Plane & Controller-based & (Tunnel only) \\
+		Stärken & Weit verbreitet & Guter Microsoft-Support & Verlustfreie Übertragung & Nur Tunnelling \\
+		Schwächen & Standardmässig kein Controller, dadurch mehr Traffic & z.T. fehlende Unterstützung, braucht spezielle Hardware & Viel Overhead \& Latenz durch TCP & Nur Tunneling \\
+		\bottomrule
+	\end{tabu}
+	\label{tbl:VXLANcompare}
+	\caption{Vergleich zwischen VXLAN und ähnlichen Technologien}
+\end{table}
+
 
 \subsection{Lab Konfiguration}
 Es wurde folgende logische Topologie in zwei virtuellen Ubuntu Maschinen abgebildet. Die dazu nötigen Schritte konnten ohne Probleme ausgeführt werden. Innerhalb der beiden virtuellen Maschinen wurde je ein Mininet mit je 4 virtuellen Hosts und einem Switch erstellt. Die Hosts können nur innerhalb des eigenen VLAN's kommunizieren. Die beiden virtuellen Switches verfügen über einen VTEP und erlauben die VM-übergreifende Kommunikation. Nachdem der VNI auf das korrekte VLAN und Remote VTEP gemappt wurde, war die Kommunikation zwischen den Mininets ohne Probleme möglich.
