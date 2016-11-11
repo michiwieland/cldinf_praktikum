@@ -95,7 +95,6 @@ Es gibt somit einige neue grundlegende Anforderungen an das Netzwerk\footnote{Qu
 
 
 \section{TRILL}
-\subsection{Theorie}
 \subsection{Terminologie}
 \begin{description}
 	\item[RBrige] Bridge die TRILL unterstützt und verwendent
@@ -107,7 +106,7 @@ Es gibt somit einige neue grundlegende Anforderungen an das Netzwerk\footnote{Qu
 	Bridges die den TRILL Verkehr nur weiterleiten und dabei nur den Outer Ethernet Header beachten. Sie stehen innerhalb der TRILL ''Wolke''.
 \end{description}
 
-\subsubsection{Funktion} %function / protocol header
+\subsection{Funktion} %function / protocol header
 Das TRILL Protokoll  (Transparent Interconnection of Lots of Links) implementiert ein Routing auf Layer 2. Das Routing wird mit sogenannten RBridges vollzogen. RBridges routen die verpackten Ethernet Frames mit dem Link-State-Protokoll IS-IS (Intermediate System to Intermediate System). TRILL kann relativ einfach in eine bestehendes Netz eingefügt werden, da Bridges ohne TRILL Funktion, die restlichen RBridges als Wolke und somit als ein grossen Switch wahrnehmen. (Vergleichbar mit MPLS). \\ 
 
 Versendet ein Client A ein Paket an Client B, wird das MAC Frame bei der Ingress RBrige in ein TRILL Paket verpackt. Anschliessend routet IS-IS das Paket zur Egress Bridge welche den TRILL Header wieder entfernt und das ursprüngliche MAC Frame auspackt.  \\
@@ -137,37 +136,36 @@ Ein TRILL Frame ist in drei Schichten aufgeteilt:
 \label{fig:trillheader}
 \end{figure}
 
-\subsubsection{Ziel von TRILL} %goal of trill
+\subsection{Ziel von TRILL} %goal of trill
 Das Ziel von TRILL ist es auf Layer 2 ein Routing zu betreiben und dabei die Nachteile von STP zu lösen.
 
-\subsubsection{Warum wurde TRILL entwickelt?} %why was trill developed?
+\subsection{Warum wurde TRILL entwickelt?} %why was trill developed?
 TRILL wurde entwickelt um das Spanning Tree Protocol (STP) zu ersetzen. STP wurde entwickelt um Bridging Loops zu unterbinden. Das Problem bei STP ist, dass es eine relativ grosse Konvergenzzeit hat und Links blockiert, was in Rechenzentren inakzeptabel ist. TRILL wurde entwickelt um genau dieses Problem zu lösen. TRILL verwendet IS-IS (Intermediate System to Intermediate System Protocol) auf Layer 2. IS-IS ist wie OSPF eine Link State Protokoll welches aber im Gegensatz zu OSPF auf L2 operieren kann. Wie alle Link State Protokollen weiss jede RBridge über die gesamte Topologie bescheid. 
 
-\subsubsection{Wo und wie kann TRILL eingesetzt werden (Use Cases)?} %where and how can trill be used? (use cases)
+\subsection{Wo und wie kann TRILL eingesetzt werden (Use Cases)?} %where and how can trill be used? (use cases)
 
 
-\paragraph{High Performance Datacenter}
+\subsubsection{High Performance Datacenter}
 Bei modernen Datencenter versucht man die Spine-Leaf Architektur umzusetzen. Diese flachen Layer 2 Netze werden oft mit TRILL verwaltet, die STP in der neuen Architektur nicht effizient arbeiten könnten. Aus Spine-Leaf Architektur folgt, dass sehr viele Leaf Switches gibt, die mit jedem Spine Knoten verbunden werden. Die Hohe Anzahl an Verbindungen würde unter STP zu viele blockierten Ports führen.  Da TRILL alle verfügbaren Ports und Pfade nutzt, kann die Payload bei einer maximalen Bandbreite übertragen werden. Damit agiert ein Datacenter in sich extrem performant. 
 
-\paragraph{VMotion}
+\subsubsection{VMotion}
 Durch den Einsatz von VMotion sind flache Layer 2 Netze nötig, damit die virtuellen Maschienen zwischen mehreren Host Systemen je nach Last verschoben werden müssen. Damit diese Layer 2 Netze performant arbeiten ist ein Protokoll wie TRILL oder SPB nötig. 
 
 
-\subsubsection{Ist TRILL kompatibel mit traditionellen Protokollen?} %is trill comparable to a traditional protcol?
+\subsection{Ist TRILL kompatibel mit traditionellen Protokollen?} %is trill comparable to a traditional protcol?
 %  if yes, what are the differences and which limitiations does TRILL solve?
 TRILL ist kompatibel mit VLAN und STP. Der VLAN Tag des Inner Ethernet Header wird bei der Übertragung durch Transit RBridges nicht beachtet. Der VLAN Tag im Outer Ethernet Header wird nur verwendet wenn zwei RBridges über unterschiedliche VLAN's kommunizieren. STP Bridges ohne TRILL Funktionalität erkennen die TRILL ''Wolke'' als einen grossen Switch. TRILL agiert für das restliche 802.1 Netzwerk als eigenständiges System operiert somit oberhalb des klassischen Layer 2. Man kann also sagen, dass TRILL wie MPLS zwischen zwei Layer arbeitet. Bei TRILL wäre dies also Layer 2.5. 
 
 
-\subsubsection{Was sind die Vor- und Nachteile von TRILL?}%what are the advantages and disadvantages of TRILL
-\paragraph{Vorteile} \hfill \\
+\subsection{Was sind die Vor- und Nachteile von TRILL?}%what are the advantages and disadvantages of TRILL
+\subsubsection{Vorteile} \hfill \\
 Die Vorteile von TRILL decken sich mit den Kritikpunkten an STP. So gibt es bei TRILL keine blockierten Ports (die ganze Bandbreite kann genutzt werden) und es gibt keine Probleme mit der Konvergationszeit des L2 Netzes. Dadurch kann auf STP verzichtet werden. 
 TRILL erlaubt es Virtuelle Maschienen zu verschieben (z.B VMotion) ohne dass man sich Gedanken über die IP Subnetze machen muss.
-%TODO ECMP
 
-\paragraph{Nachteile} \hfill \\
+\subsubsection{Nachteile} \hfill \\
 Ein Kritikpunkt an TRILL ist, dass es zu schlechtem Design in den Rechenzentren führe und Alternative Protokolle wie z.B SPB das Problem eleganter lösen. Ebenfalls sind für TRILL spezielle Geräte nötig, was zu erhöhten Initialen Kosten führt.
 
-\subsubsection{Gibt es andere moderne Technologien, welche TRILL ähnlich sind?}%are there other modern technologies which are similar to TRILL?
+\subsection{Gibt es andere moderne Technologien, welche TRILL ähnlich sind?}%are there other modern technologies which are similar to TRILL?
 %  if yes, what are the differences between them
 Der grösste Konkurenz von TRILL ist SPB (Shortest Path Bridging oder IEEE 802.1aq). SPB wurde als Erweiterung von VLAN entwickelt, mit dem gleichen Ziel, um die Konvergenzzeit von STP zu verbessern. SPB verwendet das herkömmliche Header Format, wodurch ohne Hardware Update in ein bestehendes Netzwerk eingefügt werden kann. 
 
@@ -340,9 +338,35 @@ Die MAC Adressen werden nur von den Edge Knoten gelernt.
 \subsection{Terminologie}
 \begin{description}
 	\item[VXLAN: Virtual eXtensible Local Area Network] description
-	\item[VNI: VXLAN Network Identifier] 
-	\item[VTEP: VXLAN Tunnel End Point] description 
-
+	\item[VNI: VXLAN Network Identifier]  
+	\item[VTEP: VXLAN Tunnel End Point]  
+	\item[VEM: Virtual Ethernet Module] 
 \end{description}
+
+\subsection{Funktion}
+
+\subsection{Protokoll Header}
+
+\subsection{Ziel von VXLAN}
+
+\subsection{Warum wurde VXLAN entwickelt}
+
+\subsection{Wo und wie kann VXLAN eingesetzt werden (Use Cases)}
+
+\subsection{Ist VXLAN kompatibel mit traditionellen Protokollen} % If yes, what are the differences and which limitations does VXLAN solve?
+
+\subsection{Was sind die Vor- und Nachteile von VXLAN}
+
+\subsection{Gibt es andere moderne Technologien, welche TRILL ähnlich sind?}%  if yes, what are the differences between them
+
+
+VXLAN benötigt keine spezielle Hardware mehr. description
+Die Verbindung zum restlichen Netzwerk fehlt bei Host Overlays -> Hybrid
+
+ethernet in udp encapsulation
+
+24Bit Identifier, vergleichbar mit VLAN (VLAN zwischen Hosts = VYLAN)
+
+
 %TODO
 \input{appendix.tex}
