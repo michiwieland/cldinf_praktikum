@@ -258,41 +258,88 @@ Wir haben eine Wireshark
 
 %TODO: Screenshots Wireshark mit erkenntnissen / erklährungen
 
-\subsubsection{Trees: Multicast / Broadcast / Unknown Unicast}
+\subsubsection{Trees: Multicast / Broadcast / Unknown Unicast}\label{sec:trees-multicast--broadcast--unknown-unicast}
 
 Trees werden von TRILL mittels des Dijkstra Algorithmus von IS-IS mit den erhaltenen Geräte-Tree und damit bekannten Neighbors und Prioritäten aufgebaut. Die Nachbarn und Geräteprioritäten sind in der Tabelle und Grafik am Anfang des Kapitels \ref{sec:lab-konfiguration} ersichtlich.
 
-Der Multicast-Tree steuert das verteilen von Multicast, ''Broadcast''\footnote{Ausserhalb des TRILL-Netzwerkes sind es MAC-Broadcast Pakete, innerhalb von TRILL werden sie als Multicast verteilt.} und Unknown-Unicast\footnote{Wenn die Ziel-MAC-Adresse dem Ingress-Switch noch nicht bekannt ist, verteilt er das Paket per Multicast an alle Egress-Switches}-Paketen im Netzwerk. Die Pakete werden jeweils entlang eines von einem Root aus gesehenen Tree verteilt; die Anzahl gewünschter Trees lässt sich im Trill Konfigurieren.
+Der Multicast-Tree steuert das verteilen von Multicast, ''Broadcast''\footnote{Ausserhalb des TRILL-Netzwerkes sind es MAC-Broadcast Pakete, innerhalb von TRILL werden sie als Multicast verteilt.} und Unknown-Unicast\footnote{Wenn die Ziel-MAC-Adresse dem Ingress-Switch noch nicht bekannt ist, verteilt er das Paket per Multicast an alle Egress-Switches}-Paketen im Netzwerk. Die Pakete werden jeweils entlang eines von einem Root aus gesehenen Tree verteilt; die Anzahl gewünschter Trees lässt sich im konfigurieren.
 
 Die im Lab vorhandene TRILL-Konfiguration ist so konfiguriert, dass 4 Multicast Trees aufgebaut werden.
 
-Die Struktur kann mit \lstinline|display trill multicast-route tree-root <NICK>| für einen Tree mit der Root beim Switch \lstinline|<NICK>| ausgelesen werden. Der jeweilige Switch leitet Pakete dann jeweils nach gemäss der Tree Struktur weiter.
+Die Struktur kann mit \lstinline|display trill multicast-route tree-root <NICK>| für einen Tree mit der Root beim Switch \lstinline|<NICK>| ausgelesen werden. Der jeweilige Switch leitet Pakete dann jeweils nach gemäss der Tree Struktur weiter. Der jeweils zu Verwendete Multicast Tree wird im ''Egress''-TRILL-Header definiert (siehe Abbildung \ref{fig:trillheadermulticast})
 
-Damit lassen sich folgende Tree-Strukturen auslesen:
 \begin{figure}[H]
 \centering
-% \includegraphics[width=0.5\linewidth]{images/multicast_trees/0x2b67}
-\caption{Multicast Tree Switch \lstinline|0x2b67| bzw. HP1}
-\label{fig:multicasttree0x2b67}
+\includegraphics[width=0.7\linewidth]{images/trill_header_multicast}
+\caption{TRILL Multicast-Header Felder}
+\label{fig:trillheadermulticast}
+\end{figure}
+
+
+\paragraph{Fehler in Tree \lstinline|0x2b67|} \hfill \\
+Im Tree \lstinline|0x2b67| (HP1) in Abbildung \ref{fig:multicasttree0x2b67} hat sich vermutlich einen Fehler eingeschlichen. Möglicherweise lässt sich dieser darauf zurückführen, dass ein Teil der Konfiguration (die auf HP3) erst eine Woche später aus den Switches ausgelesen wurde als die anderen und so ein inkonsistenter Zustand bzw. eine andere Treestruktur, z.B. aufgrund der Einschalt-Reihenfolge, ausgelesen wurde. Die entsprechenden Konfigurationen von \lstinline|0x2b67| sind:
+
+\begin{lstlisting}
+<HP1>display trill multicast-route tree-root 2b67
+Root: 0x2b67
+LocalRcvFlag: True
+List of VLANs:
+1003, 1006
+List of outgoing ports:
+XGE1/0/49
+XGE1/0/50
+
+<HP2>display trill multicast-route tree-root 2b67
+Root: 0x2b67
+LocalRcvFlag: True
+List of VLANs:
+1003, 1006
+List of outgoing ports:
+XGE1/0/50
+
+[HP3]display trill multicast-route tree-root 2b67
+Root: 0x2b67
+LocalRcvFlag: True
+List of VLANs: None
+List of outgoing ports:
+XGE1/0/49
+
+<HP4>display trill multicast-route tree-root 2b67
+Root: 0x2b67
+LocalRcvFlag: True
+List of VLANs:
+1003, 1006
+List of outgoing ports:
+XGE1/0/49
+XGE1/0/50
+\end{lstlisting}
+
+\paragraph{Tree-Strukturen} \hfill \\
+Damit lassen sich folgende Tree-Strukturen auslesen:
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.5\linewidth]{images/multicast_trees/0x2b67}
+	\caption{Multicast Tree Switch \lstinline|0x2b67| bzw. HP1. Hier ist vermutlich ein Fehler vorhanden (Siehe \ref{sec:trees-multicast--broadcast--unknown-unicast})}
+	\label{fig:multicasttree0x2b67}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
-%	\includegraphics[width=0.5\linewidth]{images/multicast_trees/0x56ce}
+	\includegraphics[width=0.5\linewidth]{images/multicast_trees/0x56ce}
 	\caption{Multicast Tree Switch \lstinline|0x56ce| bzw. HP2}
 	\label{fig:multicasttree0x56ce}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
-%	\includegraphics[width=0.5\linewidth]{images/multicast_trees/0x8235}
+	\includegraphics[width=0.5\linewidth]{images/multicast_trees/0x8235}
 	\caption{Multicast Tree Switch \lstinline|0x8235| bzw. HP3}
 	\label{fig:multicasttree0x8235s}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
-	%\includegraphics[width=0.5\linewidth]{images/multicast_trees/0xad9c}
+	\includegraphics[width=0.5\linewidth]{images/multicast_trees/0xad9c}
 	\caption{Multicast Tree Switch \lstinline|0xad9c| bzw. HP4}
 	\label{fig:multicasttree0xad9c}
 \end{figure}
@@ -312,7 +359,7 @@ Damit lassen sich folgende Tree-Strukturen auslesen:
 
 \begin{figure}
 	\centering
-%	\includegraphics[width=\linewidth]{images/ping_request}
+	\includegraphics[width=\linewidth]{images/ping_request}
 	\caption{Ping Request: Known Unicast TRILL Frame}
 	\label{fig:trillpackage}
 \end{figure}
@@ -320,7 +367,7 @@ Damit lassen sich folgende Tree-Strukturen auslesen:
 
 \begin{figure}
 	\centering
-%	\includegraphics[width=\linewidth]{images/ping_reply}
+	\includegraphics[width=\linewidth]{images/ping_reply}
 	\caption{Ping Reply: Known Unicast TRILL Frame}
 	\label{fig:trillpackage}
 \end{figure}
@@ -417,14 +464,14 @@ Ein VXLAN Frame ist in fünf Schichten aufgeteilt:
 \end{figure}
 \clearpage
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/ping_replay}
 	\caption{Ping Reply Wireshark Trace}
 	\label{fig:pingreply}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=0.6\linewidth]{images/vxlan_logical}
 	\caption{Logische Umgebung im Lab}
