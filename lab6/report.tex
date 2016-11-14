@@ -338,20 +338,28 @@ Damit lassen sich folgende Tree-Strukturen auslesen:
 	\label{fig:multicasttree0xad9c}
 \end{figure}
 
-
-%TODO: Grafik erstellen
-%TODO: Erklären wie zusande gekommen
-
 \subsubsection{PacketFlow}
-%-> Normaler Unicast Weg
-%-> Broadcast wege
-%-> Multicast
-%TODO: Erklären, wie der Fluss bei Broadcast, Multicast und Unicast aussieht
+Bei TRILL unterscheided man zwischen zwei Varianten des Paketflusses:
 
-%TODO: display trill fib
-%TODO: display trill multicast-route
+\paragraph{Known Unicast} \hfill \\
+Um die Egress Bridge zu bestimmen, wird bei Known Unicast Verkehr ein Lookup für die Ziel MAC-Adresse durchgeführt. Diese Information ist auf der Ingress Bridge aufgrund vorhergehender Kommunikation bereits bekannt. Anschliessend wird das Paket anhand des Egress Bridge Nicknames durch die Wolke weitergeleitet. Beim Ziel angekommen wird der TRILL Header entpackt und gemäss dem Inneren Ethernet Header dem Empfänger zugestellt. Wenn zwei gleichwertige Pfade zur Verfügung stehen, wird ein Hash über die Source und Ziel MAC Adresse erstellt und dieser Modulo Portanzahl genommen. Die resultierende Zahl bestimmt die ausgehende Port Nummer. Sind Empfänger und Sender die Selben, wird der Verkehr immer über das selbe Interface versendet.
+\[
+	M = H(MAC_{src}, MAC_{dest}) \text{ mod } N
+\]
+wobei 
+\begin{itemize}[label={}]
+	\item N = Anzahl verfügbare Ports
+	\item M = Ausgehender Port
+	\item H = Hash Funktion
+\end{itemize}
 
-\begin{figure}
+ Wir konnten dieses Verhalten feststellen, als wir von Client A nach Client B gepingt haben. Obschon HP3 zwei gleichwertige Pfade nach HP4 hat, wird immer der Pfad über HP2 verwendet. 
+
+
+\paragraph{Unknown Unicast, Broadcast, Multicast} \hfill \\
+Geht der Verkehr an ein noch unbekanntes Ziel, wird das M Bit gesetzt und das Paket entlang des Multicast Trees an alle Multicast Teilnehmer versendet. Beim Ziel angekommen wird der TRILL Header entfernt und an alle Teilnehmer gebroadcasted. Der Anwort zurück, ist dann wieder Known Unicast. (\lstinline|ping reply|) Zusätzlich lernen die RBridges bei diesem Vorgang die MAC Adressen, der angeschlossenen Clients. (vergessen diese aber auch wieder nach wenigen Minuten)
+
+\begin{figure}[h]
 	\centering
 	\includegraphics[width=\linewidth]{images/ping_request}
 	\caption{Ping Request: Known Unicast TRILL Frame}
@@ -359,14 +367,14 @@ Damit lassen sich folgende Tree-Strukturen auslesen:
 \end{figure}
 
 
-\begin{figure}
+\begin{figure}[h]
 	\centering
 	\includegraphics[width=\linewidth]{images/ping_reply}
 	\caption{Ping Reply: Known Unicast TRILL Frame}
 	\label{fig:trillpackage}
 \end{figure}
 
-Obschon HP3 zwei gleichwertige Pfade nach HP4 hat, schickt es alle ping Pakete immer via HP2. Dies ist erstaunlich, da ECMP eigentlich für die Lastverteilung über alle verfügbaren Pfade zuständig sein sollte.
+
 
 
 \subsubsection{Mac Learning}
@@ -501,8 +509,8 @@ Auf der virtuellen Umgebung ist es nötig, virtuelle Switches zu erstellen, welc
 % If yes, what are the differences and which limitations does VXLAN solve?
 
 VXLAN ist kompatibel mit ''traditionellen'' Protokollen wie VLAN, da die Pakete eins zu eins wiederum in UDP eingepackt werden, ohne gross Veränderungen vorzunehmen. 
-%TODO 2x egress? unter vxlan wird das glaube ich nicht egress switch genannt
-VXLAN wurde zudem so entwickelt, dass die bestehende L2 und L3 Infrastruktur weiter genutzt werden kann (abgesehen vom (meist virtuellen) ''Egress'' und ''Egress'' ''Switch'', welcher eben das VXLAN entpacken muss). Das heisst, VXLAN arbeitet komplett im (tatsächlichen) Layer 3 und höher.
+
+VXLAN wurde zudem so entwickelt, dass die bestehende L2 und L3 Infrastruktur weiter genutzt werden kann (abgesehen von den (meist virtuellen) Edge-Switches, welche eben das VXLAN verpacken/entpacken müssen). Das heisst, VXLAN arbeitet komplett im (tatsächlichen) Layer 3 und höher.
 
 Die Zentrale Einschränkung von traditionellen Protokollen ist ebenfalls, dass diese nicht zwischen dem ''Wo'' und ''Wer'' unterscheiden. Mit VXLAN gibt es neben einem ''Wer'' (die MAC-Adresse) und ein ''Wo'' (die IP-Adresse) ein Overlay Netzwerk, welches das ''Wo'' weiter von der (VM- oder Container-)IP-Adresse abstrahiert.
 
