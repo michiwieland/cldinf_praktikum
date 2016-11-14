@@ -146,7 +146,7 @@ TRILL wurde entwickelt um das Spanning Tree Protocol (STP) zu ersetzen. STP wurd
 
 
 \subsubsection{High Performance Datacenter}
-Bei modernen Datencenter versucht man die Spine-Leaf Architektur umzusetzen. Diese flachen Layer 2 Netze werden oft mit TRILL verwaltet, die STP in der neuen Architektur nicht effizient arbeiten könnten. Aus Spine-Leaf Architektur folgt, dass sehr viele Leaf Switches gibt, die mit jedem Spine Knoten verbunden werden. Die Hohe Anzahl an Verbindungen würde unter STP zu viele blockierten Ports führen.  Da TRILL alle verfügbaren Ports und Pfade nutzt, kann die Payload bei einer maximalen Bandbreite übertragen werden. Damit agiert ein Datacenter in sich extrem performant. 
+Bei modernen Datencenter versucht man die Spine-Leaf Architektur umzusetzen. Diese flachen Layer 2 Netze werden oft mit TRILL verwaltet, die STP in der neuen Architektur nicht effizient arbeiten könnten. Aus der Spine-Leaf Architektur folgt, dass sehr viele Leaf Switches gibt, die mit jedem Spine Knoten verbunden werden. Die Hohe Anzahl an Verbindungen würde unter STP zu viele blockierten Ports führen.  Da TRILL alle verfügbaren Ports und Pfade nutzt, kann die Payload bei einer maximalen Bandbreite übertragen werden. Damit agiert ein Datacenter in sich extrem performant. 
 
 \subsubsection{VMotion}
 Durch den Einsatz von VMotion sind flache Layer 2 Netze nötig, damit die virtuellen Maschienen zwischen mehreren Host Systemen je nach Last verschoben werden müssen. Damit diese Layer 2 Netze performant arbeiten ist ein Protokoll wie TRILL oder SPB nötig. 
@@ -159,8 +159,7 @@ TRILL ist kompatibel mit VLAN und STP. Der VLAN Tag des Inner Ethernet Header wi
 
 \subsection{Was sind die Vor- und Nachteile von TRILL?}%what are the advantages and disadvantages of TRILL
 \subsubsection{Vorteile} \hfill \\
-Die Vorteile von TRILL decken sich mit den Kritikpunkten an STP. So gibt es bei TRILL keine blockierten Ports (die ganze Bandbreite kann genutzt werden) und es gibt keine Probleme mit der Konvergationszeit des L2 Netzes. Dadurch kann auf STP verzichtet werden. 
-TRILL erlaubt es Virtuelle Maschienen zu verschieben (z.B VMotion) ohne dass man sich Gedanken über die IP Subnetze machen muss.
+Die Vorteile von TRILL decken sich mit den Kritikpunkten an STP. So gibt es bei TRILL keine blockierten Ports (die ganze Bandbreite kann genutzt werden) und es gibt keine Probleme mit der Konvergationszeit des L2 Netzes. Dadurch kann auf STP verzichtet werden. Durch den Einsatz von TRILL wird Unicast Verkehr immer über den kürzesten Pfad verbreitet. ECMP schaut dabei, dass mehrere Pfade mit den gleichen Kosten genutzt werden. Durch den Einsatz von IS-IS entstehen keine Loops. (zusätzlich wird auf den Hop Count geschaut) 
 
 \subsubsection{Nachteile} \hfill \\
 Ein Kritikpunkt an TRILL ist, dass es zu schlechtem Design in den Rechenzentren führe und Alternative Protokolle wie z.B SPB das Problem eleganter lösen. Ebenfalls sind für TRILL spezielle Geräte nötig, was zu erhöhten Initialen Kosten führt.
@@ -244,7 +243,7 @@ Der grösste Konkurenz von TRILL ist SPB (Shortest Path Bridging oder IEEE 802.1
 
 \subsubsection{Aufzeichnung Traffic}
 Wir haben unserer Testumgebung gemäss der Abbildung \ref{fig:testaufbau} aufgebaut und auf alle Switches mit Wireshark gesnifft. Nach der Analyse der Wireshark Traces dokumierten wir den Paketaufbau, sowie das Verhalten von TRILL in der vorliegenden Dokumentation. 
-\begin{figure}
+\begin{figure}[h!]
 	\centering
 	\includegraphics[width=\linewidth]{images/trill_package}
 	\caption{ARP Request von Client A an Broadcast}
@@ -355,21 +354,17 @@ wobei
 \end{itemize}
 
  Wir konnten dieses Verhalten feststellen, als wir von Client A nach Client B einen Ping versendeten. Obschon HP3 zwei gleichwertige Pfade nach HP4 hat, wird immer der Pfad über HP2 verwendet.
+ 
+ 
+ \begin{figure}[H]
+ 	\centering
+ 	\includegraphics[width=\linewidth]{images/ping_reply}
+ 	\caption{Ping Reply: Known Unicast TRILL Frame}
+ 	\label{fig:trillpackage}
+ \end{figure}
+ 
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=\linewidth]{images/ping_request}
-	\caption{Ping Request: Known Unicast TRILL Frame}
-	\label{fig:trillpackage}
-\end{figure}
 
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=\linewidth]{images/ping_reply}
-	\caption{Ping Reply: Known Unicast TRILL Frame}
-	\label{fig:trillpackage}
-\end{figure}
 
 \paragraph{Unknown Unicast, Broadcast, Multicast} \hfill \\
 Geht der Verkehr an ein noch unbekanntes Ziel, wird das M-Bit gesetzt und das Paket entlang des Multicast Trees an alle Multicast Teilnehmer versendet. Beim Ziel angekommen wird der TRILL Header entfernt und an alle Teilnehmer gebroadcasted. Die Anwort zurück ist dann wieder Known Unicast. (\lstinline|ping|-reply) Zusätzlich lernen die RBridges bei diesem Vorgang die MAC Adressen, der angeschlossenen Clients (vergessen diese aber auch wieder nach wenigen Minuten, siehe Kapitel \ref{sec:mac-learning}).
