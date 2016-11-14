@@ -111,7 +111,7 @@ Das TRILL Protokoll  (Transparent Interconnection of Lots of Links) implementier
 
 Versendet ein Client A ein Paket an Client B, wird das MAC Frame bei der Ingress RBrige in ein TRILL Paket verpackt. Anschliessend routet IS-IS das Paket zur Egress Bridge welche den TRILL Header wieder entfernt und das ursprüngliche MAC Frame auspackt.  \\
 
-Edge RBridges (Ingress, Egress) lernen die angeschlossen Clients auf die klassische Art und Weise über ARP. Das Wissen, welche MAC Adresse an welcher Edge RBridge angeschlossen ist, wird dann über IS-IS an die weiteren RBridges verteilt. Da Link State Protokolle über die gesammte Netzwerktopologie bescheid wissen, kann IS-IS optimale Pfade für Unicast, sowie Distribution Trees für unbekannte Hosts und Broadcast und Multicast Gruppen berechnen. Die berechneten Bäume bilden einen Pfad zu allen Egress Bridges ab. Durch das Equal Cost Multipath Routing (ECMP) werden alle Pfade mit gleichen Kosten zu einem Ziel parallel genutzt. Dadurch erreicht man eine höhere Bandbreit, als dies unter STP möglich war. IS-IS verwendet für die Berechnung des kürzestens Wegs den Dijkstra-Algorithmus ein. Dieser garantiert loop-freie Pfade. Zudem wird ein Hop Cound im TRILL Header verwendet um Loops zu unterbinden.
+Da Link State Protokolle über die gesammte Netzwerktopologie bescheid wissen, kann IS-IS optimale Pfade für Unicast, sowie Distribution Trees für unbekannte Hosts und Broadcast und Multicast Gruppen berechnen. Die berechneten Bäume bilden einen Pfad zu allen Egress Bridges ab. Durch das Equal Cost Multipath Routing (ECMP) können alle Pfade mit gleichen Kosten zu einem Ziel parallel genutzt. Dadurch erreicht man eine höhere Bandbreit, als dies unter STP möglich war. IS-IS verwendet für die Berechnung des kürzestens Wegs den Dijkstra-Algorithmus ein. Dieser garantiert loop-freie Pfade. Zudem wird ein Hop Cound im TRILL Header verwendet um Loops zu unterbinden.
 
 \subsection{Protokoll Header}
 Ein TRILL Frame ist in drei Schichten aufgeteilt:
@@ -183,7 +183,6 @@ Der grösste Konkurenz von TRILL ist SPB (Shortest Path Bridging oder IEEE 802.1
 	\caption{Lab TRILL Testaufbau}
 	\label{fig:testaufbau}
 \end{figure}
-%TODO: Welcher switch welche funktion.
 
 \begin{table}[H]
 	\centering
