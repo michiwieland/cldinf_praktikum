@@ -368,11 +368,17 @@ Damit lassen sich folgende Tree-Strukturen auslesen:
 
 Obschon HP3 zwei gleichwertige Pfade nach HP4 hat, schickt es alle ping Pakete immer via HP2. Dies ist erstaunlich, da ECMP eigentlich für die Lastverteilung über alle verfügbaren Pfade zuständig sein sollte.
 
-\subsubsection{Mac Learning}
-Die MAC Adressen werden nur von den Edge Knoten gelernt. 
-%-> Was passiert nach Client einstecken (IS-IS)
-%-> Was passiert nach wechseln Client auf anderen Access Switch
 
+\subsubsection{Mac Learning}
+Die MAC Adressen werden grundsätzlich von den Edge Knoten gelernt.
+
+TRILL lernt die MAC-Adressen, wie das für einen Switch gebräuchlich ist: Es merkt sich, auf welchen Ports Pakete von der MAC-Adresse eingegangen sind, und schickt Pakete an diese MAC-Adresse wiederum an diesen Port zurück. Diese Forwarding-Information wird allerdings nicht lange gespeichert, und meist nach kurzer Zeit wieder verworfen (üblicherweise 3 Minuten).
+
+Kennt der Ingress-Switch die Destination-MAC-Adresse nicht, so verteilt er das Pakete gemäss dem hinterlegten Multicast-Tree (siehe auch Kapitel \ref{sec:trees-multicast--broadcast--unknown-unicast}).
+
+Innerhalb der TRILL-Cloud werden Pakete mithilfe des ''Egress''-Headers weitergeleitet: Die MAC-Adresse des (inneren) Pakets spielt in der MAC-Cloud also keine Rolle mehr.
+
+Wenn Geräte auf einem Switch eingesteckt werden, wird daher \textbf{nicht} die MAC Adresse via IS-IS verteilt; allerdings meldet IS-IS die Änderung eines Port-Zustandes mittels einer entsprechenden eindeutigen ID, welche sich auf den Switch und Switchport zurückführen lässt. So werden alle Switches über eine Änderung an den entsprechenden Geräten informiert; diese können als Reaktion darauf allenfalls ihre FIB anpassen.
 
 \section{VXLAN}
 \subsection{Terminologie}
