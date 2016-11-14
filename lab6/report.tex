@@ -8,7 +8,7 @@
 
 \section{Modern Data Center Requirements}
 
-Die Ansprüche an eine Data Center hat sich in den letzten zehn Jahren stark gewandelt. In den folgenden Abschnitten werfen wir einen Blick auf die Änderungen der letzten Jahre sowie der neu entstandenen Ansprüche an Data Centers.
+Die Ansprüche an ein Data Center haben sich in den letzten zehn Jahren stark gewandelt. In den folgenden Abschnitten werfen wir einen Blick auf die Änderungen der letzten Jahre sowie der neu entstandenen Ansprüche an Data Centers.
 
 % - was ändert sich
 % - was ist heutigen DC anders als 20 jahre
@@ -181,6 +181,7 @@ Der grösste Konkurenz von TRILL ist SPB (Shortest Path Bridging oder IEEE 802.1
 	\centering
 	\includegraphics[width=0.7\linewidth]{testaufbau}
 	\caption{Lab TRILL Testaufbau}
+	\label{fig:testaufbau}
 \end{figure}
 %TODO: Welcher switch welche funktion.
 
@@ -242,21 +243,14 @@ Der grösste Konkurenz von TRILL ist SPB (Shortest Path Bridging oder IEEE 802.1
 \clearpage
 
 
-
+\subsubsection{Aufzeichnung Traffic}
+Wir haben unserer Testumgebung gemäss der Abbildung \ref{fig:testaufbau} aufgebaut und auf alle Switches mit Wireshark gesnifft. Nach der Analyse der Wireshark Traces dokumierten wir den Paketaufbau, sowie das Verhalten von TRILL in der vorliegenden Dokumentation. 
 \begin{figure}
-\centering
-\includegraphics[width=\linewidth]{images/trill_package}
-\caption{ARP Request von Client A an Broadcast}
-\label{fig:trillpackage}
+	\centering
+	\includegraphics[width=\linewidth]{images/trill_package}
+	\caption{ARP Request von Client A an Broadcast}
+	\label{fig:trillpackage}
 \end{figure}
-
-
-
-\subsubsection{Aufzeichnung Traffic etc}
-
-Wir haben eine Wireshark
-
-%TODO: Screenshots Wireshark mit erkenntnissen / erklährungen
 
 \subsubsection{Trees: Multicast / Broadcast / Unknown Unicast}\label{sec:trees-multicast--broadcast--unknown-unicast}
 
@@ -376,7 +370,6 @@ Obschon HP3 zwei gleichwertige Pfade nach HP4 hat, schickt es alle ping Pakete i
 
 \subsubsection{Mac Learning}
 Die MAC Adressen werden nur von den Edge Knoten gelernt. 
-%TODO
 %-> Was passiert nach Client einstecken (IS-IS)
 %-> Was passiert nach wechseln Client auf anderen Access Switch
 
@@ -386,14 +379,14 @@ Die MAC Adressen werden nur von den Edge Knoten gelernt.
 \begin{description}
 	\item[VXLAN: Virtual eXtensible Local Area Network] \hfill \\
 	Ist ein Encapsulation Protokoll, um Overlay Netzwerke auf einer existierenden Layer 3 Infrastruktur umzusetzen.
-	\item[VNI: VXLAN Network Identifier]
+	\item[VNI: VXLAN Network Identifier] \hfill \\
 	24bit langer Identifiert pro VXLAN (vergleichbar mit VLAN Tag)
 	\item[VTEP: VXLAN Tunnel End Point] \hfill \\
 	Die ''externe'' IP Adresse des Virtuellen Switches. Der VTEP ist wie der Switch, teil der VM. Der VTEP enkapselt den VM Traffic in einem IP Header, damit dieser über ein Layer 3 Netzwerk gesendet werden kann. Die VM an sich verfügt über kein Wissen der VXLANs.
 \end{description}
 
 \subsection{Funktion}
-VXLAN ist ein Overlay Protokoll, welches einem Host erlaubt, seine IP Adresse beizubehalten, obschon die VM ihren Standort gewechselt hat. Dies funktioniert, da der VTEP teil der VM ist und somit mitverschoben wird. Mittel VXLAN lassen sich logische Layer 2 Overlay Netzwerk auf das bestehende Layer 3 Netzwerk umsetzen. Die Layer 2 Pakete werden dann einfach in Layer 3 Header verpackt. Da in klassischen Netzes die MAC Broadcasts auf Layer 3 geblockt werden, muss das MAC Learning und Floading unter VXLAN mit Multicast emuliert werden. So wird Broadcast und Unknow-Unicast Verkehr einfach über Multicast übertragen. Bekannter Unicast Verkehr kann nach wie vor direkt übertragen werden. (gemäss Remote VTEP). Grundlend läuft die Kommunikation wie folgt ab.
+VXLAN ist ein Overlay Protokoll, welches einem Host erlaubt, seine IP Adresse beizubehalten, obschon die VM ihren Standort gewechselt hat. Dies funktioniert, da der VTEP teil der VM ist und somit mitverschoben wird. Mittel VXLAN lassen sich logische Layer 2 Overlay Netzwerk auf das bestehende Layer 3 Netzwerk umsetzen. Die Layer 2 Pakete werden dann einfach in Layer 3 Header verpackt. Da in klassischen Netzes die MAC Broadcasts auf Layer 3 geblockt werden, muss das MAC Learning und Floading unter VXLAN mit Multicast emuliert werden. So wird Broadcast und Unknow-Unicast Verkehr einfach über Multicast übertragen. Bekannter Unicast Verkehr kann nach wie vor direkt übertragen werden. (gemäss Remote VTEP). Grundlegend läuft die Kommunikation wie folgt ab.
 
 \begin{enumerate}
 	\item VM1 möchte Daten Daten versenden und erstellt dafür ein L2 Ethernet Frame
@@ -502,7 +495,7 @@ Auf der virtuellen Umgebung ist es nötig, virtuelle Switches zu erstellen, welc
 % If yes, what are the differences and which limitations does VXLAN solve?
 
 VXLAN ist kompatibel mit ''traditionellen'' Protokollen wie VLAN, da die Pakete eins zu eins wiederum in UDP eingepackt werden, ohne gross Veränderungen vorzunehmen. 
-
+%TODO 2x egress? unter vxlan wird das glaube ich nicht egress switch genannt
 VXLAN wurde zudem so entwickelt, dass die bestehende L2 und L3 Infrastruktur weiter genutzt werden kann (abgesehen vom (meist virtuellen) ''Egress'' und ''Egress'' ''Switch'', welcher eben das VXLAN entpacken muss). Das heisst, VXLAN arbeitet komplett im (tatsächlichen) Layer 3 und höher.
 
 Die Zentrale Einschränkung von traditionellen Protokollen ist ebenfalls, dass diese nicht zwischen dem ''Wo'' und ''Wer'' unterscheiden. Mit VXLAN gibt es neben einem ''Wer'' (die MAC-Adresse) und ein ''Wo'' (die IP-Adresse) ein Overlay Netzwerk, welches das ''Wo'' weiter von der (VM- oder Container-)IP-Adresse abstrahiert.
