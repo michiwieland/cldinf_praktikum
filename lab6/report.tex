@@ -342,7 +342,9 @@ Damit lassen sich folgende Tree-Strukturen auslesen:
 Bei TRILL unterscheided man zwischen zwei Varianten des Paketflusses:
 
 \paragraph{Known Unicast} \hfill \\
-Um die Egress Bridge zu bestimmen, wird bei Known Unicast Verkehr ein Lookup für die Ziel MAC-Adresse durchgeführt. Diese Information ist auf der Ingress Bridge aufgrund vorhergehender Kommunikation bereits bekannt. Anschliessend wird das Paket anhand des Egress Bridge Nicknames durch die Wolke weitergeleitet. Beim Ziel angekommen wird der TRILL Header entpackt und gemäss dem Inneren Ethernet Header dem Empfänger zugestellt. Wenn zwei gleichwertige Pfade zur Verfügung stehen, wird ein Hash über die Source und Ziel MAC Adresse erstellt und dieser Modulo Portanzahl genommen. Die resultierende Zahl bestimmt die ausgehende Port Nummer. Sind Empfänger und Sender die Selben, wird der Verkehr immer über das selbe Interface versendet.
+Um die Egress Bridge zu bestimmen, wird bei Known Unicast Verkehr ein Lookup für die Ziel MAC-Adresse durchgeführt. Diese Information ist auf der Ingress Bridge aufgrund vorhergehender Kommunikation bereits bekannt. Anschliessend wird das Paket anhand des Egress Bridge Nicknames durch die Wolke weitergeleitet. Beim Ziel angekommen wird der TRILL Header entpackt und gemäss dem inneren Ethernet Header dem Empfänger zugestellt. Wenn zwei gleichwertige Pfade zur Verfügung stehen, wird ein Hash über die Source und Ziel MAC Adresse erstellt und dieser Modulo Portanzahl genommen. Die resultierende Zahl bestimmt die ausgehende Port Nummer.
+
+Sind Empfänger und Sender dieselben, wird der Verkehr immer über das selbe Interface versendet.
 \[
 	M = H(MAC_{src}, MAC_{dest}) \text{ mod } N
 \]
@@ -353,13 +355,9 @@ wobei
 	\item H = Hash Funktion
 \end{itemize}
 
- Wir konnten dieses Verhalten feststellen, als wir von Client A nach Client B gepingt haben. Obschon HP3 zwei gleichwertige Pfade nach HP4 hat, wird immer der Pfad über HP2 verwendet. 
+ Wir konnten dieses Verhalten feststellen, als wir von Client A nach Client B einen Ping versendeten. Obschon HP3 zwei gleichwertige Pfade nach HP4 hat, wird immer der Pfad über HP2 verwendet.
 
-
-\paragraph{Unknown Unicast, Broadcast, Multicast} \hfill \\
-Geht der Verkehr an ein noch unbekanntes Ziel, wird das M Bit gesetzt und das Paket entlang des Multicast Trees an alle Multicast Teilnehmer versendet. Beim Ziel angekommen wird der TRILL Header entfernt und an alle Teilnehmer gebroadcasted. Der Anwort zurück, ist dann wieder Known Unicast. (\lstinline|ping reply|) Zusätzlich lernen die RBridges bei diesem Vorgang die MAC Adressen, der angeschlossenen Clients. (vergessen diese aber auch wieder nach wenigen Minuten)
-
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=\linewidth]{images/ping_request}
 	\caption{Ping Request: Known Unicast TRILL Frame}
@@ -367,17 +365,24 @@ Geht der Verkehr an ein noch unbekanntes Ziel, wird das M Bit gesetzt und das Pa
 \end{figure}
 
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=\linewidth]{images/ping_reply}
 	\caption{Ping Reply: Known Unicast TRILL Frame}
 	\label{fig:trillpackage}
 \end{figure}
 
+\paragraph{Unknown Unicast, Broadcast, Multicast} \hfill \\
+Geht der Verkehr an ein noch unbekanntes Ziel, wird das M-Bit gesetzt und das Paket entlang des Multicast Trees an alle Multicast Teilnehmer versendet. Beim Ziel angekommen wird der TRILL Header entfernt und an alle Teilnehmer gebroadcasted. Die Anwort zurück ist dann wieder Known Unicast. (\lstinline|ping|-reply) Zusätzlich lernen die RBridges bei diesem Vorgang die MAC Adressen, der angeschlossenen Clients (vergessen diese aber auch wieder nach wenigen Minuten, siehe Kapitel \ref{sec:mac-learning}).
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\linewidth]{images/trill_header_multicast}
+\caption{TRILL Multicast Package}
+\label{fig:trillheadermulticastpackage}
+\end{figure}
 
-
-\subsubsection{Mac Learning}
+\subsubsection{Mac Learning}\label{sec:mac-learning}
 Die MAC Adressen werden grundsätzlich von den Edge Knoten gelernt.
 
 TRILL lernt die MAC-Adressen, wie das für einen Switch gebräuchlich ist: Es merkt sich, auf welchen Ports Pakete von der MAC-Adresse eingegangen sind, und schickt Pakete an diese MAC-Adresse wiederum an diesen Port zurück. Diese Forwarding-Information wird allerdings nicht lange gespeichert, und meist nach kurzer Zeit wieder verworfen (üblicherweise 3 Minuten).
