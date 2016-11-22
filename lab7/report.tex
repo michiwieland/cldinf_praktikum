@@ -45,17 +45,20 @@ mininet> h1 ping h2
 mininet> py 'hello ' + 'world'
 \end{lstlisting}
 
+\subsection{Topologie}
+%TODO add scheme
+
 \subsection{Source Files}
 \subsubsection{requirements.txt}
 Wir verwenden für die Parameter Übergabe die CLI Description Language von Docopts. 
 \lstinputlisting{sourcen/requirements.txt}
 
 \subsubsection{clos-network.py}
-Das Clos Python Skript nimmt zwei Parameter entgegen und erstellt die gewünschte Anzahl Leaf und Spines. Die Leaf Knoten werden mit allen vorhandenen Spine Knoten verknüpft. Ebenfalls an jeden Leaf Knoten genau ein Host angehängt.
+Das Clos Python Skript nimmt zwei Parameter entgegen und erstellt die gewünschte Anzahl Leafs und Spines. Die Leaf Knoten werden mit allen vorhandenen Spine Knoten verknüpft. Ebenfalls wird an jeden Leaf Knoten genau ein Host angehängt.
 \lstinputlisting{sourcen/clos-network.py}
 
 \subsubsection{stpswitch.py}
-Damit die Pings funktionieren, dürfen in dem Netzwerk keine Loops existieren. Einfachheitshabler haben wir das Problem mit STP gelöst. 
+Damit die Pings funktionieren, dürfen in dem Netzwerk keine Loops existieren. Weder der standardmässig verwendetete ovs-controller, noch NOX's pyswitch, noch POX l2\_learning switch unterbinden Loops als Standardeinstellung. Für ein Cloud Netzwerk würde sich ein OpenFlow Multipath Controller anbieten, einfachheitshabler haben wir das Problem aber mit STP gelöst. 
 \lstinputlisting{sourcen/stpswitch.py}
 
 
