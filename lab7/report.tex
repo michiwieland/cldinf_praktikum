@@ -1,0 +1,74 @@
+\input{../template.tex}
+
+% Dokumentinformationen
+\newcommand{\SUBJECT}{Report}
+\newcommand{\TITLE}{Cloud Infrastructre Lab 7}
+
+\input{../front.tex}
+
+\section{Custom Clos Topology}
+\subsection{Requirements}
+Auf der vorgegebenen VM müssen noch folgende Pakete installiert werden
+\begin{lstlisting}[language=bash]
+# requirements
+sudo apt-get install python-pip
+sudo pip install -r ./requirements.txt
+
+# call
+./clos-nnetwork <spines> <leaves>
+\end{lstlisting}
+
+\subsection{Mininet CLI}
+\begin{lstlisting}[language=bash]
+# clean mininet
+sudo mn -c
+
+# debug
+sudo mn -v debug
+
+# print configuration
+mininet> pingall
+mininet> nodes
+mininet> net
+mininet> dump
+
+# host commands
+mininet> h1 ifconfig -a
+
+# switch commands
+mininet> s1 ifconfig -a
+
+# connectivity test
+mininet> h1 ping h2
+
+# pyhton interpreter
+mininet> py 'hello ' + 'world'
+\end{lstlisting}
+
+\subsection{Source Files}
+\subsubsection{requirements.txt}
+Wir verwenden für die Parameter Übergabe die CLI Description Language von Docopts. 
+\lstinputlisting{sourcen/requirements.txt}
+
+\subsubsection{clos-network.py}
+Das Clos Python Skript nimmt zwei Parameter entgegen und erstellt die gewünschte Anzahl Leaf und Spines. Die Leaf Knoten werden mit allen vorhandenen Spine Knoten verknüpft. Ebenfalls an jeden Leaf Knoten genau ein Host angehängt.
+\lstinputlisting{sourcen/clos-network.py}
+
+\subsubsection{stpswitch.py}
+Damit die Pings funktionieren, dürfen in dem Netzwerk keine Loops existieren. Einfachheitshabler haben wir das Problem mit STP gelöst. 
+\lstinputlisting{sourcen/stpswitch.py}
+
+
+\subsection{Tests}
+Nachdem der STP Tree konvergiert hat, können sämtliche Hosts in der Clos Topology gepingt werden.
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\linewidth]{images/ping_result}
+\caption{pingall Resultat}
+\label{fig:pingresult}
+\end{figure}
+
+
+
+
+\input{appendix.tex}
