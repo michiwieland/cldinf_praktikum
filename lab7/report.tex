@@ -45,9 +45,6 @@ mininet> h1 ping h2
 mininet> py 'hello ' + 'world'
 \end{lstlisting}
 
-\subsection{Topologie}
-%TODO add scheme
-
 \subsection{Source Files}
 \subsubsection{requirements.txt}
 Wir verwenden für die Parameter Übergabe die CLI Description Language von Docopts. 
@@ -61,7 +58,6 @@ Das Clos Python Skript nimmt zwei Parameter entgegen und erstellt die gewünscht
 Damit die Pings funktionieren, dürfen in dem Netzwerk keine Loops existieren. Weder der standardmässig verwendetete ovs-controller, noch NOX's pyswitch, noch POX l2\_learning switch unterbinden Loops als Standardeinstellung. Für ein Cloud Netzwerk würde sich ein OpenFlow Multipath Controller anbieten, einfachheitshabler haben wir das Problem aber mit STP gelöst. 
 \lstinputlisting{sourcen/stpswitch.py}
 
-
 \subsection{Tests}
 Nachdem der STP Tree konvergiert hat, können sämtliche Hosts in der Clos Topology gepingt werden.
 \begin{figure}[h]
@@ -69,6 +65,16 @@ Nachdem der STP Tree konvergiert hat, können sämtliche Hosts in der Clos Topol
 \includegraphics[width=0.7\linewidth]{images/ping_result}
 \caption{pingall Resultat}
 \label{fig:pingresult}
+\end{figure}
+
+\clearpage
+
+\subsection{Topologie}
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.9\linewidth]{images/scheme}
+	\caption{Clos Topologie mit 2 Spines und 4 Leafs}
+	\label{fig:scheme}
 \end{figure}
 
 
